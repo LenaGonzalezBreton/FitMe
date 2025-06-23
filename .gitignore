@@ -1,0 +1,42 @@
+# General
+.DS_Store
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.obsidian/
+
+# Node
+node_modules/
+dist/
+build/
+coverage/
+
+# Environment Variables
+# Do not commit sensitive data. Create a .env.example file instead.
+.env
+.env.*
+!.env.example
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.swp
+
+# --- Client (React Native / Expo) ---
+/client/.expo/
+/client/web-build/
+/client/expo-env.d.ts
+/client/.kotlin/
+/client/*.orig.*
+/client/*.jks
+/client/*.p8
+/client/*.p12
+/client/*.key
+/client/*.mobileprovision
+/client/.metro-health-check*
+/client/*.tsbuildinfo
+
+# --- Server (NestJS) ---
+/server/dist/
+/server/*.tsbuildinfo 
