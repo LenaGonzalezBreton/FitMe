@@ -1,31 +1,32 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CacheModule } from '@nestjs/cache-manager';
 import { getTypeOrmConfig } from './config/postgres.config';
 import { getRedisConfig } from './config/redis.config';
-import { CacheModule } from '@nestjs/cache-manager';
 import { StatusModule } from './modules/status/status.module';
+import { CoreModule } from './core/core.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
+      envFilePath: 'server/.env',
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
+      inject: [ConfigService],
       useFactory: (configService: ConfigService) =>
         getTypeOrmConfig(configService),
-      inject: [ConfigService],
     }),
     CacheModule.registerAsync({
       imports: [ConfigModule],
+      inject: [ConfigService],
       useFactory: (configService: ConfigService) =>
         getRedisConfig(configService),
-      inject: [ConfigService],
-      isGlobal: true,
     }),
     StatusModule,
+    CoreModule,
   ],
   controllers: [],
   providers: [],

@@ -4,108 +4,132 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FitMe API Status</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { 
             font-family: 'Poppins', sans-serif; 
             margin: 0; 
-            background-color: #f7f8fa; 
-            color: #333; 
+            background-color: #f8f9fc; /* Lighter background */
+            color: #344767; /* Softer black */
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         .container { 
             width: 100%;
-            max-width: 900px; 
-            margin: 50px; 
-            padding: 30px; 
+            max-width: 950px; /* Slightly wider */
+            margin: 40px; 
+            padding: 35px 45px;
             background-color: #fff; 
-            border-radius: 12px; 
-            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-            transition: transform 0.3s ease;
-        }
-        .container:hover {
-            transform: translateY(-5px);
+            border-radius: 20px; /* More rounded */
+            box-shadow: 0 20px 27px 0 rgba(0,0,0,0.05);
         }
         .header { 
             display: flex; 
             align-items: center; 
             justify-content: space-between;
-            border-bottom: 1px solid #e9ecef; 
+            border-bottom: 1px solid #f0f2f5; 
             padding-bottom: 20px; 
-            margin-bottom: 30px; 
-        }
-        .header-left {
-            display: flex;
-            align-items: baseline;
+            margin-bottom: 35px; 
         }
         .logo { 
-            font-size: 28px; 
-            font-weight: 700; 
-            color: #6a11cb; 
-            margin-right: 12px;
-        }
-        h1 { 
             font-size: 24px; 
-            margin: 0; 
-            font-weight: 600;
-            color: #212529; 
+            font-weight: 700; 
+            background: linear-gradient(45deg, #5e72e4, #825ee4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         .status-badge { 
-            padding: 8px 18px; 
-            background-color: #e4f8e9; 
-            color: #28a745; 
-            border-radius: 20px; 
+            padding: 6px 16px; 
+            background-color: rgba(72, 187, 120, 0.1); 
+            color: #48BB78; 
+            border-radius: 12px; 
             font-weight: 600; 
             font-size: 14px;
-            letter-spacing: 0.5px;
         }
         .grid { 
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
             gap: 25px; 
         }
-        .metric { 
-            background-color: #f8f9fa; 
-            padding: 20px; 
-            border-radius: 10px; 
-            border: 1px solid #e9ecef; 
+        .metric-card {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid #f0f2f5;
             transition: all 0.3s ease;
         }
-        .metric:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            border-color: #6a11cb;
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.07);
         }
         .metric-title { 
-            font-size: 15px; 
-            color: #6c757d; 
-            margin-bottom: 12px; 
+            font-size: 14px; 
+            color: #6c757d;
+            margin-bottom: 20px; 
             font-weight: 500; 
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        .metric-value { 
-            font-size: 20px; 
-            color: #343a40; 
-            font-weight: 600; 
-            transition: color 0.3s ease; 
+        .metric-chart-container {
+            position: relative;
+            width: 160px; /* Larger chart */
+            height: 160px;
+            margin: 0 auto;
         }
-        .metric-value.updated { 
-            color: #6a11cb; 
-            animation: pulse 0.5s ease;
+        .chart-value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
         }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+        #heap-chart-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #344767;
+            display: block;
+        }
+        #heap-details {
+            font-size: 14px;
+            margin-top: 5px;
+            color: #6c757d;
+        }
+        /* For non-chart cards */
+        .metric-details-card {
+             border-left: 5px solid #e9ecef;
+             text-align: left;
+             padding-left: 20px;
+        }
+        .metric-details-card.status-ok {
+            border-left-color: #48BB78;
+        }
+        .metric-details-card.status-error {
+            border-left-color: #F56565;
+        }
+        .metric-value-large {
+            font-size: 28px;
+            font-weight: 600;
+            color: #344767;
+            margin-bottom: 8px;
+        }
+        .metric-details {
+            font-size: 14px;
+            color: #6c757d;
+            word-wrap: break-word;
+            min-height: 1.2em;
         }
         footer { 
             text-align: center; 
             margin-top: 40px; 
             padding-top: 20px;
-            border-top: 1px solid #e9ecef;
-            font-size: 13px; 
+            border-top: 1px solid #f0f2f5;
+            font-size: 14px; 
             color: #6c757d; 
         }
     </style>
@@ -113,51 +137,116 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="header-left">
-                <div class="logo">FitMe API</div>
-                <h1>Server Status</h1>
-            </div>
-            <div class="status-badge">{{status}}</div>
+            <div class="logo">FitMe API Status</div>
+            <div id="main-status" class="status-badge">{{status}}</div>
         </div>
         
         <div class="grid">
-            <div class="metric">
-                <div class="metric-title">Uptime</div>
-                <div class="metric-value" id="uptime">{{uptime}}</div>
+            <!-- Chart Card -->
+            <div class="metric-card">
+                <div class="metric-title">Heap Memory</div>
+                <div class="metric-chart-container">
+                    <canvas id="heap-chart"></canvas>
+                    <div class="chart-value">
+                        <span id="heap-chart-value">--%</span>
+                        <div id="heap-details">-- / --</div>
+                    </div>
+                </div>
             </div>
-            <div class="metric">
-                <div class="metric-title">Node.js Version</div>
-                <div class="metric-value" id="node-version">{{nodeVersion}}</div>
+
+            <!-- Uptime Card -->
+            <div class="metric-card">
+                 <div class="metric-title">Uptime</div>
+                 <div class="metric-value-large" id="uptime">{{uptime}}</div>
+                 <div class="metric-details" id="node-version">Node.js {{nodeVersion}}</div>
             </div>
-            <div class="metric">
-                <div class="metric-title">Platform</div>
-                <div class="metric-value" id="platform">{{platform}} / {{arch}}</div>
+
+            <!-- Database Card -->
+            <div class="metric-card metric-details-card" id="db-metric">
+                <div class="metric-title">Database</div>
+                <div class="metric-value-large" id="db-status">{{database.status}}</div>
+                <div class="metric-details" id="db-details">{{database.message}}</div>
             </div>
-             <div class="metric">
-                <div class="metric-title">CPU Cores</div>
-                <div class="metric-value" id="cpu-count">{{cpuCount}}</div>
+
+            <!-- Prisma Card -->
+            <div class="metric-card metric-details-card" id="prisma-metric">
+                <div class="metric-title">Prisma Client</div>
+                <div class="metric-value-large" id="prisma-status">{{prisma.status}}</div>
+                <div class="metric-details" id="prisma-details">v{{prisma.version}}</div>
             </div>
-            <div class="metric">
-                <div class="metric-title">Memory (RSS)</div>
-                <div class="metric-value" id="memory-rss">{{memory.rss}}</div>
+
+            <!-- Redis Card -->
+            <div class="metric-card metric-details-card" id="redis-metric">
+                <div class="metric-title">Cache (Redis)</div>
+                <div class="metric-value-large" id="redis-status">{{redis.status}}</div>
+                <div class="metric-details" id="redis-details">{{redis.message}}</div>
             </div>
-            <div class="metric">
-                <div class="metric-title">Heap Used</div>
-                <div class="metric-value" id="heap-used">{{memory.heapUsed}} / {{memory.heapTotal}}</div>
+            
+            <!-- CPU/Platform Card -->
+            <div class="metric-card">
+                 <div class="metric-title">Platform</div>
+                 <div class="metric-value-large" id="platform">{{platform}}</div>
+                 <div class="metric-details" id="cpu-cores">{{cpuCount}} CPU Cores</div>
             </div>
         </div>
-        <footer>FitMe - Cycle-Based Fitness Companion</footer>
+        <footer>FitMe - Cycle-Based Fitness Companion - v1.0.0</footer>
     </div>
 
     <script>
-        function updateMetric(elementId, newValue) {
+        let heapChart;
+
+        function createChart(ctx, initialData) {
+            const gradient = ctx.createLinearGradient(0, 0, 0, 160);
+            gradient.addColorStop(0, '#825ee4');
+            gradient.addColorStop(1, '#5e72e4');
+
+            return new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: initialData,
+                        backgroundColor: [gradient, 'rgba(233, 236, 239, 0.5)'],
+                        borderColor: 'transparent',
+                        borderWidth: 0,
+                    }]
+                },
+                options: {
+                    cutout: '80%',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    },
+                    animation: {
+                        duration: 800,
+                        easing: 'easeInOutCubic'
+                    }
+                }
+            });
+        }
+
+        function initCharts() {
+            const heapCtx = document.getElementById('heap-chart').getContext('2d');
+            heapChart = createChart(heapCtx, [0, 100]);
+        }
+        
+        function updateText(elementId, newValue) {
             const element = document.getElementById(elementId);
             if (element && element.textContent !== newValue) {
                 element.textContent = newValue;
-                element.classList.add('updated');
-                setTimeout(() => {
-                    element.classList.remove('updated');
-                }, 500);
+            }
+        }
+
+        function updateCardStatus(cardId, status) {
+            const card = document.getElementById(cardId);
+            if(card) {
+                card.className = 'metric-card metric-details-card'; // Reset
+                if (status === 'OK' || status === 'Connected') {
+                    card.classList.add('status-ok');
+                } else {
+                    card.classList.add('status-error');
+                }
             }
         }
 
@@ -165,13 +254,48 @@
             fetch('/status-json')
                 .then(response => response.json())
                 .then(data => {
-                    updateMetric('uptime', data.uptime);
-                    updateMetric('memory-rss', data.memory.rss);
-                    updateMetric('heap-used', data.memory.heapUsed + ' / ' + data.memory.heapTotal);
+                    // Update main status
+                    updateText('main-status', data.status);
+                    
+                    // Update Uptime
+                    updateText('uptime', data.uptime);
+                    updateText('node-version', `Node.js ${data.nodeVersion}`);
+
+                    // Update Platform
+                    updateText('platform', data.platform);
+                    updateText('cpu-cores', `${data.cpuCount} CPU Cores`);
+
+                    // Update Heap Memory Chart
+                    const heapUsed = data.memory.raw.heapUsed;
+                    const heapTotal = data.memory.raw.heapTotal;
+                    const heapPercentage = heapTotal > 0 ? (heapUsed / heapTotal) * 100 : 0;
+                    
+                    heapChart.data.datasets[0].data = [heapPercentage, 100 - heapPercentage];
+                    heapChart.update();
+                    updateText('heap-chart-value', `${heapPercentage.toFixed(1)}%`);
+                    updateText('heap-details', `${data.memory.heapUsed} / ${data.memory.heapTotal}`);
+
+                    // Update status cards
+                    updateText('db-status', data.database.status);
+                    updateText('db-details', data.database.message);
+                    updateCardStatus('db-metric', data.database.status);
+
+                    updateText('prisma-status', data.prisma.status);
+                    updateText('prisma-details', `v${data.prisma.version}`);
+                    updateCardStatus('prisma-metric', data.prisma.status);
+
+                    updateText('redis-status', data.redis.status);
+                    updateText('redis-details', data.redis.message);
+                    updateCardStatus('redis-metric', data.redis.status);
                 })
                 .catch(error => console.error('Error fetching status:', error));
         }
-        setInterval(fetchStatus, 1000);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+            fetchStatus();
+            setInterval(fetchStatus, 2000);
+        });
     </script>
 </body>
 </html> 

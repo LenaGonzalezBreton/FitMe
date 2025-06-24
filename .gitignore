@@ -40,3 +40,4 @@ coverage/
 # --- Server (NestJS) ---
 /server/dist/
 /server/*.tsbuildinfo 
+/server/generated/prisma*
