@@ -5,10 +5,16 @@ export const setupFirebase = (configService: ConfigService) => {
   const serviceAccount = {
     projectId: configService.get<string>('FIREBASE_PROJECT_ID'),
     clientEmail: configService.get<string>('FIREBASE_CLIENT_EMAIL'),
-    privateKey: configService.get<string>('FIREBASE_PRIVATE_KEY')?.replace(/\\n/g, '\n'),
+    privateKey: configService
+      .get<string>('FIREBASE_PRIVATE_KEY')
+      ?.replace(/\\n/g, '\n'),
   };
 
-  if (serviceAccount.projectId && serviceAccount.clientEmail && serviceAccount.privateKey) {
+  if (
+    serviceAccount.projectId &&
+    serviceAccount.clientEmail &&
+    serviceAccount.privateKey
+  ) {
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
     });
@@ -16,4 +22,4 @@ export const setupFirebase = (configService: ConfigService) => {
   } else {
     console.log('Firebase credentials not found, skipping initialization.');
   }
-}; 
+};
