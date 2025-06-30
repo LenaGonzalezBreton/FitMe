@@ -7,17 +7,17 @@ export class StatusController {
   constructor(private readonly statusService: StatusService) {}
 
   @Get('status-json')
-  getAppStatusJson() {
+  async getAppStatusJson() {
     return this.statusService.getAppStatus();
   }
 
   @Get()
-  getAppStatusPage(@Res() res: Response) {
+  async getAppStatusPage(@Res() res: Response) {
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
 
-    const status = this.statusService.getAppStatus();
+    const status = await this.statusService.getAppStatus();
     return res.render('status', status);
   }
 }

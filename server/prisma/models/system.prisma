@@ -1,0 +1,135 @@
+// System models for notifications, logging, auth, etc.
+/// @namespace "System"
+
+model Notification {
+  id              String           @id @default(cuid())
+  userId          String           @map("user_id")
+  type            NotificationType
+  message         String           @db.Text
+  date            DateTime
+  relatedPhase    String?          @map("related_phase")
+  relatedProgramId String?         @map("related_program_id")
+  isRead          Boolean          @default(false) @map("is_read")
+  
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+
+  // Relations
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  relatedProgram  Program?         @relation(fields: [relatedProgramId], references: [id])
+
+  @@index([userId])
+  @@index([date])
+  @@map("notification")
+}
+
+model ExternalSync {
+  id           String             @id @default(cuid())
+  userId       String             @map("user_id")
+  provider     ExternalProvider
+  entitySynced String             @map("entity_synced")
+  externalId   String             @map("external_id")
+  status       ExternalSyncStatus
+  message      String?            @db.Text
+  syncedAt     DateTime           @map("synced_at")
+  
+  createdAt    DateTime           @default(now()) @map("created_at")
+  updatedAt    DateTime           @updatedAt @map("updated_at")
+
+  // Relations
+  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([provider])
+  @@map("external_sync")
+}
+
+model JournalEntry {
+  id        String          @id @default(cuid())
+  userId    String          @map("user_id")
+  date      DateTime        @db.Date
+  category  JournalCategory
+  content   String          @db.Text
+  
+  createdAt DateTime        @default(now()) @map("created_at")
+  updatedAt DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([date])
+  @@map("journal_entry")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?  @map("user_id")
+  action    String
+  entity    String
+  entityId  String?  @map("entity_id")
+  oldData   Json?    @map("old_data")
+  newData   Json?    @map("new_data")
+  
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([entity])
+  @@map("audit_log")
+}
+
+model Log {
+  id          String    @id @default(cuid())
+  userId      String?   @map("user_id")
+  eventType   EventType @map("event_type")
+  description String?   @db.Text
+  timestamp   DateTime  @default(now())
+  metadata    Json?
+
+  // Relations
+  user        User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([eventType])
+  @@map("log")
+}
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  userId    String    @map("user_id")
+  tokenHash String    @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  revoked   Boolean   @default(false)
+  
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tokenHash])
+  @@map("refresh_token")
+}
+
+model AuthSession {
+  id        String    @id @default(cuid())
+  userId    String    @map("user_id")
+  userAgent String?   @map("user_agent") @db.Text
+  ipAddress String?   @map("ip_address")
+  lastSeen  DateTime  @map("last_seen")
+  isActive  Boolean   @default(true) @map("is_active")
+  
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isActive])
+  @@map("auth_session")
+} 

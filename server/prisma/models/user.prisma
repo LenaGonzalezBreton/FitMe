@@ -1,0 +1,38 @@
+// User model for FitMe application
+/// @namespace "User"
+model User {
+  id              String        @id @default(cuid())
+  email           String        @unique
+  passwordHash    String        @map("password_hash")
+  firstName       String?       @map("first_name")
+  birthDate       DateTime?     @map("birth_date")
+  isMenopausal    Boolean       @default(false) @map("is_menopausal")
+  objective       String?
+  sportFrequency  SportFrequency? @map("sport_frequency")
+  profileType     ProfileType   @default(FEMALE) @map("profile_type")
+  contextType     ContextType   @default(CYCLE) @map("context_type")
+  
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  cycles              Cycle[]
+  programs            Program[]
+  moodTracks          MoodTrack[]
+  userSettings        UserSettings?
+  reminderSettings    ReminderSettings[]
+  userFeatureFlags    UserFeatureFlag[]
+  userObjectives      UserObjective[]
+  profileChangeLogs   ProfileChangeLog[]
+  cycleProfileConfig  CycleProfileConfig?
+  symptomLogs         SymptomLog[]
+  notifications       Notification[]
+  externalSyncs       ExternalSync[]
+  journalEntries      JournalEntry[]
+  auditLogs           AuditLog[]
+  logs                Log[]
+  refreshTokens       RefreshToken[]
+  authSessions        AuthSession[]
+
+  @@map("user")
+} 

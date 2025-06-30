@@ -1,0 +1,28 @@
+// Enumerations for exercise and program-related data
+
+enum Intensity {
+  VERY_LOW
+  LOW
+  MODERATE
+  HIGH
+  VERY_HIGH
+}
+
+enum MuscleZone {
+  UPPER_BODY
+  LOWER_BODY
+  CORE
+  FULL_BODY
+  CARDIO
+  FLEXIBILITY
+  BALANCE
+}
+
+enum TagType {
+  DIFFICULTY
+  EQUIPMENT
+  MUSCLE_GROUP
+  OBJECTIVE
+  DURATION
+  STYLE
+} 

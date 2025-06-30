@@ -1,0 +1,81 @@
+// User settings and configuration models
+/// @namespace "UserSettings"
+
+model UserSettings {
+  id                    String          @id @default(cuid())
+  userId                String          @unique @map("user_id")
+  unitPreference        UnitPreference  @default(METRIC) @map("unit_preference")
+  notificationEnabled   Boolean         @default(true) @map("notification_enabled")
+  notificationTime      DateTime?       @map("notification_time") @db.Time
+  
+  createdAt             DateTime        @default(now()) @map("created_at")
+  updatedAt             DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  user                  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_settings")
+}
+
+model ReminderSettings {
+  id        String        @id @default(cuid())
+  userId    String        @map("user_id")
+  type      ReminderType
+  enabled   Boolean       @default(true)
+  time      DateTime?     @db.Time
+  
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("reminder_settings")
+}
+
+model UserFeatureFlag {
+  id        String    @id @default(cuid())
+  userId    String    @map("user_id")
+  feature   String
+  isEnabled Boolean   @default(false) @map("is_enabled")
+  
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, feature])
+  @@map("user_feature_flag")
+}
+
+model UserObjective {
+  id        String        @id @default(cuid())
+  userId    String        @map("user_id")
+  type      ObjectiveType
+  note      String?       @db.Text
+  
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("user_objective")
+}
+
+model ProfileChangeLog {
+  id         String     @id @default(cuid())
+  userId     String     @map("user_id")
+  changeType ChangeType @map("change_type")
+  details    String?    @db.Text
+  changedAt  DateTime   @default(now()) @map("changed_at")
+
+  // Relations
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("profile_change_log")
+} 

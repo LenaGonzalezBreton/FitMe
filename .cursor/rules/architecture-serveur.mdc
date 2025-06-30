@@ -1,0 +1,73 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Guide d'Architecture du Serveur (Architecture Propre + DDD)
+
+Ce document décrit les principes d'architecture pour le backend NestJS de l'application FitMe, en s'inspirant de l'Architecture Propre (Clean Architecture) et du Domain-Driven Design (DDD). L'objectif est de construire une base de code modulaire, évolutive et facile à maintenir.
+
+Le contexte et les fonctionnalités du projet sont détaillés dans [FitMe.md](mdc:FitMe.md).
+
+## 📁 Structure des Dossiers Principaux (`/server/src`)
+
+Le dossier `src` est organisé en trois zones principales :
+
+*   `modules/` : Contient les différents domaines métier de l'application (ex: `user`, `cycle`).
+*   `core/` : Regroupe l'infrastructure globale de l'application et la logique du framework (ex: configuration, logs, gardes).
+*   `shared/` : Contient du code partagé et agnostique au framework, comme des utilitaires ou des entités de base.
+
+---
+
+## 📦 Structure d'un Module (Dans `src/modules/`)
+
+Chaque domaine métier est encapsulé dans son propre module. Cela favorise la séparation des responsabilités et la modularité. Chaque module devrait suivre cette structure en couches :
+
+### 1. `domain`
+
+C'est le cœur du module. Il contient la logique métier et est complètement indépendant de tout framework ou dépendance externe.
+
+*   **`*.entity.ts`** : Représente les objets du domaine (ex: `User`, `Cycle`). Contient les règles et la logique métier.
+*   **`*.repository.ts`** : Définit les interfaces pour la persistance des données (ex: `IUserRepository`). L'implémentation se trouve dans la couche `infrastructure`.
+*   **Enums, Value Objects, Domain Events** : Tout autre concept fondamental du domaine.
+
+### 2. `application`
+
+Cette couche orchestre la logique du domaine pour accomplir les tâches spécifiques requises par l'application.
+
+*   **`use-cases/`** : Contient des classes qui implémentent des actions applicatives spécifiques (ex: `CreateUserUseCase`). Les cas d'utilisation sont les points d'entrée de la logique applicative.
+*   **`*.service.ts`** : (Optionnel) Services applicatifs qui ne sont pas des cas d'utilisation mais qui sont nécessaires pour coordonner la logique.
+
+### 3. `infrastructure`
+
+Cette couche contient l'implémentation des interfaces définies dans la couche `domain`. C'est ici que l'application interagit avec le monde extérieur (base de données, APIs externes, etc.).
+
+*   **`prisma-*.repository.ts`** : L'implémentation concrète d'une interface de repository utilisant une technologie spécifique comme Prisma ou TypeORM.
+*   **Adapters, Gateways** : Code pour interagir avec des systèmes externes comme Firebase.
+
+### 4. `controller` (ou `presentation`)
+
+Cette couche expose les fonctionnalités de l'application au monde extérieur, généralement via une API REST.
+
+*   **`*.controller.ts`** : Contrôleurs NestJS qui gèrent les requêtes HTTP entrantes. Ils doivent être légers, se contentant de mapper les requêtes au cas d'utilisation approprié dans la couche `application`.
+*   **`dto/`** : Data Transfer Objects utilisés pour définir la forme des données entrant et sortant de l'API.
+
+### 5. `*.module.ts`
+
+Le fichier de module NestJS (`user.module.ts`, `cycle.module.ts`, etc.) qui relie toutes les couches entre elles grâce à l'injection de dépendances.
+
+---
+
+## 🔧 Core & Shared
+
+*   **`core/`** : Ce dossier est destiné aux préoccupations transversales qui sont liées au framework NestJS. Il inclut :
+    *   `config/` : Configuration de l'application.
+    *   `guards/` : Gardes d'authentification/autorisation.
+    *   `interceptors/` : Intercepteurs de requêtes/réponses.
+    *   `prisma.service.ts` : Le service client Prisma.
+
+*   **`shared/`** : Ce dossier est pour le code qui peut être partagé entre plusieurs modules et qui est **agnostique au framework**.
+    *   `utils/` : Fonctions utilitaires génériques.
+    *   `constants/` : Constantes globales.
+    *   `base-entity.ts` : Une classe d'entité de base si des propriétés communes sont partagées entre les entités du domaine.
+

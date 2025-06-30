@@ -1,0 +1,74 @@
+// Cycle model for tracking menstrual cycles
+/// @namespace "Cycle"
+model Cycle {
+  id                String       @id @default(cuid())
+  userId            String       @map("user_id")
+  startDate         DateTime     @map("start_date")
+  cycleLength       Int?         @map("cycle_length")
+  periodLength      Int?         @map("period_length")
+  isRegular         Boolean      @default(true) @map("is_regular")
+  providerId        String?      @map("provider_id")
+  externalCycleId   String?      @map("external_cycle_id")
+  
+  createdAt         DateTime     @default(now()) @map("created_at")
+  updatedAt         DateTime     @updatedAt @map("updated_at")
+  
+  // Relations
+  user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider          CycleProvider? @relation(fields: [providerId], references: [id])
+  phases            Phase[]
+  
+  @@index([userId])
+  @@index([startDate])
+  @@map("cycle")
+}
+
+model CycleProfileConfig {
+  id                      String   @id @default(cuid())
+  userId                  String   @unique @map("user_id")
+  isCycleTrackingEnabled  Boolean  @default(true) @map("is_cycle_tracking_enabled")
+  usesExternalProvider    Boolean  @default(false) @map("uses_external_provider")
+  useMenopauseMode        Boolean  @default(false) @map("use_menopause_mode")
+  averageCycleLength      Int?     @default(28) @map("average_cycle_length")
+  averagePeriodLength     Int?     @default(5) @map("average_period_length")
+  prefersManualInput      Boolean  @default(false) @map("prefers_manual_input")
+  
+  createdAt               DateTime @default(now()) @map("created_at")
+  updatedAt               DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("cycle_profile_config")
+}
+
+model CycleProvider {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?  @db.Text
+  
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  cycles      Cycle[]
+
+  @@map("cycle_provider")
+}
+
+model Phase {
+  id        String     @id @default(cuid())
+  cycleId   String     @map("cycle_id")
+  name      CyclePhase
+  startDate DateTime   @map("start_date")
+  endDate   DateTime   @map("end_date")
+  
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+
+  // Relations
+  cycle     Cycle      @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+
+  @@index([cycleId])
+  @@map("phase")
+} 

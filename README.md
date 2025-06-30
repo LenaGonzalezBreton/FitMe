@@ -46,6 +46,9 @@ Then, fill in the required values in the newly created `.env` file. It will be i
 
 **Example `.env` content:**
 ```
+# Prisma 
+DATABASE_URL="postgresql://admin:password@postgres:5432/fitme?schema=public"
+
 # PostgreSQL
 POSTGRES_USER=admin
 POSTGRES_PASSWORD=password

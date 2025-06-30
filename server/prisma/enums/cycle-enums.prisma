@@ -1,0 +1,8 @@
+// Enumerations for cycle-related data
+
+enum CyclePhase {
+  MENSTRUAL
+  FOLLICULAR  
+  OVULATION
+  LUTEAL
+} 
