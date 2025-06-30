@@ -1,50 +1,93 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native';
 
-const SAMPLE_PROGRAMS = [
-  {
-    id: 1,
-    title: 'Programme Folliculaire',
-    description: 'Entraînement adapté à votre phase d\'énergie haute',
-    duration: '4 semaines',
-    workouts: 3,
-    difficulty: 'Modéré',
-    phase: 'Folliculaire',
-    color: 'bg-primary-500',
-    progress: 65,
-    lastWorkout: '2 jours',
-  },
-  {
-    id: 2,
-    title: 'Récupération Douce',
-    description: 'Programme de yoga et étirements pour les jours difficiles',
-    duration: '2 semaines',
-    workouts: 2,
-    difficulty: 'Léger',
-    phase: 'Menstruelle',
-    color: 'bg-error',
-    progress: 30,
-    lastWorkout: '1 semaine',
-  },
-  {
-    id: 3,
-    title: 'HIIT Intensif',
-    description: 'Maximisez votre potentiel pendant l\'ovulation',
-    duration: '3 semaines',
-    workouts: 4,
-    difficulty: 'Intense',
-    phase: 'Ovulatoire',
-    color: 'bg-accent-500',
-    progress: 0,
-    lastWorkout: 'Pas encore commencé',
-  },
-];
-
 const ProgramScreen = ({ navigation }) => {
   const [activeTab, setActiveTab] = useState('mes-programmes');
 
+  const myPrograms = [
+    {
+      id: 1,
+      title: 'Programme Folliculaire',
+      description: 'Entraînement adapté à votre phase d\'énergie haute',
+      duration: '4 semaines',
+      workouts: 3,
+      difficulty: 'Modéré',
+      phase: 'Folliculaire',
+      color: 'bg-primary-500',
+      progress: 65,
+      lastWorkout: '2 jours',
+    },
+    {
+      id: 2,
+      title: 'Récupération Douce',
+      description: 'Programme de yoga et étirements pour les jours difficiles',
+      duration: '2 semaines',
+      workouts: 2,
+      difficulty: 'Léger',
+      phase: 'Menstruelle',
+      color: 'bg-accent-500',
+      progress: 30,
+      lastWorkout: '1 semaine',
+    },
+    {
+      id: 3,
+      title: 'HIIT Intensif',
+      description: 'Maximisez votre potentiel pendant l\'ovulation',
+      duration: '3 semaines',
+      workouts: 4,
+      difficulty: 'Intense',
+      phase: 'Ovulatoire',
+      color: 'bg-error',
+      progress: 0,
+      lastWorkout: 'Pas encore commencé',
+    },
+  ];
+
+  const recommendedPrograms = [
+    {
+      id: 4,
+      title: 'Débutant Complet',
+      description: 'Programme parfait pour commencer en douceur',
+      duration: '6 semaines',
+      workouts: 2,
+      difficulty: 'Léger',
+      phase: 'Toutes phases',
+      color: 'bg-success',
+      progress: 0,
+      lastWorkout: 'Nouveau',
+    },
+    {
+      id: 5,
+      title: 'Force & Endurance',
+      description: 'Combinaison équilibrée de musculation et cardio',
+      duration: '8 semaines',
+      workouts: 4,
+      difficulty: 'Modéré',
+      phase: 'Folliculaire/Ovulatoire',
+      color: 'bg-primary-600',
+      progress: 0,
+      lastWorkout: 'Nouveau',
+    },
+    {
+      id: 6,
+      title: 'Bien-être Menstruel',
+      description: 'Programme doux pour les jours difficiles',
+      duration: '4 semaines',
+      workouts: 2,
+      difficulty: 'Très léger',
+      phase: 'Menstruelle/Lutéale/Récupération',
+      color: 'bg-primary-300',
+      progress: 0,
+      lastWorkout: 'Nouveau',
+    },
+  ];
+
+  // Get current programs based on active tab
+  const currentPrograms = activeTab === 'mes-programmes' ? myPrograms : recommendedPrograms;
+
   const getDifficultyColor = (difficulty) => {
     switch (difficulty) {
+      case 'Très léger': return 'bg-primary-200 text-primary-800';
       case 'Léger': return 'bg-success text-white';
       case 'Modéré': return 'bg-warning text-white';
       case 'Intense': return 'bg-error text-white';
@@ -63,7 +106,7 @@ const ProgramScreen = ({ navigation }) => {
     <SafeAreaView className="flex-1 bg-background">
       <ScrollView className="flex-1 px-6">
         {/* Header */}
-        <View className="py-6">
+        <View className="pt-16 pb-6">
           <Text className="text-3xl font-bold text-text-primary mb-2">Programmes</Text>
           <Text className="text-base text-text-secondary">
             Gérez vos entraînements personnalisés
@@ -116,7 +159,7 @@ const ProgramScreen = ({ navigation }) => {
             {activeTab === 'mes-programmes' ? 'Vos programmes actifs' : 'Programmes recommandés'}
           </Text>
           
-          {SAMPLE_PROGRAMS.map((program) => (
+          {currentPrograms.map((program) => (
             <TouchableOpacity
               key={program.id}
               className="bg-surface border border-border rounded-xl p-4 mb-4"
@@ -135,19 +178,19 @@ const ProgramScreen = ({ navigation }) => {
               </View>
 
               {/* Program Stats */}
-              <View className="flex-row justify-between items-center mb-4">
-                <View className="flex-row space-x-4">
-                  <View>
+              <View className="mb-4">
+                <View className="flex-row justify-between mb-2">
+                  <View className="flex-1 mr-4">
                     <Text className="text-xs text-text-tertiary">Durée</Text>
                     <Text className="text-sm font-medium text-text-primary">{program.duration}</Text>
                   </View>
-                  <View>
+                  <View className="flex-1 mr-4">
                     <Text className="text-xs text-text-tertiary">Séances/sem</Text>
                     <Text className="text-sm font-medium text-text-primary">{program.workouts}</Text>
                   </View>
-                  <View>
+                  <View className="flex-1">
                     <Text className="text-xs text-text-tertiary">Dernière fois</Text>
-                    <Text className="text-sm font-medium text-text-primary">{program.lastWorkout}</Text>
+                    <Text className="text-sm font-medium text-text-primary" numberOfLines={1} ellipsizeMode="tail">{program.lastWorkout}</Text>
                   </View>
                 </View>
               </View>
@@ -167,14 +210,38 @@ const ProgramScreen = ({ navigation }) => {
               </View>
 
               {/* Tags and Action */}
-              <View className="flex-row justify-between items-center">
-                <View className="flex-row space-x-2">
-                  <View className={`px-3 py-1 rounded-full ${getDifficultyColor(program.difficulty)}`}>
-                    <Text className="text-xs font-medium">{program.difficulty}</Text>
-                  </View>
-                  <View className="px-3 py-1 rounded-full bg-text-tertiary">
-                    <Text className="text-xs font-medium text-white">{program.phase}</Text>
-                  </View>
+              <View className="flex-row items-center">
+                <View className="flex-1 mr-3">
+                  <ScrollView 
+                    horizontal 
+                    showsHorizontalScrollIndicator={false} 
+                    className="flex-row"
+                    contentContainerStyle={{ paddingRight: 8 }}
+                  >
+                    <View className="flex-row space-x-2">
+                      <View className={`px-3 py-1 rounded-full ${getDifficultyColor(program.difficulty)}`}>
+                        <Text className="text-xs font-medium">{program.difficulty}</Text>
+                      </View>
+                      <View className="px-3 py-1 rounded-full bg-primary-400">
+                        <Text className="text-xs font-medium text-white">{program.phase}</Text>
+                      </View>
+                      {program.workouts <= 2 && (
+                        <View className="px-3 py-1 rounded-full bg-success">
+                          <Text className="text-xs font-medium text-white">Débutant</Text>
+                        </View>
+                      )}
+                      {program.duration.includes('8') && (
+                        <View className="px-3 py-1 rounded-full bg-accent-500">
+                          <Text className="text-xs font-medium text-white">Longue durée</Text>
+                        </View>
+                      )}
+                      {program.workouts >= 4 && (
+                        <View className="px-3 py-1 rounded-full bg-warning">
+                          <Text className="text-xs font-medium text-white">Intensif</Text>
+                        </View>
+                      )}
+                    </View>
+                  </ScrollView>
                 </View>
                 
                 <TouchableOpacity className="bg-primary-500 px-4 py-2 rounded-lg">

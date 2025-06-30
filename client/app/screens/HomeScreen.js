@@ -2,33 +2,20 @@ import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
 
 const HomeScreen = ({ navigation }) => {
-  const currentPhase = 'Folliculaire'; // This would come from user's cycle data
-  const nextWorkout = 'Squats + Cardio';
+  const currentPhase = 'Folliculaire'; 
   const streakDays = 7;
-
-  const cyclePhases = [
-    { name: 'Menstruelle', days: '1-5', current: false, color: 'bg-error' },
-    { name: 'Folliculaire', days: '6-14', current: true, color: 'bg-primary-400' },
-    { name: 'Ovulatoire', days: '15-17', current: false, color: 'bg-accent-400' },
-    { name: 'Lutéale', days: '18-28', current: false, color: 'bg-primary-600' },
-  ];
-
-  const todayStats = [
-    { label: 'Énergie', value: '85%', color: 'text-success' },
-    { label: 'Motivation', value: 'Haute', color: 'text-primary-600' },
-    { label: 'Récupération', value: 'Bonne', color: 'text-accent-600' },
-  ];
+  const nextWorkout = 'Squats + Cardio';
 
   return (
     <SafeAreaView className="flex-1 bg-background">
       <ScrollView className="flex-1 px-6">
-        {/* Header */}
-        <View className="py-6">
+        {/* Header with proper spacing */}
+        <View className="pt-16 pb-6">
           <Text className="text-lg text-text-secondary mb-1">Bonjour !</Text>
-          <Text className="text-3xl font-bold text-text-primary mb-4">Prête pour aujourd'hui ?</Text>
+          <Text className="text-3xl font-bold text-text-primary mb-6">Prête pour aujourd'hui ?</Text>
           
           {/* Streak Badge */}
-          <View className="bg-primary-100 border border-primary-200 rounded-xl p-4 mb-6">
+          <View className="bg-primary-100 border border-primary-200 rounded-xl p-4 mb-4">
             <View className="flex-row items-center justify-between">
               <View>
                 <Text className="text-sm text-primary-700 mb-1">Série en cours</Text>
@@ -39,49 +26,18 @@ const HomeScreen = ({ navigation }) => {
           </View>
         </View>
 
-        {/* Current Phase */}
+        {/* Current Phase Card */}
         <View className="mb-6">
           <Text className="text-lg font-semibold text-text-primary mb-3">Phase actuelle</Text>
           <View className="bg-surface border border-border rounded-xl p-4">
-            <View className="flex-row items-center justify-between mb-4">
-              <View>
+            <View className="flex-row items-center justify-between">
+              <View className="flex-1">
                 <Text className="text-xl font-bold text-text-primary mb-1">{currentPhase}</Text>
                 <Text className="text-sm text-text-secondary">Parfait pour les entraînements intensifs</Text>
               </View>
               <View className="bg-primary-500 rounded-full w-12 h-12 items-center justify-center">
                 <Text className="text-white text-xl">💪</Text>
               </View>
-            </View>
-            
-            {/* Phase Timeline */}
-            <View className="flex-row space-x-2">
-              {cyclePhases.map((phase, index) => (
-                <View key={phase.name} className="flex-1">
-                  <View className={`h-2 rounded-full ${
-                    phase.current ? phase.color : 'bg-border'
-                  }`} />
-                  <Text className={`text-xs mt-1 text-center ${
-                    phase.current ? 'text-text-primary font-medium' : 'text-text-tertiary'
-                  }`}>
-                    {phase.name}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          </View>
-        </View>
-
-        {/* Today's Stats */}
-        <View className="mb-6">
-          <Text className="text-lg font-semibold text-text-primary mb-3">Comment vous sentez-vous ?</Text>
-          <View className="bg-surface border border-border rounded-xl p-4">
-            <View className="flex-row justify-between">
-              {todayStats.map((stat, index) => (
-                <View key={stat.label} className="items-center">
-                  <Text className="text-sm text-text-secondary mb-1">{stat.label}</Text>
-                  <Text className={`text-lg font-bold ${stat.color}`}>{stat.value}</Text>
-                </View>
-              ))}
             </View>
           </View>
         </View>
@@ -102,9 +58,9 @@ const HomeScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Quick Actions */}
+        {/* Quick Actions Grid */}
         <View className="mb-8">
-          <Text className="text-lg font-semibold text-text-primary mb-3">Actions rapides</Text>
+          <Text className="text-lg font-semibold text-text-primary mb-4">Actions rapides</Text>
           <View className="space-y-3">
             <View className="flex-row space-x-3">
               <TouchableOpacity 
@@ -112,12 +68,12 @@ const HomeScreen = ({ navigation }) => {
                 onPress={() => navigation.navigate('CreateProgram')}
               >
                 <Text className="text-2xl mb-2">🎯</Text>
-                <Text className="text-text-primary font-medium text-center">Créer Programme</Text>
+                <Text className="text-text-primary font-medium text-center">Nouveau Programme</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity className="flex-1 bg-surface border border-border rounded-xl p-4 items-center">
+              <TouchableOpacity className="flex-1 bg-accent-50 border border-accent-200 rounded-xl p-4 items-center">
                 <Text className="text-2xl mb-2">📊</Text>
-                <Text className="text-text-primary font-medium text-center">Mes Stats</Text>
+                <Text className="text-accent-700 font-medium text-center">Mes Stats</Text>
               </TouchableOpacity>
             </View>
             
@@ -127,9 +83,9 @@ const HomeScreen = ({ navigation }) => {
                 <Text className="text-text-primary font-medium text-center">Calendrier</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity className="flex-1 bg-surface border border-border rounded-xl p-4 items-center">
+              <TouchableOpacity className="flex-1 bg-primary-50 border border-primary-200 rounded-xl p-4 items-center">
                 <Text className="text-2xl mb-2">💭</Text>
-                <Text className="text-text-primary font-medium text-center">Journal</Text>
+                <Text className="text-primary-700 font-medium text-center">Journal</Text>
               </TouchableOpacity>
             </View>
           </View>

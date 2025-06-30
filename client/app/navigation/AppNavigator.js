@@ -12,30 +12,33 @@ import CreateProgramScreen from '../screens/CreateProgramScreen';
 const Stack = createNativeStackNavigator();
 const Tab = createMaterialTopTabNavigator();
 
-// Main tab navigator with swipe functionality
+// Main tab navigator with swipe support at bottom
 const MainTabNavigator = () => {
   return (
     <Tab.Navigator
+      tabBarPosition="bottom"
       screenOptions={{
         tabBarStyle: {
-          backgroundColor: '#f8fafc', // background color
-          elevation: 0,
-          shadowOpacity: 0,
-          borderBottomWidth: 1,
-          borderBottomColor: '#e2e8f0', // border color
+          backgroundColor: '#ffffff', // Clean white background
+          borderTopWidth: 1,
+          borderTopColor: '#e2e8f0', // border color
+          paddingBottom: 8,
+          paddingTop: 4,
+          height: 58,
         },
         tabBarActiveTintColor: '#0891b2', // primary-500
         tabBarInactiveTintColor: '#64748b', // text-secondary
         tabBarLabelStyle: {
-          fontSize: 14,
+          fontSize: 12,
           fontWeight: '600',
-          textTransform: 'none',
+          marginTop: 4,
         },
         tabBarIndicatorStyle: {
           backgroundColor: '#0891b2', // primary-500
           height: 3,
+          top: 0, // Position indicator at top of bottom tab bar
         },
-        swipeEnabled: true,
+        swipeEnabled: true, // Enable swipe gestures
         tabBarPressColor: '#cffafe', // primary-100 for ripple effect
       }}
     >
@@ -44,7 +47,7 @@ const MainTabNavigator = () => {
         component={HomeScreen}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <Text style={{ color, fontSize: 16 }}>
+            <Text style={{ fontSize: 20 }}>
               {focused ? '🏠' : '🏡'}
             </Text>
           ),
@@ -55,8 +58,8 @@ const MainTabNavigator = () => {
         component={ExercicesScreen}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <Text style={{ color, fontSize: 16 }}>
-              {focused ? '💪' : '💪'}
+            <Text style={{ fontSize: 20 }}>
+              {focused ? '💪' : '🏋️‍♀️'}
             </Text>
           ),
         }}
@@ -66,8 +69,8 @@ const MainTabNavigator = () => {
         component={ProgramScreen}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <Text style={{ color, fontSize: 16 }}>
-              {focused ? '📋' : '📋'}
+            <Text style={{ fontSize: 20 }}>
+              {focused ? '📋' : '📄'}
             </Text>
           ),
         }}

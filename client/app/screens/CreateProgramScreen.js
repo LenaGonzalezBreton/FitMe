@@ -30,7 +30,7 @@ const CreateProgramScreen = () => {
     <SafeAreaView className="flex-1 bg-background">
       <ScrollView className="flex-1 px-6">
         {/* Header */}
-        <View className="py-6">
+        <View className="pt-16 pb-6">
           <Text className="text-3xl font-bold text-text-primary mb-2">Nouveau Programme</Text>
           <Text className="text-base text-text-secondary">
             Créez un programme adapté à votre cycle
@@ -167,24 +167,20 @@ const CreateProgramScreen = () => {
         <View className="mb-8 space-y-3">
           <TouchableOpacity 
             className={`p-4 rounded-xl items-center ${
-              programTitle && selectedDays.length > 0 
+              programTitle && selectedType 
                 ? 'bg-primary-500' 
                 : 'bg-border'
             }`}
-            disabled={!programTitle || selectedDays.length === 0}
-            onPress={() => console.log('Créer le programme')}
+            disabled={!programTitle || !selectedType}
           >
             <Text className={`text-lg font-bold ${
-              programTitle && selectedDays.length > 0 ? 'text-white' : 'text-text-tertiary'
+              programTitle && selectedType ? 'text-white' : 'text-text-tertiary'
             }`}>
               Créer le programme
             </Text>
           </TouchableOpacity>
           
-          <TouchableOpacity 
-            className="bg-surface border border-border p-4 rounded-xl items-center"
-            onPress={() => console.log('Ajouter des exercices')}
-          >
+          <TouchableOpacity className="bg-surface border border-border p-4 rounded-xl items-center">
             <Text className="text-text-primary text-lg font-medium">
               + Ajouter des exercices
             </Text>

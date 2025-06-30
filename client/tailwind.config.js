@@ -53,28 +53,28 @@ module.exports = {
         mono: ['SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'monospace'],
       },
       fontSize: {
-        // Responsive typography scale
-        'xs': ['12px', { lineHeight: '16px', letterSpacing: '0.025em' }],
-        'sm': ['14px', { lineHeight: '20px', letterSpacing: '0.025em' }],
-        'base': ['16px', { lineHeight: '24px', letterSpacing: '0em' }],
-        'lg': ['18px', { lineHeight: '28px', letterSpacing: '-0.025em' }],
-        'xl': ['20px', { lineHeight: '28px', letterSpacing: '-0.025em' }],
-        '2xl': ['24px', { lineHeight: '32px', letterSpacing: '-0.025em' }],
-        '3xl': ['30px', { lineHeight: '36px', letterSpacing: '-0.025em' }],
-        '4xl': ['36px', { lineHeight: '40px', letterSpacing: '-0.05em' }],
-        '5xl': ['48px', { lineHeight: '48px', letterSpacing: '-0.05em' }],
+        // Responsive typography scale - React Native compatible
+        'xs': ['12px', { lineHeight: '16px' }],
+        'sm': ['14px', { lineHeight: '20px' }],
+        'base': ['16px', { lineHeight: '24px' }],
+        'lg': ['18px', { lineHeight: '28px' }],
+        'xl': ['20px', { lineHeight: '28px' }],
+        '2xl': ['24px', { lineHeight: '32px' }],
+        '3xl': ['30px', { lineHeight: '36px' }],
+        '4xl': ['36px', { lineHeight: '40px' }],
+        '5xl': ['48px', { lineHeight: '48px' }],
       },
       spacing: {
-        // Custom spacing scale for mobile
-        '18': '4.5rem',   // 72px
-        '22': '5.5rem',   // 88px
-        '26': '6.5rem',   // 104px
-        '30': '7.5rem',   // 120px
-        '34': '8.5rem',   // 136px
-        '38': '9.5rem',   // 152px
-        '42': '10.5rem',  // 168px
-        '46': '11.5rem',  // 184px
-        '50': '12.5rem',  // 200px
+        // Custom spacing scale for mobile - React Native compatible
+        '18': '72px',   // 4.5rem equivalent
+        '22': '88px',   // 5.5rem equivalent  
+        '26': '104px',  // 6.5rem equivalent
+        '30': '120px',  // 7.5rem equivalent
+        '34': '136px',  // 8.5rem equivalent
+        '38': '152px',  // 9.5rem equivalent
+        '42': '168px',  // 10.5rem equivalent
+        '46': '184px',  // 11.5rem equivalent
+        '50': '200px',  // 12.5rem equivalent
       },
       borderRadius: {
         // Consistent border radius scale
