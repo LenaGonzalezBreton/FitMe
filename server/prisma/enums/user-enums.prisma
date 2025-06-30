@@ -1,0 +1,47 @@
+// Enumerations for user-related data
+
+enum ProfileType {
+  FEMALE
+  MALE
+  NON_BINARY
+  OTHER
+}
+
+enum ContextType {
+  CYCLE
+  GENERAL
+  MENOPAUSE
+  NONE
+}
+
+enum ObjectiveType {
+  WEIGHT_LOSS
+  MUSCLE_GAIN
+  ENDURANCE
+  STRENGTH
+  FLEXIBILITY
+  GENERAL_FITNESS
+  STRESS_REDUCTION
+  ENERGY_BOOST
+}
+
+enum SportFrequency {
+  SEDENTARY
+  LIGHT
+  MODERATE
+  ACTIVE
+  VERY_ACTIVE
+}
+
+enum UnitPreference {
+  METRIC
+  IMPERIAL
+}
+
+enum ChangeType {
+  PROFILE_UPDATE
+  SETTINGS_UPDATE
+  CYCLE_CONFIG_UPDATE
+  OBJECTIVE_UPDATE
+  PASSWORD_CHANGE
+} 

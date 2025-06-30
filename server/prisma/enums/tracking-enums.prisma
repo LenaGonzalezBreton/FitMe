@@ -1,0 +1,67 @@
+// Enumerations for tracking-related data
+
+enum MoodType {
+  VERY_HAPPY
+  HAPPY
+  NEUTRAL
+  SAD
+  VERY_SAD
+  ANXIOUS
+  IRRITATED
+  CALM
+  ENERGETIC
+  TIRED
+  STRESSED
+  RELAXED
+}
+
+enum EnergyLevel {
+  VERY_LOW
+  LOW
+  MODERATE
+  HIGH
+  VERY_HIGH
+}
+
+enum PainLevel {
+  NONE
+  LIGHT
+  MODERATE
+  SEVERE
+  VERY_SEVERE
+}
+
+enum StressLevel {
+  NONE
+  LOW
+  MODERATE
+  HIGH
+  VERY_HIGH
+}
+
+enum SleepQuality {
+  VERY_POOR
+  POOR
+  FAIR
+  GOOD
+  EXCELLENT
+}
+
+enum SymptomType {
+  CRAMPS
+  BLOATING
+  HEADACHE
+  BACK_PAIN
+  BREAST_TENDERNESS
+  ACNE
+  MOOD_SWINGS
+  FATIGUE
+  NAUSEA
+  FOOD_CRAVINGS
+  CONSTIPATION
+  DIARRHEA
+  HOT_FLASHES
+  COLD_FLASHES
+  JOINT_PAIN
+  INSOMNIA
+} 

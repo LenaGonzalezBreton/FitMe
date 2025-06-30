@@ -1,0 +1,102 @@
+// Exercise and program models
+/// @namespace "Exercise"
+
+model Exercise {
+  id              String    @id @default(cuid())
+  title           String
+  description     String?   @db.Text
+  imageUrl        String?   @map("image_url")
+  durationMinutes Int?      @map("duration_minutes")
+  intensity       Intensity?
+  muscleZone      MuscleZone? @map("muscle_zone")
+  
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  exerciseTags    ExerciseTag[]
+  phaseExercises  PhaseExercise[]
+  programExercises ProgramExercise[]
+
+  @@map("exercise")
+}
+
+model Tag {
+  id           String       @id @default(cuid())
+  name         String       @unique
+  type         TagType
+  
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+
+  // Relations
+  exerciseTags ExerciseTag[]
+
+  @@map("tag")
+}
+
+model ExerciseTag {
+  id         String   @id @default(cuid())
+  exerciseId String   @map("exercise_id")
+  tagId      String   @map("tag_id")
+  
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relations
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([exerciseId, tagId])
+  @@map("exercise_tag")
+}
+
+model PhaseExercise {
+  id         String     @id @default(cuid())
+  phaseName  CyclePhase @map("phase_name")
+  exerciseId String     @map("exercise_id")
+  
+  createdAt  DateTime   @default(now()) @map("created_at")
+
+  // Relations
+  exercise   Exercise   @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@index([phaseName])
+  @@map("phase_exercise")
+}
+
+model Program {
+  id        String    @id @default(cuid())
+  userId    String    @map("user_id")
+  title     String
+  goal      String?
+  startDate DateTime  @map("start_date")
+  endDate   DateTime? @map("end_date")
+  
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  programExercises ProgramExercise[]
+  notifications    Notification[]
+
+  @@index([userId])
+  @@map("program")
+}
+
+model ProgramExercise {
+  id         String   @id @default(cuid())
+  programId  String   @map("program_id")
+  exerciseId String   @map("exercise_id")
+  day        Int
+  order      Int
+  
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relations
+  program    Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@index([programId])
+  @@map("program_exercise")
+} 
