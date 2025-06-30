@@ -42,7 +42,7 @@ const HomeScreen = ({ navigation }) => {
         {/* Current Phase */}
         <View className="mb-6">
           <Text className="text-lg font-semibold text-text-primary mb-3">Phase actuelle</Text>
-          <View className="bg-surface border border-border rounded-xl p-4 shadow-soft">
+          <View className="bg-surface border border-border rounded-xl p-4">
             <View className="flex-row items-center justify-between mb-4">
               <View>
                 <Text className="text-xl font-bold text-text-primary mb-1">{currentPhase}</Text>
@@ -74,7 +74,7 @@ const HomeScreen = ({ navigation }) => {
         {/* Today's Stats */}
         <View className="mb-6">
           <Text className="text-lg font-semibold text-text-primary mb-3">Comment vous sentez-vous ?</Text>
-          <View className="bg-surface border border-border rounded-xl p-4 shadow-soft">
+          <View className="bg-surface border border-border rounded-xl p-4">
             <View className="flex-row justify-between">
               {todayStats.map((stat, index) => (
                 <View key={stat.label} className="items-center">
@@ -89,7 +89,7 @@ const HomeScreen = ({ navigation }) => {
         {/* Next Workout */}
         <View className="mb-6">
           <Text className="text-lg font-semibold text-text-primary mb-3">Prochain entraînement</Text>
-          <TouchableOpacity className="bg-primary-500 rounded-xl p-6 shadow-medium">
+          <TouchableOpacity className="bg-primary-500 rounded-xl p-6">
             <View className="flex-row items-center justify-between">
               <View className="flex-1">
                 <Text className="text-white text-xl font-bold mb-2">{nextWorkout}</Text>
@@ -108,26 +108,26 @@ const HomeScreen = ({ navigation }) => {
           <View className="space-y-3">
             <View className="flex-row space-x-3">
               <TouchableOpacity 
-                className="flex-1 bg-surface border border-border rounded-xl p-4 items-center shadow-soft"
+                className="flex-1 bg-surface border border-border rounded-xl p-4 items-center"
                 onPress={() => navigation.navigate('CreateProgram')}
               >
                 <Text className="text-2xl mb-2">🎯</Text>
                 <Text className="text-text-primary font-medium text-center">Créer Programme</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity className="flex-1 bg-surface border border-border rounded-xl p-4 items-center shadow-soft">
+              <TouchableOpacity className="flex-1 bg-surface border border-border rounded-xl p-4 items-center">
                 <Text className="text-2xl mb-2">📊</Text>
                 <Text className="text-text-primary font-medium text-center">Mes Stats</Text>
               </TouchableOpacity>
             </View>
             
             <View className="flex-row space-x-3">
-              <TouchableOpacity className="flex-1 bg-surface border border-border rounded-xl p-4 items-center shadow-soft">
+              <TouchableOpacity className="flex-1 bg-surface border border-border rounded-xl p-4 items-center">
                 <Text className="text-2xl mb-2">🗓️</Text>
                 <Text className="text-text-primary font-medium text-center">Calendrier</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity className="flex-1 bg-surface border border-border rounded-xl p-4 items-center shadow-soft">
+              <TouchableOpacity className="flex-1 bg-surface border border-border rounded-xl p-4 items-center">
                 <Text className="text-2xl mb-2">💭</Text>
                 <Text className="text-text-primary font-medium text-center">Journal</Text>
               </TouchableOpacity>

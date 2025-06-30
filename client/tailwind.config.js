@@ -87,12 +87,12 @@ module.exports = {
         '2xl': '20px',
         '3xl': '24px',
       },
-      boxShadow: {
-        // Custom shadows for mobile
-        'soft': '0 2px 8px 0 rgba(0, 0, 0, 0.05)',
-        'medium': '0 4px 12px 0 rgba(0, 0, 0, 0.1)',
-        'strong': '0 8px 24px 0 rgba(0, 0, 0, 0.15)',
-        'glow': '0 0 20px 0 rgba(8, 145, 178, 0.2)',
+      // React Native compatible shadows using elevation
+      elevation: {
+        'sm': 2,
+        'md': 4,
+        'lg': 8,
+        'xl': 12,
       },
       animation: {
         // Custom animations

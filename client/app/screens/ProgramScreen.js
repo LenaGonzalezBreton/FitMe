@@ -104,7 +104,7 @@ const ProgramScreen = ({ navigation }) => {
         {/* Create Program Button */}
         <TouchableOpacity
           onPress={() => navigation.navigate('CreateProgram')}
-          className="bg-primary-500 rounded-xl p-4 mb-6 flex-row items-center justify-center shadow-medium"
+          className="bg-primary-500 rounded-xl p-4 mb-6 flex-row items-center justify-center"
         >
           <Text className="text-white text-xl mr-2">+</Text>
           <Text className="text-white font-bold text-lg">Créer un nouveau programme</Text>
@@ -119,7 +119,7 @@ const ProgramScreen = ({ navigation }) => {
           {SAMPLE_PROGRAMS.map((program) => (
             <TouchableOpacity
               key={program.id}
-              className="bg-surface border border-border rounded-xl p-4 mb-4 shadow-soft"
+              className="bg-surface border border-border rounded-xl p-4 mb-4"
             >
               {/* Program Header */}
               <View className="flex-row items-start justify-between mb-3">
@@ -188,7 +188,7 @@ const ProgramScreen = ({ navigation }) => {
         </View>
 
         {/* Quick Stats */}
-        <View className="bg-surface border border-border rounded-xl p-4 mb-8 shadow-soft">
+        <View className="bg-surface border border-border rounded-xl p-4 mb-8">
           <Text className="text-lg font-semibold text-text-primary mb-4">Vos statistiques</Text>
           <View className="flex-row justify-between">
             <View className="items-center">

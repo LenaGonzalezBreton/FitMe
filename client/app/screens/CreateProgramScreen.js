@@ -134,7 +134,7 @@ const CreateProgramScreen = () => {
 
         {/* Program Summary */}
         {(programTitle || selectedDays.length > 0) && (
-          <View className="bg-surface border border-border rounded-xl p-4 mb-6 shadow-soft">
+          <View className="bg-surface border border-border rounded-xl p-4 mb-6">
             <Text className="text-lg font-semibold text-text-primary mb-3">Résumé</Text>
             <View className="space-y-2">
               <View className="flex-row">
@@ -168,7 +168,7 @@ const CreateProgramScreen = () => {
           <TouchableOpacity 
             className={`p-4 rounded-xl items-center ${
               programTitle && selectedDays.length > 0 
-                ? 'bg-primary-500 shadow-medium' 
+                ? 'bg-primary-500' 
                 : 'bg-border'
             }`}
             disabled={!programTitle || selectedDays.length === 0}

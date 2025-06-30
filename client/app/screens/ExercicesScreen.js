@@ -131,7 +131,7 @@ const ExercicesScreen = () => {
           {filteredExercises.map((exercise) => (
             <TouchableOpacity
               key={exercise.id}
-              className="bg-surface border border-border rounded-xl p-4 mb-4 shadow-soft"
+              className="bg-surface border border-border rounded-xl p-4 mb-4"
             >
               <View className="flex-row justify-between items-start mb-3">
                 <View className="flex-1">
