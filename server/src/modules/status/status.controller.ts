@@ -1,16 +1,19 @@
 import { Controller, Get, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { StatusService } from './status.service';
+import { Public } from '../auth/guards/public.decorator';
 
 @Controller()
 export class StatusController {
   constructor(private readonly statusService: StatusService) {}
 
+  @Public()
   @Get('status-json')
   async getAppStatusJson() {
     return this.statusService.getAppStatus();
   }
 
+  @Public()
   @Get()
   async getAppStatusPage(@Res() res: Response) {
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
