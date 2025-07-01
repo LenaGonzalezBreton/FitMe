@@ -100,7 +100,7 @@ model Log {
 model RefreshToken {
   id        String    @id @default(cuid())
   userId    String    @map("user_id")
-  tokenHash String    @map("token_hash")
+  tokenHash String    @map("token_hash") @unique
   expiresAt DateTime  @map("expires_at")
   revoked   Boolean   @default(false)
   
