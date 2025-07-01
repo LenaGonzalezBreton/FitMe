@@ -1,11 +1,30 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native';
 import Tag from '../components/Tag';
+import { NavigationProp } from '@react-navigation/native';
 
-const ProgramScreen = ({ navigation }) => {
+interface Program {
+  id: number;
+  title: string;
+  objective: string;
+  description: string;
+  duration: string;
+  workouts: number;
+  difficulty: 'Très léger' | 'Léger' | 'Modéré' | 'Intense';
+  phase: string;
+  color: string;
+  progress: number;
+  lastWorkout: string;
+}
+
+interface ProgramScreenProps {
+  navigation: NavigationProp<any, any>;
+}
+
+const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
   const [activeTab, setActiveTab] = useState('mes-programmes');
 
-  const myPrograms = [
+  const myPrograms: Program[] = [
   {
     id: 1,
     title: 'Programme Folliculaire',
@@ -47,7 +66,7 @@ const ProgramScreen = ({ navigation }) => {
   },
 ];
 
-  const recommendedPrograms = [
+  const recommendedPrograms: Program[] = [
     {
       id: 4,
       title: 'Débutant Complet',
@@ -92,7 +111,7 @@ const ProgramScreen = ({ navigation }) => {
   // Get current programs based on active tab
   const currentPrograms = activeTab === 'mes-programmes' ? myPrograms : recommendedPrograms;
 
-  const getDifficultyColor = (difficulty) => {
+  const getDifficultyColor = (difficulty: string): string => {
     switch (difficulty) {
       case 'Très léger': return 'bg-primary-200 text-primary-800';
       case 'Léger': return 'bg-success text-white';
@@ -102,7 +121,7 @@ const ProgramScreen = ({ navigation }) => {
     }
   };
 
-  const getProgressColor = (progress) => {
+  const getProgressColor = (progress: number): string => {
     if (progress === 0) return 'bg-border';
     if (progress < 50) return 'bg-accent-400';
     if (progress < 80) return 'bg-primary-500';
@@ -166,7 +185,7 @@ const ProgramScreen = ({ navigation }) => {
             {activeTab === 'mes-programmes' ? 'Vos programmes actifs' : 'Programmes recommandés'}
           </Text>
           
-          {currentPrograms.map((program) => (
+          {currentPrograms.map((program: Program) => (
             <TouchableOpacity
               key={program.id}
               className="bg-brand-dark-surface rounded-xl p-4 mb-4"

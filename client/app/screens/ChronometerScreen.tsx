@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, SafeAreaView, AppState } from 'react-native';
 
-const formatTime = (time) => {
+const formatTime = (time: number): string => {
   const minutes = Math.floor(time / 60);
   const seconds = time % 60;
   return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 };
 
 const ChronometerScreen = () => {
-  const [time, setTime] = useState(30 * 60); // 30 minutes in seconds
+  const [time, setTime] = useState(30 * 60);
   const [isActive, setIsActive] = useState(false);
-  const intervalRef = useRef(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     if (isActive && time > 0) {
@@ -18,12 +18,14 @@ const ChronometerScreen = () => {
         setTime(t => t - 1);
       }, 1000);
     } else if (!isActive || time === 0) {
-      clearInterval(intervalRef.current);
+      if (intervalRef.current) clearInterval(intervalRef.current);
     }
-    return () => clearInterval(intervalRef.current);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
   }, [isActive, time]);
 
-  const handleStartStop = () => {
+  const handleStartStop = (): void => {
       if(time === 0) {
         setTime(30 * 60);
         setIsActive(false);
