@@ -1,45 +1,46 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, SafeAreaView, TouchableOpacity, Image } from 'react-native';
+import Tag from '../components/Tag';
 
 const ExercicesScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const currentPhase = 'Folliculaire';
 
   const exerciseCategories = [
-    { id: 'cardio', name: 'Cardio', icon: '💓', color: 'bg-accent-100' },
-    { id: 'strength', name: 'Musculation', icon: '💪', color: 'bg-primary-100' },
-    { id: 'flexibility', name: 'Flexibilité', icon: '🧘‍♀️', color: 'bg-primary-200' },
-    { id: 'recovery', name: 'Récupération', icon: '🛁', color: 'bg-accent-200' },
-  ];
+  { id: 'cardio', name: 'Cardio', icon: '💓', color: 'bg-accent-100' },
+  { id: 'strength', name: 'Musculation', icon: '💪', color: 'bg-primary-100' },
+  { id: 'flexibility', name: 'Flexibilité', icon: '🧘‍♀️', color: 'bg-primary-200' },
+  { id: 'recovery', name: 'Récupération', icon: '🛁', color: 'bg-accent-200' },
+];
 
   const sampleExercises = [
-    {
-      id: 1,
-      title: 'Squats',
-      duration: '15 min',
-      intensity: 'Modéré',
-      phase: 'Folliculaire',
-      category: 'strength',
-      description: 'Exercice complet pour les jambes et fessiers'
-    },
-    {
-      id: 2,
-      title: 'Marche rapide',
-      duration: '30 min',
-      intensity: 'Léger',
-      phase: 'Menstruelle',
-      category: 'cardio',
-      description: 'Cardio doux parfait pendant les règles'
-    },
-    {
-      id: 3,
-      title: 'HIIT',
-      duration: '25 min',
-      intensity: 'Intense',
-      phase: 'Ovulatoire',
-      category: 'cardio',
-      description: 'Entraînement fractionné haute intensité'
-    },
+  {
+    id: 1,
+    title: 'Squats',
+    duration: '15 min',
+    intensity: 'Modéré',
+    phase: 'Folliculaire',
+    category: 'strength',
+    description: 'Exercice complet pour les jambes et fessiers'
+  },
+  {
+    id: 2,
+    title: 'Marche rapide',
+    duration: '30 min',
+    intensity: 'Léger',
+    phase: 'Menstruelle',
+    category: 'cardio',
+    description: 'Cardio doux parfait pendant les règles'
+  },
+  {
+    id: 3,
+    title: 'HIIT',
+    duration: '25 min',
+    intensity: 'Intense',
+    phase: 'Ovulatoire',
+    category: 'cardio',
+    description: 'Entraînement fractionné haute intensité'
+  },
     {
       id: 4,
       title: 'Yoga restauratif',
@@ -85,28 +86,28 @@ const ExercicesScreen = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <SafeAreaView className="flex-1 bg-brand-dark-bg">
       <ScrollView className="flex-1 px-6">
         {/* Header */}
         <View className="pt-16 pb-6">
-          <Text className="text-3xl font-bold text-text-primary mb-2">Exercices</Text>
-          <Text className="text-base text-text-secondary">
-            Phase actuelle : <Text className="font-semibold text-primary-600">{currentPhase}</Text>
+          <Text className="text-3xl font-bold text-brand-dark-text mb-2">Exercices</Text>
+          <Text className="text-base text-brand-dark-secondary">
+            Phase actuelle : <Text className="font-semibold text-primary-400">{currentPhase}</Text>
           </Text>
         </View>
 
         {/* Categories Filter */}
         <View className="mb-6">
-          <Text className="text-lg font-semibold text-text-primary mb-3">Catégories</Text>
+          <Text className="text-lg font-semibold text-brand-dark-text mb-3">Catégories</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
             <TouchableOpacity
               onPress={() => setSelectedCategory('all')}
               className={`mr-3 px-4 py-2 rounded-xl ${
-                selectedCategory === 'all' ? 'bg-primary-500' : 'bg-surface border border-border'
+                selectedCategory === 'all' ? 'bg-primary-500' : 'bg-brand-dark-surface'
               }`}
             >
               <Text className={`font-medium ${
-                selectedCategory === 'all' ? 'text-white' : 'text-text-primary'
+                selectedCategory === 'all' ? 'text-white' : 'text-brand-dark-text'
               }`}>
                 Tous
               </Text>
@@ -117,12 +118,12 @@ const ExercicesScreen = () => {
                 key={category.id}
                 onPress={() => setSelectedCategory(category.id)}
                 className={`mr-3 px-4 py-2 rounded-xl flex-row items-center ${
-                  selectedCategory === category.id ? 'bg-primary-500' : 'bg-surface border border-border'
+                  selectedCategory === category.id ? 'bg-primary-500' : 'bg-brand-dark-surface'
                 }`}
               >
                 <Text className="mr-2">{category.icon}</Text>
                 <Text className={`font-medium ${
-                  selectedCategory === category.id ? 'text-white' : 'text-text-primary'
+                  selectedCategory === category.id ? 'text-white' : 'text-brand-dark-text'
                 }`}>
                   {category.name}
                 </Text>
@@ -133,94 +134,22 @@ const ExercicesScreen = () => {
 
         {/* Exercises List */}
         <View className="mb-6">
-          <Text className="text-lg font-semibold text-text-primary mb-4">
+          <Text className="text-lg font-semibold text-brand-dark-text mb-4">
             Recommandés pour vous ({filteredExercises.length})
           </Text>
-          
-          {filteredExercises.map((exercise) => (
-            <View
-              key={exercise.id}
-              className="bg-surface border border-border rounded-xl p-4 mb-4"
-            >
-              <View className="flex-row justify-between items-start mb-3">
-                <View className="flex-1">
-                  <Text className="text-xl font-bold text-text-primary mb-1">
-                    {exercise.title}
-                  </Text>
-                  <Text className="text-sm text-text-secondary mb-2">
-                    {exercise.description}
-                  </Text>
-                  <Text className="text-sm text-text-tertiary">
-                    {exercise.duration}
-                  </Text>
+          <View className="flex-row flex-wrap justify-between">
+            {filteredExercises.map((exercise) => (
+              <TouchableOpacity 
+                key={exercise.id}
+                className="bg-brand-dark-surface rounded-xl p-4 mb-4 w-[48%]"
+              >
+                <View className="items-center mb-3">
+                  <Image source={require('../../assets/logo.png')} className="w-24 h-24" resizeMode="contain" />
                 </View>
-              </View>
-              
-              <View className="flex-row items-center">
-                <View className="flex-1 mr-3">
-                  <ScrollView 
-                    horizontal 
-                    showsHorizontalScrollIndicator={false} 
-                    className="flex-row"
-                    contentContainerStyle={{ paddingRight: 8 }}
-                  >
-                    <View className="flex-row space-x-2">
-                      <View className={`px-3 py-1 rounded-full ${getIntensityColor(exercise.intensity)}`}>
-                        <Text className="text-xs font-medium">{exercise.intensity}</Text>
-                      </View>
-                      <View className="px-3 py-1 rounded-full bg-primary-400">
-                        <Text className="text-xs font-medium text-white">{exercise.phase}</Text>
-                      </View>
-                      {exercise.category === 'cardio' && (
-                        <View className="px-3 py-1 rounded-full bg-accent-400">
-                          <Text className="text-xs font-medium text-white">Cardio</Text>
-                        </View>
-                      )}
-                      {exercise.category === 'strength' && (
-                        <View className="px-3 py-1 rounded-full bg-primary-600">
-                          <Text className="text-xs font-medium text-white">Force</Text>
-                        </View>
-                      )}
-                      {exercise.category === 'flexibility' && (
-                        <View className="px-3 py-1 rounded-full bg-success">
-                          <Text className="text-xs font-medium text-white">Flexibilité</Text>
-                        </View>
-                      )}
-                      {exercise.category === 'recovery' && (
-                        <View className="px-3 py-1 rounded-full bg-primary-300">
-                          <Text className="text-xs font-medium text-primary-800">Récupération</Text>
-                        </View>
-                      )}
-                      {parseInt(exercise.duration) <= 15 && (
-                        <View className="px-3 py-1 rounded-full bg-warning">
-                          <Text className="text-xs font-medium text-white">Rapide</Text>
-                        </View>
-                      )}
-                    </View>
-                  </ScrollView>
-                </View>
-                
-                <TouchableOpacity className="bg-primary-500 px-4 py-2 rounded-lg">
-                  <Text className="text-white font-medium text-sm">Commencer</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          ))}
-        </View>
-
-        {/* Quick Actions */}
-        <View className="mb-8">
-          <Text className="text-lg font-semibold text-text-primary mb-4">Actions rapides</Text>
-          <View className="flex-row space-x-3">
-            <TouchableOpacity className="flex-1 bg-primary-100 border border-primary-200 rounded-xl p-4 items-center">
-              <Text className="text-2xl mb-2">🎯</Text>
-              <Text className="text-primary-700 font-medium text-center">Créer un programme</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity className="flex-1 bg-accent-100 border border-accent-200 rounded-xl p-4 items-center">
-              <Text className="text-2xl mb-2">📊</Text>
-              <Text className="text-accent-700 font-medium text-center">Voir mes stats</Text>
-            </TouchableOpacity>
+                <Text className="text-white font-bold text-center text-base mb-1">{exercise.title}</Text>
+                <Text className="text-brand-dark-secondary text-center text-sm">{exercise.duration}</Text>
+              </TouchableOpacity>
+            ))}
           </View>
         </View>
       </ScrollView>

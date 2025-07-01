@@ -8,6 +8,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        'brand-background': '#F5EFE6',
+        'brand-text': '#6B4F4F',
+        'brand-placeholder': '#A99985',
+        // Dark theme from new design
+        'brand-dark-bg': '#1C1C1E',
+        'brand-dark-text': '#FFFFFF',
+        'brand-dark-secondary': '#8E8E93',
+        'brand-dark-surface': '#3A3A3C',
+        'brand-dark-brown-btn': '#4a2c2a',
+        'brand-dark-gray-btn': '#6B6B6B',
+        'brand-dark-red-btn': '#D13438',
         // FitMe Brand Colors - Light Theme
         primary: {
           50: '#ecfeff',

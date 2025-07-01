@@ -27,36 +27,36 @@ const CreateProgramScreen = () => {
   const isDaySelected = (day) => selectedDays.includes(day);
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <SafeAreaView className="flex-1 bg-brand-dark-bg">
       <ScrollView className="flex-1 px-6">
         {/* Header */}
         <View className="pt-16 pb-6">
-          <Text className="text-3xl font-bold text-text-primary mb-2">Nouveau Programme</Text>
-          <Text className="text-base text-text-secondary">
+          <Text className="text-3xl font-bold text-brand-dark-text mb-2">Nouveau Programme</Text>
+          <Text className="text-base text-brand-dark-secondary">
             Créez un programme adapté à votre cycle
           </Text>
         </View>
 
         {/* Current Phase Info */}
-        <View className="bg-primary-100 border border-primary-200 rounded-xl p-4 mb-6">
+        <View className="bg-brand-dark-surface rounded-xl p-4 mb-6">
           <View className="flex-row items-center">
             <View className="bg-primary-500 rounded-full w-10 h-10 items-center justify-center mr-3">
               <Text className="text-white text-lg">💪</Text>
             </View>
             <View>
-              <Text className="text-sm text-primary-700 mb-1">Phase actuelle</Text>
-              <Text className="text-lg font-bold text-primary-800">{currentPhase}</Text>
+              <Text className="text-sm text-primary-200 mb-1">Phase actuelle</Text>
+              <Text className="text-lg font-bold text-white">{currentPhase}</Text>
             </View>
           </View>
         </View>
 
         {/* Program Title */}
         <View className="mb-6">
-          <Text className="text-lg font-semibold text-text-primary mb-3">Titre du programme</Text>
+          <Text className="text-lg font-semibold text-brand-dark-text mb-3">Titre du programme</Text>
           <TextInput
-            className="bg-surface border border-border p-4 rounded-xl text-lg text-text-primary"
+            className="bg-brand-dark-surface border border-brand-dark-secondary p-4 rounded-xl text-lg text-white"
             placeholder="Mon super programme"
-            placeholderTextColor="#94a3b8"
+            placeholderTextColor="#8E8E93"
             value={programTitle}
             onChangeText={setProgramTitle}
           />
@@ -64,7 +64,7 @@ const CreateProgramScreen = () => {
 
         {/* Program Type */}
         <View className="mb-6">
-          <Text className="text-lg font-semibold text-text-primary mb-3">Type d'entraînement</Text>
+          <Text className="text-lg font-semibold text-brand-dark-text mb-3">Type d'entraînement</Text>
           <View className="space-y-3">
             {PROGRAM_TYPES.map((type) => (
               <TouchableOpacity
@@ -72,14 +72,14 @@ const CreateProgramScreen = () => {
                 onPress={() => setSelectedType(type.id)}
                 className={`border rounded-xl p-4 flex-row items-center ${
                   selectedType === type.id 
-                    ? `${type.color} border-2` 
-                    : 'bg-surface border border-border'
+                    ? 'bg-primary-500 border-primary-500' 
+                    : 'bg-brand-dark-surface border-brand-dark-secondary'
                 }`}
               >
                 <Text className="text-2xl mr-3">{type.icon}</Text>
                 <View className="flex-1">
                   <Text className={`text-lg font-semibold ${
-                    selectedType === type.id ? 'text-text-primary' : 'text-text-primary'
+                    selectedType === type.id ? 'text-white' : 'text-brand-dark-text'
                   }`}>
                     {type.name}
                   </Text>
@@ -96,7 +96,7 @@ const CreateProgramScreen = () => {
 
         {/* Training Days */}
         <View className="mb-6">
-          <Text className="text-lg font-semibold text-text-primary mb-3">
+          <Text className="text-lg font-semibold text-brand-dark-text mb-3">
             Jours d'entraînement ({selectedDays.length} sélectionnés)
           </Text>
           <View className="space-y-3">
@@ -106,18 +106,18 @@ const CreateProgramScreen = () => {
                 onPress={() => toggleDay(day)}
                 className={`border rounded-xl p-4 flex-row items-center justify-between ${
                   isDaySelected(day) 
-                    ? 'bg-primary-100 border-primary-200 border-2' 
-                    : 'bg-surface border border-border'
+                    ? 'bg-primary-500 border-primary-500' 
+                    : 'bg-brand-dark-surface border-brand-dark-secondary'
                 }`}
               >
                 <View>
                   <Text className={`text-lg font-semibold ${
-                    isDaySelected(day) ? 'text-primary-800' : 'text-text-primary'
+                    isDaySelected(day) ? 'text-white' : 'text-brand-dark-text'
                   }`}>
                     {day}
                   </Text>
                   <Text className={`text-sm ${
-                    isDaySelected(day) ? 'text-primary-600' : 'text-text-secondary'
+                    isDaySelected(day) ? 'text-primary-200' : 'text-brand-dark-secondary'
                   }`}>
                     {isDaySelected(day) ? 'Séance prévue' : 'Jour de repos'}
                   </Text>
@@ -134,30 +134,30 @@ const CreateProgramScreen = () => {
 
         {/* Program Summary */}
         {(programTitle || selectedDays.length > 0) && (
-          <View className="bg-surface border border-border rounded-xl p-4 mb-6">
-            <Text className="text-lg font-semibold text-text-primary mb-3">Résumé</Text>
+          <View className="bg-brand-dark-surface rounded-xl p-4 mb-6">
+            <Text className="text-lg font-semibold text-brand-dark-text mb-3">Résumé</Text>
             <View className="space-y-2">
               <View className="flex-row">
-                <Text className="text-text-secondary w-20">Titre:</Text>
-                <Text className="text-text-primary font-medium flex-1">
+                <Text className="text-brand-dark-secondary w-20">Titre:</Text>
+                <Text className="text-white font-medium flex-1">
                   {programTitle || 'Non défini'}
                 </Text>
               </View>
               <View className="flex-row">
-                <Text className="text-text-secondary w-20">Type:</Text>
-                <Text className="text-text-primary font-medium flex-1">
+                <Text className="text-brand-dark-secondary w-20">Type:</Text>
+                <Text className="text-white font-medium flex-1">
                   {PROGRAM_TYPES.find(t => t.id === selectedType)?.name}
                 </Text>
               </View>
               <View className="flex-row">
-                <Text className="text-text-secondary w-20">Jours:</Text>
-                <Text className="text-text-primary font-medium flex-1">
+                <Text className="text-brand-dark-secondary w-20">Jours:</Text>
+                <Text className="text-white font-medium flex-1">
                   {selectedDays.length} jours/semaine
                 </Text>
               </View>
               <View className="flex-row">
-                <Text className="text-text-secondary w-20">Phase:</Text>
-                <Text className="text-primary-600 font-medium flex-1">{currentPhase}</Text>
+                <Text className="text-brand-dark-secondary w-20">Phase:</Text>
+                <Text className="text-primary-400 font-medium flex-1">{currentPhase}</Text>
               </View>
             </View>
           </View>
@@ -169,19 +169,19 @@ const CreateProgramScreen = () => {
             className={`p-4 rounded-xl items-center ${
               programTitle && selectedType 
                 ? 'bg-primary-500' 
-                : 'bg-border'
+                : 'bg-brand-dark-gray-btn'
             }`}
             disabled={!programTitle || !selectedType}
           >
             <Text className={`text-lg font-bold ${
-              programTitle && selectedType ? 'text-white' : 'text-text-tertiary'
+              programTitle && selectedType ? 'text-white' : 'text-brand-dark-secondary'
             }`}>
               Créer le programme
             </Text>
           </TouchableOpacity>
           
-          <TouchableOpacity className="bg-surface border border-border p-4 rounded-xl items-center">
-            <Text className="text-text-primary text-lg font-medium">
+          <TouchableOpacity className="bg-brand-dark-surface border border-brand-dark-secondary p-4 rounded-xl items-center">
+            <Text className="text-white text-lg font-medium">
               + Ajouter des exercices
             </Text>
           </TouchableOpacity>
