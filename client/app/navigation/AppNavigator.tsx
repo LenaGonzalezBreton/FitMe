@@ -29,7 +29,7 @@ const AppNavigator = () => {
             title: 'Nouveau Programme',
             headerStyle: { backgroundColor: '#1C1C1E' },
             headerTintColor: '#FFFFFF',
-            headerBackTitleVisible: false,
+            headerBackVisible: false,
           }} 
         />
       </Stack.Navigator>

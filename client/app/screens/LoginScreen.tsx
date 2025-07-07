@@ -10,8 +10,13 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
+import { NavigationProp } from '@react-navigation/native';
 
-const LoginScreen = ({ navigation }) => {
+interface LoginScreenProps {
+  navigation: NavigationProp<any, any>;
+}
+
+const LoginScreen = ({ navigation }: LoginScreenProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 

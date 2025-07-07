@@ -2,45 +2,55 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, SafeAreaView, TouchableOpacity, Image } from 'react-native';
 import Tag from '../components/Tag';
 
+interface Exercise {
+  id: number;
+  title: string;
+  duration: string;
+  intensity: 'Très léger' | 'Léger' | 'Modéré' | 'Intense';
+  phase: string;
+  category: 'cardio' | 'strength' | 'flexibility' | 'recovery';
+  description: string;
+}
+
 const ExercicesScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const currentPhase = 'Folliculaire';
+  const currentPhase: string = 'Folliculaire';
 
   const exerciseCategories = [
-  { id: 'cardio', name: 'Cardio', icon: '💓', color: 'bg-accent-100' },
-  { id: 'strength', name: 'Musculation', icon: '💪', color: 'bg-primary-100' },
-  { id: 'flexibility', name: 'Flexibilité', icon: '🧘‍♀️', color: 'bg-primary-200' },
-  { id: 'recovery', name: 'Récupération', icon: '🛁', color: 'bg-accent-200' },
-];
+    { id: 'cardio', name: 'Cardio', icon: '💓', color: 'bg-accent-100' },
+    { id: 'strength', name: 'Musculation', icon: '💪', color: 'bg-primary-100' },
+    { id: 'flexibility', name: 'Flexibilité', icon: '🧘‍♀️', color: 'bg-primary-200' },
+    { id: 'recovery', name: 'Récupération', icon: '🛁', color: 'bg-accent-200' },
+  ];
 
-  const sampleExercises = [
-  {
-    id: 1,
-    title: 'Squats',
-    duration: '15 min',
-    intensity: 'Modéré',
-    phase: 'Folliculaire',
-    category: 'strength',
-    description: 'Exercice complet pour les jambes et fessiers'
-  },
-  {
-    id: 2,
-    title: 'Marche rapide',
-    duration: '30 min',
-    intensity: 'Léger',
-    phase: 'Menstruelle',
-    category: 'cardio',
-    description: 'Cardio doux parfait pendant les règles'
-  },
-  {
-    id: 3,
-    title: 'HIIT',
-    duration: '25 min',
-    intensity: 'Intense',
-    phase: 'Ovulatoire',
-    category: 'cardio',
-    description: 'Entraînement fractionné haute intensité'
-  },
+  const sampleExercises: Exercise[] = [
+    {
+      id: 1,
+      title: 'Squats',
+      duration: '15 min',
+      intensity: 'Modéré',
+      phase: 'Folliculaire',
+      category: 'strength',
+      description: 'Exercice complet pour les jambes et fessiers'
+    },
+    {
+      id: 2,
+      title: 'Marche rapide',
+      duration: '30 min',
+      intensity: 'Léger',
+      phase: 'Menstruelle',
+      category: 'cardio',
+      description: 'Cardio doux parfait pendant les règles'
+    },
+    {
+      id: 3,
+      title: 'HIIT',
+      duration: '25 min',
+      intensity: 'Intense',
+      phase: 'Ovulatoire',
+      category: 'cardio',
+      description: 'Entraînement fractionné haute intensité'
+    },
     {
       id: 4,
       title: 'Yoga restauratif',
@@ -73,9 +83,9 @@ const ExercicesScreen = () => {
   // Filter exercises based on selected category
   const filteredExercises = selectedCategory === 'all' 
     ? sampleExercises 
-    : sampleExercises.filter(exercise => exercise.category === selectedCategory);
+    : sampleExercises.filter((exercise: Exercise) => exercise.category === selectedCategory);
 
-  const getIntensityColor = (intensity) => {
+  const getIntensityColor = (intensity: string): string => {
     switch (intensity) {
       case 'Très léger': return 'bg-primary-200 text-primary-800';
       case 'Léger': return 'bg-success text-white';
@@ -138,7 +148,7 @@ const ExercicesScreen = () => {
             Recommandés pour vous ({filteredExercises.length})
           </Text>
           <View className="flex-row flex-wrap justify-between">
-            {filteredExercises.map((exercise) => (
+            {filteredExercises.map((exercise: Exercise) => (
               <TouchableOpacity 
                 key={exercise.id}
                 className="bg-brand-dark-surface rounded-xl p-4 mb-4 w-[48%]"

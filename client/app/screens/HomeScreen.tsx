@@ -1,7 +1,12 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
+import { NavigationProp } from '@react-navigation/native';
 
-const HomeScreen = ({ navigation }) => {
+interface HomeScreenProps {
+  navigation: NavigationProp<any, any>;
+}
+
+const HomeScreen = ({ navigation }: HomeScreenProps) => {
   const currentPhase = 'Folliculaire'; 
   const streakDays = 7;
   const nextWorkout = 'Squats + Cardio';
@@ -48,7 +53,7 @@ const HomeScreen = ({ navigation }) => {
             </View>
             {/* Phase Timeline */}
             <View className="flex-row space-x-2">
-              {cyclePhases.map((phase) => (
+              {cyclePhases.map((phase: { name: string; current: boolean; color: string }) => (
                 <View key={phase.name} className="flex-1 h-2 rounded-full">
                   <View className={`h-full rounded-full ${phase.current ? phase.color : 'bg-brand-dark-secondary'}`} />
                 </View>

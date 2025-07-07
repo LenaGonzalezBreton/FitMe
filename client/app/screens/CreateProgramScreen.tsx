@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
 
-const DAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+const DAYS: string[] = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
 
-const PROGRAM_TYPES = [
+interface ProgramType {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+}
+
+const PROGRAM_TYPES: ProgramType[] = [
   { id: 'strength', name: 'Musculation', icon: '💪', color: 'bg-primary-100 border-primary-200' },
   { id: 'cardio', name: 'Cardio', icon: '💓', color: 'bg-accent-100 border-accent-200' },
   { id: 'flexibility', name: 'Flexibilité', icon: '🧘‍♀️', color: 'bg-primary-200 border-primary-300' },
@@ -13,10 +20,10 @@ const PROGRAM_TYPES = [
 const CreateProgramScreen = () => {
   const [programTitle, setProgramTitle] = useState('');
   const [selectedType, setSelectedType] = useState('mixed');
-  const [selectedDays, setSelectedDays] = useState([]);
-  const [currentPhase] = useState('Folliculaire');
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [currentPhase] = useState<string>('Folliculaire');
 
-  const toggleDay = (day) => {
+  const toggleDay = (day: string) => {
     setSelectedDays(prev => 
       prev.includes(day) 
         ? prev.filter(d => d !== day)
@@ -24,7 +31,7 @@ const CreateProgramScreen = () => {
     );
   };
 
-  const isDaySelected = (day) => selectedDays.includes(day);
+  const isDaySelected = (day: string): boolean => selectedDays.includes(day);
 
   return (
     <SafeAreaView className="flex-1 bg-brand-dark-bg">
@@ -66,7 +73,7 @@ const CreateProgramScreen = () => {
         <View className="mb-6">
           <Text className="text-lg font-semibold text-brand-dark-text mb-3">Type d'entraînement</Text>
           <View className="space-y-3">
-            {PROGRAM_TYPES.map((type) => (
+            {PROGRAM_TYPES.map((type: ProgramType) => (
               <TouchableOpacity
                 key={type.id}
                 onPress={() => setSelectedType(type.id)}
@@ -100,7 +107,7 @@ const CreateProgramScreen = () => {
             Jours d'entraînement ({selectedDays.length} sélectionnés)
           </Text>
           <View className="space-y-3">
-            {DAYS.map((day) => (
+            {DAYS.map((day: string) => (
               <TouchableOpacity
                 key={day}
                 onPress={() => toggleDay(day)}

@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, SafeAreaView, Image, FlatList } from 'react-native';
 
-const exercises = [
+interface Exercise {
+  id: string;
+  name: string;
+  details: string;
+}
+
+const exercises: Exercise[] = [
   { id: '1', name: 'Shoulder Press Machine', details: '4x12 - poids conseillé: 2kg' },
   { id: '2', name: 'Shoulder Press Machine', details: '4x12 - poids conseillé: 2kg' },
   { id: '3', name: 'Shoulder Press Machine', details: '4x12 - poids conseillé: 2kg' },
@@ -10,13 +16,13 @@ const exercises = [
 ];
 
 const WorkoutSessionScreen = () => {
-  const [checked, setChecked] = useState({});
+  const [checked, setChecked] = useState<{ [key: string]: boolean }>({});
 
-  const toggleCheck = (id) => {
+  const toggleCheck = (id: string) => {
     setChecked(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item }: { item: Exercise }) => (
     <View className="bg-brand-dark-surface rounded-xl p-4 mb-4 flex-row items-center justify-between">
       <View className="flex-row items-center">
         <Image

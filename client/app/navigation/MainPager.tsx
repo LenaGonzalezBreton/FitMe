@@ -5,10 +5,15 @@ import HomeScreen from '../screens/HomeScreen';
 import ExercicesScreen from '../screens/ExercicesScreen';
 import ProgramScreen from '../screens/ProgramScreen';
 import ChronometerScreen from '../screens/ChronometerScreen';
+import { NavigationProp } from '@react-navigation/native';
 
-const MainPager = ({ navigation }) => {
-  const [page, setPage] = useState(0);
-  const pages = [
+interface MainPagerProps {
+  navigation: NavigationProp<any, any>;
+}
+
+const MainPager: React.FC<MainPagerProps> = ({ navigation }) => {
+  const [page, setPage] = useState<number>(0);
+  const pages: JSX.Element[] = [
     <HomeScreen navigation={navigation} />,
     <ExercicesScreen navigation={navigation} />,
     <ProgramScreen navigation={navigation} />,
