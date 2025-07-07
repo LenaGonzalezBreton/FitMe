@@ -1,7 +1,12 @@
 import { Injectable, Inject } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { IUserRepository, CreateUserData, ProfileType, ContextType } from '../../domain/auth.repository';
-import { USER_REPOSITORY_TOKEN } from '../../auth.module';
+import {
+  IUserRepository,
+  CreateUserData,
+  ProfileType,
+  ContextType,
+} from '../../domain/auth.repository';
+import { USER_REPOSITORY_TOKEN } from '../../tokens';
 
 export interface RegisterRequest {
   email: string;

@@ -26,12 +26,15 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 // Token string constants for DI
-export const USER_REPOSITORY_TOKEN = 'USER_REPOSITORY';
-export const REFRESH_TOKEN_REPOSITORY_TOKEN = 'REFRESH_TOKEN_REPOSITORY';
+import {
+  USER_REPOSITORY_TOKEN,
+  REFRESH_TOKEN_REPOSITORY_TOKEN,
+} from './tokens';
 
 @Module({
   imports: [
     CoreModule,
+    ConfigModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -46,18 +49,11 @@ export const REFRESH_TOKEN_REPOSITORY_TOKEN = 'REFRESH_TOKEN_REPOSITORY';
   ],
   controllers: [AuthController],
   providers: [
-    // Strategies
     JwtStrategy,
-
-    // Guards
     JwtAuthGuard,
-
-    // Use Cases
     RegisterUseCase,
     LoginUseCase,
     RefreshTokenUseCase,
-
-    // Repository Implementations
     {
       provide: USER_REPOSITORY_TOKEN,
       useClass: PrismaUserRepository,
@@ -67,6 +63,11 @@ export const REFRESH_TOKEN_REPOSITORY_TOKEN = 'REFRESH_TOKEN_REPOSITORY';
       useClass: PrismaRefreshTokenRepository,
     },
   ],
-  exports: [JwtAuthGuard, JwtStrategy, USER_REPOSITORY_TOKEN, REFRESH_TOKEN_REPOSITORY_TOKEN],
+  exports: [
+    JwtAuthGuard,
+    JwtStrategy,
+    USER_REPOSITORY_TOKEN,
+    REFRESH_TOKEN_REPOSITORY_TOKEN,
+  ],
 })
 export class AuthModule {}

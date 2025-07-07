@@ -3,9 +3,15 @@ import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { IUserRepository, IRefreshTokenRepository } from '../../domain/auth.repository';
+import {
+  IUserRepository,
+  IRefreshTokenRepository,
+} from '../../domain/auth.repository';
 import { AuthTokens } from '../../domain/auth.entity';
-import { USER_REPOSITORY_TOKEN, REFRESH_TOKEN_REPOSITORY_TOKEN } from '../../auth.module';
+import {
+  USER_REPOSITORY_TOKEN,
+  REFRESH_TOKEN_REPOSITORY_TOKEN,
+} from '../../tokens';
 
 export interface LoginRequest {
   email: string;
@@ -86,7 +92,10 @@ export class LoginUseCase {
     });
 
     // Sauvegarder le refresh token dans la base de données
-    const tokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex');
+    const tokenHash = crypto
+      .createHash('sha256')
+      .update(refreshToken)
+      .digest('hex');
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7); // 7 jours par défaut
 

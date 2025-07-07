@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import { IUserRepository } from '../domain/auth.repository';
-import { USER_REPOSITORY_TOKEN } from '../auth.module';
+import { USER_REPOSITORY_TOKEN } from '../tokens';
 
 export interface JwtPayload {
   sub: string; // userId
@@ -42,4 +42,3 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     };
   }
 }
-

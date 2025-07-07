@@ -5,14 +5,14 @@ export enum ProfileType {
   FEMALE = 'FEMALE',
   MALE = 'MALE',
   NON_BINARY = 'NON_BINARY',
-  OTHER = 'OTHER'
+  OTHER = 'OTHER',
 }
 
 export enum ContextType {
   CYCLE = 'CYCLE',
   GENERAL = 'GENERAL',
   MENOPAUSE = 'MENOPAUSE',
-  NONE = 'NONE'
+  NONE = 'NONE',
 }
 
 export interface IUserRepository {

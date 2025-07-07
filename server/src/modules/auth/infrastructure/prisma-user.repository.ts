@@ -38,7 +38,10 @@ export class PrismaUserRepository implements IUserRepository {
       },
     });
 
-    return AuthUser.fromPrismaUser({ ...user, passwordHash: user.passwordHash });
+    return AuthUser.fromPrismaUser({
+      ...user,
+      passwordHash: user.passwordHash,
+    });
   }
 
   async updatePassword(userId: string, passwordHash: string): Promise<void> {

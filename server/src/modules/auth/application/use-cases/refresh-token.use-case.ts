@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthTokens } from '../../domain/auth.entity';
 import { IRefreshTokenRepository } from '../../domain/auth.repository';
-import { REFRESH_TOKEN_REPOSITORY_TOKEN } from '../../auth.module';
+import { REFRESH_TOKEN_REPOSITORY_TOKEN } from '../../tokens';
 import * as crypto from 'crypto';
 
 export interface RefreshTokenRequest {
@@ -25,13 +25,23 @@ export class RefreshTokenUseCase {
 
   async execute(request: RefreshTokenRequest): Promise<RefreshTokenResponse> {
     // Hacher le token de rafraîchissement pour le rechercher
-    const tokenHash = crypto.createHash('sha256').update(request.refreshToken).digest('hex');
+    const tokenHash = crypto
+      .createHash('sha256')
+      .update(request.refreshToken)
+      .digest('hex');
 
     // Vérifier si le token existe et n'est pas révoqué
-    const storedToken = await this.refreshTokenRepository.findByTokenHash(tokenHash);
-    
-    if (!storedToken || storedToken.revoked || storedToken.expiresAt < new Date()) {
-      throw new UnauthorizedException('Token de rafraîchissement invalide ou expiré');
+    const storedToken =
+      await this.refreshTokenRepository.findByTokenHash(tokenHash);
+
+    if (
+      !storedToken ||
+      storedToken.revoked ||
+      storedToken.expiresAt < new Date()
+    ) {
+      throw new UnauthorizedException(
+        'Token de rafraîchissement invalide ou expiré',
+      );
     }
 
     // Vérifier la validité du JWT (structure et signature)
@@ -54,12 +64,22 @@ export class RefreshTokenUseCase {
     const tokens = await this.generateTokens(payload.sub);
 
     // Sauvegarder le nouveau refresh token
-    const newRefreshTokenHash = crypto.createHash('sha256').update(tokens.refreshToken).digest('hex');
-    const refreshExpiresIn = this.configService.get('JWT_REFRESH_EXPIRES_IN', '7d');
+    const newRefreshTokenHash = crypto
+      .createHash('sha256')
+      .update(tokens.refreshToken)
+      .digest('hex');
+    const refreshExpiresIn = this.configService.get(
+      'JWT_REFRESH_EXPIRES_IN',
+      '7d',
+    );
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7); // 7 jours par défaut
 
-    await this.refreshTokenRepository.create(payload.sub, newRefreshTokenHash, expiresAt);
+    await this.refreshTokenRepository.create(
+      payload.sub,
+      newRefreshTokenHash,
+      expiresAt,
+    );
 
     return { tokens };
   }
