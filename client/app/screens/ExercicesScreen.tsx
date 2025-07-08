@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, SafeAreaView, TouchableOpacity, Image } from 'react-native';
-import Tag from '../components/Tag';
 
 interface Exercise {
   id: number;
