@@ -1,0 +1,69 @@
+---
+id: auth-controller-refresh
+title: "Rafraîchissement du token d'accès"
+description: "Rafraîchissement du token d'accès"
+sidebar_label: "Rafraîchissement du token d'accès"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVEtP20AQ/iuruXAxSah6qW8plCpIBRRAPURRNV5P4gV71+wjkEb+P82FP5E/Vs065AEVrURziT2encf32AWYmix6ZfQghxT6wRfHRntrypLsD0sTS66ABGq0WJEn6yAdjROwdB/I+c8mn0O6iK/KUg6pt4ESkEZ70p4/YV2XSsYW3VtnNMecLKhCfvLzmiAFk92S9NzH8kBekWvLxv7X5o70TrbzVukpJECPWNUlh2h+VmRfpbpQZ4Obn4OjczVwnU4HEsjJSatq7g8pxFIiJ2FxYnH1JAvlHFWkvTj7fg1Nk+zsMtofYJyAVz62G+7ET7yBpmlPutpo187+oXfEf/vtz02YEYZH4fmkE9PVUq+WdrV08N9Aa0v/PQ+lJOfegW3c+L0ENZxUK0tusFtBhyoju1vhU6/3gp3xS7bWm+/wFAcbrmnZEvXxT9y8IQ2lZ1iqnIQJIk67WkapeJyyH6JtuO1+weGrOnloiRf5AUq5+sWsV+QLw96rjYskoS8ghS4GX3S3BnRkZxv3OZLBKj+/Ykm0bGaEluxGJ7z8OpSsH06NrdBDCiz05Bnowvs67sIyG25d/eUZ95cufItJpScmkriG/1T5byT6l4NXPjwxMjAkUeIMennQvxyI9sCh6G/1zx8nymtyTmToVksSLlhRkpBzWZKoSDu+dEpIgBFq6x91emtHoWRH8YYMcIVRZRojQv/G0N7kG4V6evTdukSlefNgS/7WkjcCJg829mBpFMxuOoLFIkNHN7ZsGg7fB7LzltQZWoUZ4zYaNwkUhDkTOlrAHc0hheP2eji85v6cXgae49VV0STPJ/pSUu3fzB3vCPDy4oqFka3v9MrkfMbiA2+CD5ACJGAiDu3tzLEFlKinAaec29bk329o1Dk9
+sidebar_class_name: "post api-method"
+info_path: docs/api/fitme-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Rafraîchissement du token d'accès"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/auth/refresh"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Rafraîchissement du token d'accès
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"refreshToken":{"type":"string","example":"eyJhbGciOiJIUzI1NiIs...","description":"Token de rafraîchissement JWT"}},"required":["refreshToken"],"title":"RefreshTokenDto"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  responses={{"201":{"description":"Nouveaux tokens générés","content":{"application/json":{"schema":{"type":"object","properties":{"tokens":{"type":"object","properties":{"accessToken":{"type":"string","example":"eyJhbGciOiJIUzI1NiIs..."},"refreshToken":{"type":"string","example":"eyJhbGciOiJIUzI1NiIs..."},"expiresIn":{"type":"number","example":900}},"required":[]}},"required":["tokens"],"title":"TokenResponseDto"}}}},"401":{"description":"Token de rafraîchissement invalide ou expiré"}}}
+ id="auth-controller-refresh-responses">
+  
+</StatusCodes>
+
+
+      
