@@ -35,7 +35,7 @@ const ExercicesScreen = () => {
       phase: 'Folliculaire',
       category: 'Strength 💪',
       description: 'Exercice complet pour les jambes et fessiers',
-      muscles:['Quadriceps 🥵', 'Fessiers 🔥']
+      muscles:['Quadriceps', 'Fessiers']
     },
     {
       id: 2,
@@ -45,7 +45,7 @@ const ExercicesScreen = () => {
       phase: 'Menstruelle',
       category: 'Cardio',
       description: 'Cardio doux parfait pendant les règles',
-      muscles:['Quadriceps 🥵', 'Fessiers 🔥']
+      muscles:['Quadriceps', 'Fessiers']
     },
     {
       id: 3,
@@ -55,7 +55,7 @@ const ExercicesScreen = () => {
       phase: 'Ovulatoire',
       category: 'Cardio',
       description: 'Entraînement fractionné haute intensité',
-      muscles:['Quadriceps 🥵', 'Fessiers 🔥']
+      muscles:['Quadriceps', 'Fessiers']
     },
     {
       id: 4,
@@ -65,8 +65,7 @@ const ExercicesScreen = () => {
       phase: 'Lutéale',
       category: 'Flexibility',
       description: 'Étirements et relaxation profonde',
-      muscles:['Quadriceps 🥵', 'Fessiers 🔥']
-
+      muscles:['Quadriceps', 'Fessiers']
     },
     {
       id: 5,
@@ -76,7 +75,7 @@ const ExercicesScreen = () => {
       phase: 'Folliculaire',
       category: 'Strength 💪',
       description: 'Renforcement du haut du corps',
-      muscles:['Quadriceps 🥵', 'Fessiers 🔥']
+      muscles:['Quadriceps', 'Fessiers']
 
     },
     {
@@ -87,15 +86,14 @@ const ExercicesScreen = () => {
       phase: 'Menstruelle',
       category: 'Recovery',
       description: 'Relaxation et bien-être mental',
-      muscles:['Quadriceps 🥵', 'Fessiers 🔥']
-
+      muscles:['Quadriceps', 'Fessiers']
     },
   ];
 
   // Filter exercises based on selected category
-  const filteredExercises = selectedCategory === 'all' 
-    ? sampleExercises 
-    : sampleExercises.filter((exercise: Exercise) => exercise.category === selectedCategory);
+  const filteredExercises = selectedCategory === 'all'
+      ? sampleExercises
+      : sampleExercises.filter((exercise: Exercise) => exercise.category === selectedCategory);
 
   const getIntensityColor = (intensity: string): string => {
     switch (intensity) {
@@ -109,75 +107,75 @@ const ExercicesScreen = () => {
   const navigation = useNavigation();
 
   return (
-    <SafeAreaView className="flex-1 bg-brand-background">
-      <ScrollView className="flex-1 px-6">
-        {/* Header */}
-        <View className="pt-16 pb-6">
-          <Text className="text-3xl font-bold text-black mb-2">Exercices</Text>
-          <Text className="text-base text-brand-dark-secondary">
-            Phase actuelle : <Text className="font-semibold text-brand-text">{currentPhase}</Text>
-          </Text>
-        </View>
+      <SafeAreaView className="flex-1 bg-brand-background">
+        <ScrollView className="flex-1 px-6">
+          {/* Header */}
+          <View className="pt-16 pb-6">
+            <Text className="text-3xl font-bold text-black mb-2">Exercices</Text>
+            <Text className="text-base text-brand-dark-secondary">
+              Phase actuelle : <Text className="font-semibold text-brand-text">{currentPhase}</Text>
+            </Text>
+          </View>
 
-        {/* Categories Filter */}
-        <View className="mb-6">
-          <Text className="text-lg font-semibold text-black mb-3">Catégories</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
-            <TouchableOpacity
-              onPress={() => setSelectedCategory('all')}
-              className={`mr-3 px-4 py-2 rounded-xl ${
-                selectedCategory === 'all' ? 'bg-brand-dark-brown-btn' : 'bg-white'
-              }`}
-            >
-              <Text className={`font-medium ${
-                selectedCategory === 'all' ? 'text-brand-dark-text' : 'text-brand-text'
-              }`}>
-                Tous
-              </Text>
-            </TouchableOpacity>
-            
-            {exerciseCategories.map((category) => (
+          {/* Categories Filter */}
+          <View className="mb-6">
+            <Text className="text-lg font-semibold text-black mb-3">Catégories</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
               <TouchableOpacity
-                key={category.id}
-                onPress={() => setSelectedCategory(category.id)}
-                className={`mr-3 px-4 py-2 rounded-xl flex-row items-center ${
-                  selectedCategory === category.id ? 'bg-brand-dark-brown-btn' : 'bg-white'
-                }`}
+                  onPress={() => setSelectedCategory('all')}
+                  className={`mr-3 px-4 py-2 rounded-xl ${
+                      selectedCategory === 'all' ? 'bg-brand-dark-brown-btn' : 'bg-white'
+                  }`}
               >
-                <Text className="mr-2">{category.icon}</Text>
                 <Text className={`font-medium ${
-                  selectedCategory === category.id ? 'text-brand-dark-text' : 'text-brand-text'
+                    selectedCategory === 'all' ? 'text-brand-dark-text' : 'text-brand-text'
                 }`}>
-                  {category.name}
+                  Tous
                 </Text>
               </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
 
-        {/* Exercises List */}
-        <View className="mb-6">
-          <Text className="text-lg font-semibold text-black mb-4">
-            Recommandés pour vous ({filteredExercises.length})
-          </Text>
-          <View className="flex-row flex-wrap justify-between">
-            {filteredExercises.map((exercise: Exercise) => (
-              <TouchableOpacity 
-                key={exercise.id}
-                className="bg-white rounded-xl p-4 mb-4 w-[48%]"
-                onPress={() => navigation.navigate('ExerciseDetail', { exercise })}
-              >
-                <View className="items-center mb-3">
-                  <Image source={require('../../assets/logo.png')} className="w-24 h-24" resizeMode="contain" />
-                </View>
-                <Text className="text-black font-bold text-center text-base mb-1">{exercise.title}</Text>
-                <Text className="text-brand-dark-secondary text-center text-sm">{exercise.duration}</Text>
-              </TouchableOpacity>
-            ))}
+              {exerciseCategories.map((category) => (
+                  <TouchableOpacity
+                      key={category.id}
+                      onPress={() => setSelectedCategory(category.id)}
+                      className={`mr-3 px-4 py-2 rounded-xl flex-row items-center ${
+                          selectedCategory === category.id ? 'bg-brand-dark-brown-btn' : 'bg-white'
+                      }`}
+                  >
+                    <Text className="mr-2">{category.icon}</Text>
+                    <Text className={`font-medium ${
+                        selectedCategory === category.id ? 'text-brand-dark-text' : 'text-brand-text'
+                    }`}>
+                      {category.name}
+                    </Text>
+                  </TouchableOpacity>
+              ))}
+            </ScrollView>
           </View>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+
+          {/* Exercises List */}
+          <View className="mb-6">
+            <Text className="text-lg font-semibold text-black mb-4">
+              Recommandés pour vous ({filteredExercises.length})
+            </Text>
+            <View className="flex-row flex-wrap justify-between">
+              {filteredExercises.map((exercise: Exercise) => (
+                  <TouchableOpacity
+                      key={exercise.id}
+                      className="bg-white rounded-xl p-4 mb-4 w-[48%]"
+                      onPress={() => navigation.navigate('ExerciseDetail', { exercise })}
+                  >
+                    <View className="items-center mb-3">
+                      <Image source={require('../../assets/logo.png')} className="w-24 h-24" resizeMode="contain" />
+                    </View>
+                    <Text className="text-black font-bold text-center text-base mb-1">{exercise.title}</Text>
+                    <Text className="text-brand-dark-secondary text-center text-sm">{exercise.duration}</Text>
+                  </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
   );
 };
 
