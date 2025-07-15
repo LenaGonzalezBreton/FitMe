@@ -1,0 +1,69 @@
+---
+id: auth-controller-register
+title: "Inscription d'un nouvel utilisateur"
+description: "Inscription d'un nouvel utilisateur"
+sidebar_label: "Inscription d'un nouvel utilisateur"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVttuGzcQ/RViXtICG1lO+5DqKapjFzLixHBsFIEgBBR3pGWyS26GQ9uKoP9pvsM/Vgx3Ja2sQm7S6kVLcnjmdubsLsHXSJqtd6McBjCMXJx4x+TLEukj4dwGRoIMak26QkYKMBhPMiD8EjHw7z5fwGCZlpYwhwFTxAyMd4yO5UjXdWlN8nH0KXgne8EUWGl54kWNMAA//YSGxQ9JRGwxyClW2pYds8Bk3RwywHtd1aVsxYD0ql32jK8ggxyDIVuLR8kpJwwBVYO1klRCuPOUH8atPOcopnj84hfIoLLuDbo5FzB4+djFhWeVo0rW6qfKOvVSGU3a8MNfhOFn8TqzFPitrvCw23PtcC+FS3r45nyVgic/syVeJ4BDQGenF8M3p3tQcjHFmnAEMbXqnp9GPPlwcgCwhUFYrbIOHcZtDztln2TAlhPkVUuw1+xhtWpuhtq70LT/Rf9Y/nYd3rAtbdCMkZR1ciK8+Z8Ix/4zuvC0nTYGQ7gW68NFw8V5Mf3D2Hf2fHTzdXT81o5Cr9eDlOqMMBT/DQTva0sYRl0EF6tpGtoNwm/9/qO2TFZZGp2nU7VPDIqJNv+4XkpEPzCz3zkfPzAH30/0vYI94nVLlbaMHVKLiF61NN4S+9d+f5/Lp0RC4xzVrS5tnjirfFSxw3G8t4G14xQQ67kIcPIhPnfhRm6zUvmz6JTz8RbLLpwoGXLhRe1rH1K7tYgaHOnIxVFH8gPS7UbvA5pIlhfvZZAaYkxRU0OgNF2SeruVtQ9nnirN0rU/ryFbV7xgrlMyMpxX2/fI6boBG93/J3HfqveeRHcotNbRHZpsNXGHCut+Z2DdzCdqtJ08s3yBang52lO9197ECh03HctRlc+GlyPVXHiuhlsJksOZZYchqKkOD99QhUiqRGUWpkRVoQvyzhSJlHI3+Me9fhumNiJqUi5pV6XToLsmyX/X753IN7yX/I/qUlsnmUdKI9tQYQxCBRC6t2SYZFAIWQZjWC6nOuANlauVbH+JSIuGIrearJ5K4ZK6FKhzocd4CZ9xIWVuJPp5qrqYl1EC2ZPrVba+MTQGaz5oO+nw+fLde6HZtP0mqXwud0jfSSr6DgYAGfhUiETgtLeEUrt51HOxbTDl9zfebiMV
+sidebar_class_name: "post api-method"
+info_path: docs/api/fitme-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Inscription d'un nouvel utilisateur"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/auth/register"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Inscription d'un nouvel utilisateur
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"email":{"type":"string","example":"user@example.com","description":"Adresse email"},"password":{"type":"string","example":"motdepasse123","minLength":8,"description":"Mot de passe (min 8 caractères)"},"firstName":{"type":"string","example":"Jane","description":"Prénom"},"profileType":{"type":"string","example":"FEMALE","description":"Type de profil"},"contextType":{"type":"string","example":"CYCLE","description":"Type de contexte"}},"required":["email","password"],"title":"RegisterDto"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  responses={{"201":{"description":"Utilisateur inscrit","content":{"application/json":{"schema":{"type":"object","properties":{"tokens":{"type":"object","properties":{"accessToken":{"type":"string","example":"eyJhbGciOiJIUzI1NiIs..."},"refreshToken":{"type":"string","example":"eyJhbGciOiJIUzI1NiIs..."},"expiresIn":{"type":"number","example":900}},"required":[]},"user":{"type":"object","properties":{"id":{"type":"string","example":"cuid_example"},"email":{"type":"string","example":"user@example.com"},"firstName":{"type":"string","example":"Jane"},"profileType":{"type":"string","example":"FEMALE"},"contextType":{"type":"string","example":"CYCLE"}},"required":[]}},"required":["tokens","user"],"title":"AuthResponseDto"}}}},"400":{"description":"Erreur de validation ou utilisateur existant"}}}
+ id="auth-controller-register-responses">
+  
+</StatusCodes>
+
+
+      
