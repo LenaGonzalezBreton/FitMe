@@ -1,15 +1,726 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// =============================================================================
+// ATTENTION : Fichier auto-généré par le script 'build-schema.js'.
+// NE PAS MODIFIER CE FICHIER DIRECTEMENT.
+//
+// Pour faire des changements, modifiez les fichiers sources dans :
+// - /prisma/base/
+// - /prisma/enums/
+// - /prisma/models/
+// =============================================================================
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
-}
-
+// Database configuration
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+} 
+
+// Generator configuration for Prisma Client
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+} 
+
+// --- ÉNUMÉRATIONS ---
+// Enumerations for cycle-related data
+
+enum CyclePhase {
+  MENSTRUAL
+  FOLLICULAR  
+  OVULATION
+  LUTEAL
+} 
+
+// Enumerations for exercise and program-related data
+
+enum Intensity {
+  VERY_LOW
+  LOW
+  MODERATE
+  HIGH
+  VERY_HIGH
 }
+
+enum MuscleZone {
+  UPPER_BODY
+  LOWER_BODY
+  CORE
+  FULL_BODY
+  CARDIO
+  FLEXIBILITY
+  BALANCE
+}
+
+enum TagType {
+  DIFFICULTY
+  EQUIPMENT
+  MUSCLE_GROUP
+  OBJECTIVE
+  DURATION
+  STYLE
+} 
+
+// Enumerations for system-related data
+
+enum NotificationType {
+  CYCLE_REMINDER
+  EXERCISE_REMINDER
+  MEDICATION_REMINDER
+  MOOD_TRACKING_REMINDER
+  PERIOD_PREDICTION
+  OVULATION_PREDICTION
+  PROGRAM_MILESTONE
+  GENERAL_TIP
+  SYSTEM_UPDATE
+}
+
+enum ReminderType {
+  PERIOD_START
+  OVULATION
+  EXERCISE
+  MEDICATION
+  MOOD_TRACKING
+  SYMPTOM_LOGGING
+  WATER_INTAKE
+  SLEEP_REMINDER
+}
+
+enum ExternalSyncStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  PARTIAL
+  SKIPPED
+}
+
+enum ExternalProvider {
+  APPLE_HEALTH
+  GOOGLE_FIT
+  FITBIT
+  GARMIN
+  STRAVA
+  MYFITNESSPAL
+  CLUE
+  FLO
+  PERIOD_TRACKER
+}
+
+enum JournalCategory {
+  GENERAL
+  CYCLE
+  EXERCISE
+  MOOD
+  NUTRITION
+  SLEEP
+  STRESS
+  GOALS
+  ACHIEVEMENTS
+}
+
+enum EventType {
+  USER_LOGIN
+  USER_LOGOUT
+  PROFILE_UPDATE
+  CYCLE_LOG
+  EXERCISE_COMPLETE
+  MOOD_LOG
+  SYMPTOM_LOG
+  PROGRAM_START
+  PROGRAM_COMPLETE
+  SYNC_EXTERNAL
+  ERROR_OCCURRED
+} 
+
+// Enumerations for tracking-related data
+
+enum MoodType {
+  VERY_HAPPY
+  HAPPY
+  NEUTRAL
+  SAD
+  VERY_SAD
+  ANXIOUS
+  IRRITATED
+  CALM
+  ENERGETIC
+  TIRED
+  STRESSED
+  RELAXED
+}
+
+enum EnergyLevel {
+  VERY_LOW
+  LOW
+  MODERATE
+  HIGH
+  VERY_HIGH
+}
+
+enum PainLevel {
+  NONE
+  LIGHT
+  MODERATE
+  SEVERE
+  VERY_SEVERE
+}
+
+enum StressLevel {
+  NONE
+  LOW
+  MODERATE
+  HIGH
+  VERY_HIGH
+}
+
+enum SleepQuality {
+  VERY_POOR
+  POOR
+  FAIR
+  GOOD
+  EXCELLENT
+}
+
+enum SymptomType {
+  CRAMPS
+  BLOATING
+  HEADACHE
+  BACK_PAIN
+  BREAST_TENDERNESS
+  ACNE
+  MOOD_SWINGS
+  FATIGUE
+  NAUSEA
+  FOOD_CRAVINGS
+  CONSTIPATION
+  DIARRHEA
+  HOT_FLASHES
+  COLD_FLASHES
+  JOINT_PAIN
+  INSOMNIA
+} 
+
+// Enumerations for user-related data
+
+enum ProfileType {
+  FEMALE
+  MALE
+  NON_BINARY
+  OTHER
+}
+
+enum ContextType {
+  CYCLE
+  GENERAL
+  MENOPAUSE
+  NONE
+}
+
+enum ObjectiveType {
+  WEIGHT_LOSS
+  MUSCLE_GAIN
+  ENDURANCE
+  STRENGTH
+  FLEXIBILITY
+  GENERAL_FITNESS
+  STRESS_REDUCTION
+  ENERGY_BOOST
+}
+
+enum SportFrequency {
+  SEDENTARY
+  LIGHT
+  MODERATE
+  ACTIVE
+  VERY_ACTIVE
+}
+
+enum UnitPreference {
+  METRIC
+  IMPERIAL
+}
+
+enum ChangeType {
+  PROFILE_UPDATE
+  SETTINGS_UPDATE
+  CYCLE_CONFIG_UPDATE
+  OBJECTIVE_UPDATE
+  PASSWORD_CHANGE
+} 
+
+// --- MODÈLES DE DONNÉES ---
+// Cycle model for tracking menstrual cycles
+/// @namespace "Cycle"
+model Cycle {
+  id                String       @id @default(cuid())
+  userId            String       @map("user_id")
+  startDate         DateTime     @map("start_date")
+  cycleLength       Int?         @map("cycle_length")
+  periodLength      Int?         @map("period_length")
+  isRegular         Boolean      @default(true) @map("is_regular")
+  providerId        String?      @map("provider_id")
+  externalCycleId   String?      @map("external_cycle_id")
+  
+  createdAt         DateTime     @default(now()) @map("created_at")
+  updatedAt         DateTime     @updatedAt @map("updated_at")
+  
+  // Relations
+  user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider          CycleProvider? @relation(fields: [providerId], references: [id])
+  phases            Phase[]
+  
+  @@index([userId])
+  @@index([startDate])
+  @@map("cycle")
+}
+
+model CycleProfileConfig {
+  id                      String   @id @default(cuid())
+  userId                  String   @unique @map("user_id")
+  isCycleTrackingEnabled  Boolean  @default(true) @map("is_cycle_tracking_enabled")
+  usesExternalProvider    Boolean  @default(false) @map("uses_external_provider")
+  useMenopauseMode        Boolean  @default(false) @map("use_menopause_mode")
+  averageCycleLength      Int?     @default(28) @map("average_cycle_length")
+  averagePeriodLength     Int?     @default(5) @map("average_period_length")
+  prefersManualInput      Boolean  @default(false) @map("prefers_manual_input")
+  
+  createdAt               DateTime @default(now()) @map("created_at")
+  updatedAt               DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("cycle_profile_config")
+}
+
+model CycleProvider {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?  @db.Text
+  
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  cycles      Cycle[]
+
+  @@map("cycle_provider")
+}
+
+model Phase {
+  id        String     @id @default(cuid())
+  cycleId   String     @map("cycle_id")
+  name      CyclePhase
+  startDate DateTime   @map("start_date")
+  endDate   DateTime   @map("end_date")
+  
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+
+  // Relations
+  cycle     Cycle      @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+
+  @@index([cycleId])
+  @@map("phase")
+} 
+
+// Exercise and program models
+/// @namespace "Exercise"
+
+model Exercise {
+  id              String    @id @default(cuid())
+  title           String
+  description     String?   @db.Text
+  imageUrl        String?   @map("image_url")
+  durationMinutes Int?      @map("duration_minutes")
+  intensity       Intensity?
+  muscleZone      MuscleZone? @map("muscle_zone")
+  
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  exerciseTags    ExerciseTag[]
+  phaseExercises  PhaseExercise[]
+  programExercises ProgramExercise[]
+
+  @@map("exercise")
+}
+
+model Tag {
+  id           String       @id @default(cuid())
+  name         String       @unique
+  type         TagType
+  
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+
+  // Relations
+  exerciseTags ExerciseTag[]
+
+  @@map("tag")
+}
+
+model ExerciseTag {
+  id         String   @id @default(cuid())
+  exerciseId String   @map("exercise_id")
+  tagId      String   @map("tag_id")
+  
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relations
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([exerciseId, tagId])
+  @@map("exercise_tag")
+}
+
+model PhaseExercise {
+  id         String     @id @default(cuid())
+  phaseName  CyclePhase @map("phase_name")
+  exerciseId String     @map("exercise_id")
+  
+  createdAt  DateTime   @default(now()) @map("created_at")
+
+  // Relations
+  exercise   Exercise   @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@index([phaseName])
+  @@map("phase_exercise")
+}
+
+model Program {
+  id        String    @id @default(cuid())
+  userId    String    @map("user_id")
+  title     String
+  goal      String?
+  startDate DateTime  @map("start_date")
+  endDate   DateTime? @map("end_date")
+  
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  programExercises ProgramExercise[]
+  notifications    Notification[]
+
+  @@index([userId])
+  @@map("program")
+}
+
+model ProgramExercise {
+  id         String   @id @default(cuid())
+  programId  String   @map("program_id")
+  exerciseId String   @map("exercise_id")
+  day        Int
+  order      Int
+  
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relations
+  program    Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@index([programId])
+  @@map("program_exercise")
+} 
+
+// System models for notifications, logging, auth, etc.
+/// @namespace "System"
+
+model Notification {
+  id              String           @id @default(cuid())
+  userId          String           @map("user_id")
+  type            NotificationType
+  message         String           @db.Text
+  date            DateTime
+  relatedPhase    String?          @map("related_phase")
+  relatedProgramId String?         @map("related_program_id")
+  isRead          Boolean          @default(false) @map("is_read")
+  
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+
+  // Relations
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  relatedProgram  Program?         @relation(fields: [relatedProgramId], references: [id])
+
+  @@index([userId])
+  @@index([date])
+  @@map("notification")
+}
+
+model ExternalSync {
+  id           String             @id @default(cuid())
+  userId       String             @map("user_id")
+  provider     ExternalProvider
+  entitySynced String             @map("entity_synced")
+  externalId   String             @map("external_id")
+  status       ExternalSyncStatus
+  message      String?            @db.Text
+  syncedAt     DateTime           @map("synced_at")
+  
+  createdAt    DateTime           @default(now()) @map("created_at")
+  updatedAt    DateTime           @updatedAt @map("updated_at")
+
+  // Relations
+  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([provider])
+  @@map("external_sync")
+}
+
+model JournalEntry {
+  id        String          @id @default(cuid())
+  userId    String          @map("user_id")
+  date      DateTime        @db.Date
+  category  JournalCategory
+  content   String          @db.Text
+  
+  createdAt DateTime        @default(now()) @map("created_at")
+  updatedAt DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([date])
+  @@map("journal_entry")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?  @map("user_id")
+  action    String
+  entity    String
+  entityId  String?  @map("entity_id")
+  oldData   Json?    @map("old_data")
+  newData   Json?    @map("new_data")
+  
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([entity])
+  @@map("audit_log")
+}
+
+model Log {
+  id          String    @id @default(cuid())
+  userId      String?   @map("user_id")
+  eventType   EventType @map("event_type")
+  description String?   @db.Text
+  timestamp   DateTime  @default(now())
+  metadata    Json?
+
+  // Relations
+  user        User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([eventType])
+  @@map("log")
+}
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  userId    String    @map("user_id")
+  tokenHash String    @map("token_hash") @unique
+  expiresAt DateTime  @map("expires_at")
+  revoked   Boolean   @default(false)
+  
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tokenHash])
+  @@map("refresh_token")
+}
+
+model AuthSession {
+  id        String    @id @default(cuid())
+  userId    String    @map("user_id")
+  userAgent String?   @map("user_agent") @db.Text
+  ipAddress String?   @map("ip_address")
+  lastSeen  DateTime  @map("last_seen")
+  isActive  Boolean   @default(true) @map("is_active")
+  
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isActive])
+  @@map("auth_session")
+} 
+
+// Tracking models for mood, symptoms, etc.
+/// @namespace "Tracking"
+
+model MoodTrack {
+  id           String       @id @default(cuid())
+  userId       String       @map("user_id")
+  date         DateTime     @db.Date
+  mood         MoodType?
+  energy       EnergyLevel?
+  pain         PainLevel?
+  stress       StressLevel?
+  sleepQuality SleepQuality? @map("sleep_quality")
+  
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+
+  // Relations
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId])
+  @@map("mood_track")
+}
+
+model SymptomLog {
+  id           String      @id @default(cuid())
+  userId       String      @map("user_id")
+  date         DateTime    @db.Date
+  symptomType  SymptomType @map("symptom_type")
+  value        String      // Intensity, notes, or specific values
+  
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+
+  // Relations
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([date])
+  @@map("symptom_log")
+} 
+
+// User settings and configuration models
+/// @namespace "UserSettings"
+
+model UserSettings {
+  id                    String          @id @default(cuid())
+  userId                String          @unique @map("user_id")
+  unitPreference        UnitPreference  @default(METRIC) @map("unit_preference")
+  notificationEnabled   Boolean         @default(true) @map("notification_enabled")
+  notificationTime      DateTime?       @map("notification_time") @db.Time
+  
+  createdAt             DateTime        @default(now()) @map("created_at")
+  updatedAt             DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  user                  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_settings")
+}
+
+model ReminderSettings {
+  id        String        @id @default(cuid())
+  userId    String        @map("user_id")
+  type      ReminderType
+  enabled   Boolean       @default(true)
+  time      DateTime?     @db.Time
+  
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("reminder_settings")
+}
+
+model UserFeatureFlag {
+  id        String    @id @default(cuid())
+  userId    String    @map("user_id")
+  feature   String
+  isEnabled Boolean   @default(false) @map("is_enabled")
+  
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, feature])
+  @@map("user_feature_flag")
+}
+
+model UserObjective {
+  id        String        @id @default(cuid())
+  userId    String        @map("user_id")
+  type      ObjectiveType
+  note      String?       @db.Text
+  
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("user_objective")
+}
+
+model ProfileChangeLog {
+  id         String     @id @default(cuid())
+  userId     String     @map("user_id")
+  changeType ChangeType @map("change_type")
+  details    String?    @db.Text
+  changedAt  DateTime   @default(now()) @map("changed_at")
+
+  // Relations
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("profile_change_log")
+} 
+
+// User model for FitMe application
+/// @namespace "User"
+model User {
+  id              String        @id @default(cuid())
+  email           String        @unique
+  passwordHash    String        @map("password_hash")
+  firstName       String?       @map("first_name")
+  birthDate       DateTime?     @map("birth_date")
+  isMenopausal    Boolean       @default(false) @map("is_menopausal")
+  objective       String?
+  sportFrequency  SportFrequency? @map("sport_frequency")
+  profileType     ProfileType   @default(FEMALE) @map("profile_type")
+  contextType     ContextType   @default(CYCLE) @map("context_type")
+  
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  cycles              Cycle[]
+  programs            Program[]
+  moodTracks          MoodTrack[]
+  userSettings        UserSettings?
+  reminderSettings    ReminderSettings[]
+  userFeatureFlags    UserFeatureFlag[]
+  userObjectives      UserObjective[]
+  profileChangeLogs   ProfileChangeLog[]
+  cycleProfileConfig  CycleProfileConfig?
+  symptomLogs         SymptomLog[]
+  notifications       Notification[]
+  externalSyncs       ExternalSync[]
+  journalEntries      JournalEntry[]
+  auditLogs           AuditLog[]
+  logs                Log[]
+  refreshTokens       RefreshToken[]
+  authSessions        AuthSession[]
+
+  @@map("user")
+} 
+

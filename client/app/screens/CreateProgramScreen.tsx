@@ -34,36 +34,36 @@ const CreateProgramScreen = () => {
   const isDaySelected = (day: string): boolean => selectedDays.includes(day);
 
   return (
-    <SafeAreaView className="flex-1 bg-brand-dark-bg">
+    <SafeAreaView className="flex-1 bg-brand-background">
       <ScrollView className="flex-1 px-6">
         {/* Header */}
         <View className="pt-16 pb-6">
-          <Text className="text-3xl font-bold text-brand-dark-text mb-2">Nouveau Programme</Text>
-          <Text className="text-base text-brand-dark-secondary">
+          <Text className="text-3xl font-bold text-brand-text mb-2">Nouveau Programme</Text>
+          <Text className="text-base text-text-secondary">
             Créez un programme adapté à votre cycle
           </Text>
         </View>
 
         {/* Current Phase Info */}
-        <View className="bg-brand-dark-surface rounded-xl p-4 mb-6">
+        <View className="bg-surface border border-border rounded-xl p-4 mb-6">
           <View className="flex-row items-center">
-            <View className="bg-primary-500 rounded-full w-10 h-10 items-center justify-center mr-3">
-              <Text className="text-white text-lg">💪</Text>
+            <View className="bg-primary-100 rounded-full w-10 h-10 items-center justify-center mr-3">
+              <Text className="text-primary-700 text-lg">💪</Text>
             </View>
             <View>
-              <Text className="text-sm text-primary-200 mb-1">Phase actuelle</Text>
-              <Text className="text-lg font-bold text-white">{currentPhase}</Text>
+              <Text className="text-sm text-primary-500 mb-1">Phase actuelle</Text>
+              <Text className="text-lg font-bold text-brand-text">{currentPhase}</Text>
             </View>
           </View>
         </View>
 
         {/* Program Title */}
         <View className="mb-6">
-          <Text className="text-lg font-semibold text-brand-dark-text mb-3">Titre du programme</Text>
+          <Text className="text-lg font-semibold text-brand-text mb-3">Titre du programme</Text>
           <TextInput
-            className="bg-brand-dark-surface border border-brand-dark-secondary p-4 rounded-xl text-lg text-white"
+            className="bg-surface border border-border p-4 rounded-xl text-lg text-brand-text"
             placeholder="Mon super programme"
-            placeholderTextColor="#8E8E93"
+            placeholderTextColor="#A99985"
             value={programTitle}
             onChangeText={setProgramTitle}
           />
@@ -71,7 +71,7 @@ const CreateProgramScreen = () => {
 
         {/* Program Type */}
         <View className="mb-6">
-          <Text className="text-lg font-semibold text-brand-dark-text mb-3">Type d'entraînement</Text>
+          <Text className="text-lg font-semibold text-brand-text mb-3">Type d'entraînement</Text>
           <View className="space-y-3">
             {PROGRAM_TYPES.map((type: ProgramType) => (
               <TouchableOpacity
@@ -80,19 +80,19 @@ const CreateProgramScreen = () => {
                 className={`border rounded-xl p-4 flex-row items-center ${
                   selectedType === type.id 
                     ? 'bg-primary-500 border-primary-500' 
-                    : 'bg-brand-dark-surface border-brand-dark-secondary'
+                    : 'bg-surface border-border'
                 }`}
               >
                 <Text className="text-2xl mr-3">{type.icon}</Text>
                 <View className="flex-1">
                   <Text className={`text-lg font-semibold ${
-                    selectedType === type.id ? 'text-white' : 'text-brand-dark-text'
+                    selectedType === type.id ? 'text-white' : 'text-brand-text'
                   }`}>
                     {type.name}
                   </Text>
                 </View>
                 {selectedType === type.id && (
-                  <View className="bg-primary-500 rounded-full w-6 h-6 items-center justify-center">
+                  <View className="bg-white/25 rounded-full w-6 h-6 items-center justify-center">
                     <Text className="text-white text-sm">✓</Text>
                   </View>
                 )}
@@ -103,7 +103,7 @@ const CreateProgramScreen = () => {
 
         {/* Training Days */}
         <View className="mb-6">
-          <Text className="text-lg font-semibold text-brand-dark-text mb-3">
+          <Text className="text-lg font-semibold text-brand-text mb-3">
             Jours d'entraînement ({selectedDays.length} sélectionnés)
           </Text>
           <View className="space-y-3">
@@ -114,23 +114,23 @@ const CreateProgramScreen = () => {
                 className={`border rounded-xl p-4 flex-row items-center justify-between ${
                   isDaySelected(day) 
                     ? 'bg-primary-500 border-primary-500' 
-                    : 'bg-brand-dark-surface border-brand-dark-secondary'
+                    : 'bg-surface border-border'
                 }`}
               >
                 <View>
                   <Text className={`text-lg font-semibold ${
-                    isDaySelected(day) ? 'text-white' : 'text-brand-dark-text'
+                    isDaySelected(day) ? 'text-white' : 'text-brand-text'
                   }`}>
                     {day}
                   </Text>
                   <Text className={`text-sm ${
-                    isDaySelected(day) ? 'text-primary-200' : 'text-brand-dark-secondary'
+                    isDaySelected(day) ? 'text-primary-200' : 'text-text-secondary'
                   }`}>
                     {isDaySelected(day) ? 'Séance prévue' : 'Jour de repos'}
                   </Text>
                 </View>
                 {isDaySelected(day) && (
-                  <View className="bg-primary-500 rounded-full w-8 h-8 items-center justify-center">
+                  <View className="bg-white/25 rounded-full w-8 h-8 items-center justify-center">
                     <Text className="text-white text-sm">✓</Text>
                   </View>
                 )}
@@ -141,30 +141,30 @@ const CreateProgramScreen = () => {
 
         {/* Program Summary */}
         {(programTitle || selectedDays.length > 0) && (
-          <View className="bg-brand-dark-surface rounded-xl p-4 mb-6">
-            <Text className="text-lg font-semibold text-brand-dark-text mb-3">Résumé</Text>
+          <View className="bg-surface border border-border rounded-xl p-4 mb-6">
+            <Text className="text-lg font-semibold text-brand-text mb-3">Résumé</Text>
             <View className="space-y-2">
               <View className="flex-row">
-                <Text className="text-brand-dark-secondary w-20">Titre:</Text>
-                <Text className="text-white font-medium flex-1">
+                <Text className="text-text-secondary w-20">Titre:</Text>
+                <Text className="text-brand-text font-medium flex-1">
                   {programTitle || 'Non défini'}
                 </Text>
               </View>
               <View className="flex-row">
-                <Text className="text-brand-dark-secondary w-20">Type:</Text>
-                <Text className="text-white font-medium flex-1">
+                <Text className="text-text-secondary w-20">Type:</Text>
+                <Text className="text-brand-text font-medium flex-1">
                   {PROGRAM_TYPES.find(t => t.id === selectedType)?.name}
                 </Text>
               </View>
               <View className="flex-row">
-                <Text className="text-brand-dark-secondary w-20">Jours:</Text>
-                <Text className="text-white font-medium flex-1">
+                <Text className="text-text-secondary w-20">Jours:</Text>
+                <Text className="text-brand-text font-medium flex-1">
                   {selectedDays.length} jours/semaine
                 </Text>
               </View>
               <View className="flex-row">
-                <Text className="text-brand-dark-secondary w-20">Phase:</Text>
-                <Text className="text-primary-400 font-medium flex-1">{currentPhase}</Text>
+                <Text className="text-text-secondary w-20">Phase:</Text>
+                <Text className="text-primary-500 font-medium flex-1">{currentPhase}</Text>
               </View>
             </View>
           </View>
@@ -176,19 +176,19 @@ const CreateProgramScreen = () => {
             className={`p-4 rounded-xl items-center ${
               programTitle && selectedType 
                 ? 'bg-primary-500' 
-                : 'bg-brand-dark-gray-btn'
+                : 'bg-gray-200'
             }`}
             disabled={!programTitle || !selectedType}
           >
             <Text className={`text-lg font-bold ${
-              programTitle && selectedType ? 'text-white' : 'text-brand-dark-secondary'
+              programTitle && selectedType ? 'text-white' : 'text-gray-400'
             }`}>
               Créer le programme
             </Text>
           </TouchableOpacity>
           
-          <TouchableOpacity className="bg-brand-dark-surface border border-brand-dark-secondary p-4 rounded-xl items-center">
-            <Text className="text-white text-lg font-medium">
+          <TouchableOpacity className="bg-surface border border-border p-4 rounded-xl items-center">
+            <Text className="text-brand-text text-lg font-medium">
               + Ajouter des exercices
             </Text>
           </TouchableOpacity>

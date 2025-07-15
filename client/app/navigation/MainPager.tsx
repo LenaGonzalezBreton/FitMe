@@ -1,47 +1,36 @@
-import React, { useRef, useState } from 'react';
-import { View } from 'react-native';
-import PagerView from 'react-native-pager-view';
+import React from 'react';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import HomeScreen from '../screens/HomeScreen';
 import ExercicesScreen from '../screens/ExercicesScreen';
 import ProgramScreen from '../screens/ProgramScreen';
 import ChronometerScreen from '../screens/ChronometerScreen';
-import { NavigationProp } from '@react-navigation/native';
 
-interface MainPagerProps {
-  navigation: NavigationProp<any, any>;
-}
+const Tab = createMaterialTopTabNavigator();
 
-const MainPager: React.FC<MainPagerProps> = ({ navigation }) => {
-  const [page, setPage] = useState<number>(0);
-  const pages: JSX.Element[] = [
-    <HomeScreen navigation={navigation} />,
-    <ExercicesScreen navigation={navigation} />,
-    <ProgramScreen navigation={navigation} />,
-    <ChronometerScreen />,
-  ];
-
+const MainPager = () => {
   return (
-    <View style={{ flex: 1 }}>
-      <PagerView
-        style={{ flex: 1 }}
-        initialPage={0}
-        onPageSelected={e => setPage(e.nativeEvent.position)}
-      >
-        {pages.map((p, index) => (
-          <View key={index}>{p}</View>
-        ))}
-      </PagerView>
-      <View className="absolute bottom-8 left-0 right-0 flex-row justify-center">
-        {pages.map((_, index) => (
-          <View
-            key={index}
-            className={`w-2 h-2 rounded-full mx-1 ${
-              page === index ? 'bg-white' : 'bg-gray-500'
-            }`}
-          />
-        ))}
-      </View>
-    </View>
+    <Tab.Navigator
+      initialRouteName="Accueil"
+      screenOptions={{
+        tabBarShowLabel: false,
+        tabBarStyle: {
+          backgroundColor: '#F5EFE6',
+          elevation: 0, // Remove shadow on Android
+          shadowOpacity: 0, // Remove shadow on iOS
+          borderBottomWidth: 1,
+          borderBottomColor: '#e2e8f0',
+        },
+        tabBarIndicatorStyle: {
+          backgroundColor: '#0891b2', // primary-500
+        },
+        tabBarIcon: () => null, // Hiding icons as well
+      }}
+    >
+      <Tab.Screen name="Accueil" component={HomeScreen} />
+      <Tab.Screen name="Programmes" component={ProgramScreen} />
+      <Tab.Screen name="Exercices" component={ExercicesScreen} />
+      <Tab.Screen name="Chrono" component={ChronometerScreen} />
+    </Tab.Navigator>
   );
 };
 

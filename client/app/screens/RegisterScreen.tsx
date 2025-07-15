@@ -5,7 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   SafeAreaView,
-  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -16,35 +15,36 @@ import { useAuth } from '../context/AuthContext';
 import { NavigationProp } from '@react-navigation/native';
 import api from '../utils/api';
 
-interface LoginScreenProps {
-  navigation: NavigationProp<any, any>;
+interface RegisterScreenProps {
+    navigation: NavigationProp<any, any>;
 }
 
-const LoginScreen = ({ navigation }: LoginScreenProps) => {
+const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
 
-  const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert('Erreur', 'Veuillez remplir tous les champs.');
-      return;
+  const handleRegister = async () => {
+    if (!email || !password || !firstName) {
+        Alert.alert('Erreur', 'Veuillez remplir tous les champs.');
+        return;
     }
     setIsLoading(true);
     try {
-      const response = await api.post('/auth/login', {
-        email: email.toLowerCase().trim(),
-        password,
-      });
-
-      const { user, tokens } = response.data;
-      await login(user, tokens.accessToken);
+        const response = await api.post('/auth/register', {
+            email: email.toLowerCase().trim(),
+            password,
+            firstName,
+        });
+        const { user, tokens } = response.data;
+        await login(user, tokens.accessToken);
     } catch (error: any) {
-      const message = error.response?.data?.message || 'Une erreur est survenue.';
-      Alert.alert("Erreur de connexion", message);
+        const message = error.response?.data?.message || 'Une erreur est survenue.';
+        Alert.alert("Erreur d'inscription", message);
     } finally {
-      setIsLoading(false);
+        setIsLoading(false);
     }
   };
 
@@ -54,13 +54,21 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1"
       >
-        <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between' }}>
-          <View className="pt-24 px-8">
+        <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
+          <View className="px-8">
             <Text className="text-3xl font-bold text-brand-text text-center mb-12">
-              Bienvenue jeune go muscu, prêt à t'entrainer ?
+              Créer un compte
             </Text>
 
             <View className="space-y-6">
+              <TextInput
+                className="bg-surface p-4 rounded-xl text-lg text-brand-text"
+                placeholder="Prénom"
+                placeholderTextColor="#A99985"
+                value={firstName}
+                onChangeText={setFirstName}
+                autoCapitalize="words"
+              />
               <TextInput
                 className="bg-surface p-4 rounded-xl text-lg text-brand-text"
                 placeholder="Entrez votre e-mail"
@@ -72,7 +80,7 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
               />
               <TextInput
                 className="bg-surface p-4 rounded-xl text-lg text-brand-text"
-                placeholder="Entrez votre mot de passe"
+                placeholder="Créez un mot de passe (8+ caractères)"
                 placeholderTextColor="#A99985"
                 value={password}
                 onChangeText={setPassword}
@@ -80,43 +88,29 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
               />
             </View>
 
-            <TouchableOpacity className="mt-4">
-              <Text className="text-brand-text text-center underline">
-                Oups j'ai oublié mon mot de passe
-              </Text>
-            </TouchableOpacity>
-
             <TouchableOpacity
               className="bg-surface mt-8 py-4 rounded-xl"
-              onPress={handleLogin}
+              onPress={handleRegister}
               disabled={isLoading}
             >
               {isLoading ? (
                 <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <Text className="text-brand-text text-center font-bold text-lg">
-                  Poussez !
+                  S'inscrire
                 </Text>
               )}
             </TouchableOpacity>
 
-            <TouchableOpacity
-                className="mt-4"
-                onPress={() => navigation.navigate('Register')}
-                disabled={isLoading}
+            <TouchableOpacity 
+              className="mt-4" 
+              onPress={() => navigation.goBack()}
+              disabled={isLoading}
             >
-                <Text className="text-brand-text text-center underline">
-                    Pas de compte ? Créez-en un !
-                </Text>
+              <Text className="text-brand-text text-center underline">
+                J'ai déjà un compte
+              </Text>
             </TouchableOpacity>
-          </View>
-
-          <View className="items-center pb-8">
-            <Image
-              source={require('../../assets/logo.png')}
-              className="w-48 h-48"
-              resizeMode="contain"
-            />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -124,4 +118,4 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
   );
 };
 
-export default LoginScreen; 
+export default RegisterScreen; 

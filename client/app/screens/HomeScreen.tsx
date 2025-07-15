@@ -12,26 +12,26 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
   const nextWorkout = 'Squats + Cardio';
 
   const cyclePhases = [
-    { name: 'Menstruelle', current: false, color: 'bg-brand-dark-secondary' },
-    { name: 'Folliculaire', current: true, color: 'bg-primary-400' },
-    { name: 'Ovulatoire', current: false, color: 'bg-brand-dark-secondary' },
-    { name: 'Lutéale', current: false, color: 'bg-brand-dark-secondary' },
+    { name: 'Menstruelle', current: false, color: 'bg-border' },
+    { name: 'Folliculaire', current: true, color: 'bg-primary-500' },
+    { name: 'Ovulatoire', current: false, color: 'bg-border' },
+    { name: 'Lutéale', current: false, color: 'bg-border' },
   ];
 
   return (
-    <SafeAreaView className="flex-1 bg-brand-dark-bg">
+    <SafeAreaView className="flex-1 bg-brand-background">
       <ScrollView className="flex-1 px-6">
         {/* Header with proper spacing */}
         <View className="pt-16 pb-6">
-          <Text className="text-lg text-brand-dark-secondary mb-1">Bonjour !</Text>
-          <Text className="text-3xl font-bold text-brand-dark-text mb-6">Prête pour aujourd'hui ?</Text>
+          <Text className="text-lg text-text-secondary mb-1">Bonjour !</Text>
+          <Text className="text-3xl font-bold text-brand-text mb-6">Prête pour aujourd'hui ?</Text>
           
           {/* Streak Badge */}
-          <View className="bg-brand-dark-surface rounded-xl p-4 mb-4">
+          <View className="bg-surface rounded-xl p-4 mb-4 border border-border">
             <View className="flex-row items-center justify-between">
               <View>
-                <Text className="text-sm text-brand-dark-secondary mb-1">Série en cours</Text>
-                <Text className="text-2xl font-bold text-brand-dark-text">{streakDays} jours</Text>
+                <Text className="text-sm text-text-secondary mb-1">Série en cours</Text>
+                <Text className="text-2xl font-bold text-brand-text">{streakDays} jours</Text>
               </View>
               <Text className="text-4xl">🔥</Text>
             </View>
@@ -40,12 +40,12 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
 
         {/* Current Phase Card */}
         <View className="mb-6">
-          <Text className="text-lg font-semibold text-brand-dark-text mb-3">Phase actuelle</Text>
-          <View className="bg-brand-dark-surface rounded-xl p-4">
+          <Text className="text-lg font-semibold text-brand-text mb-3">Phase actuelle</Text>
+          <View className="bg-surface rounded-xl p-4 border border-border">
             <View className="flex-row items-center justify-between mb-4">
               <View className="flex-1">
-                <Text className="text-xl font-bold text-brand-dark-text mb-1">{currentPhase}</Text>
-                <Text className="text-sm text-brand-dark-secondary">Parfait pour les entraînements intensifs</Text>
+                <Text className="text-xl font-bold text-brand-text mb-1">{currentPhase}</Text>
+                <Text className="text-sm text-text-secondary">Parfait pour les entraînements intensifs</Text>
               </View>
               <View className="bg-primary-500 rounded-full w-12 h-12 items-center justify-center">
                 <Text className="text-white text-xl">💪</Text>
@@ -55,7 +55,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
             <View className="flex-row space-x-2">
               {cyclePhases.map((phase: { name: string; current: boolean; color: string }) => (
                 <View key={phase.name} className="flex-1 h-2 rounded-full">
-                  <View className={`h-full rounded-full ${phase.current ? phase.color : 'bg-brand-dark-secondary'}`} />
+                  <View className={`h-full rounded-full ${phase.color}`} />
                 </View>
               ))}
             </View>
@@ -64,9 +64,9 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
 
         {/* Next Workout */}
         <View className="mb-6">
-          <Text className="text-lg font-semibold text-brand-dark-text mb-3">Prochain entraînement</Text>
+          <Text className="text-lg font-semibold text-brand-text mb-3">Prochain entraînement</Text>
           <TouchableOpacity 
-            className="bg-brand-dark-brown-btn rounded-xl p-6"
+            className="bg-primary-500 rounded-xl p-6"
             onPress={() => navigation.navigate('WorkoutSession')}
           >
             <View className="flex-row items-center justify-between">

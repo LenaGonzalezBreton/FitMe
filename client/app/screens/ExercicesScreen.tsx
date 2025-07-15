@@ -95,28 +95,28 @@ const ExercicesScreen = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-brand-dark-bg">
+    <SafeAreaView className="flex-1 bg-brand-background">
       <ScrollView className="flex-1 px-6">
         {/* Header */}
         <View className="pt-16 pb-6">
-          <Text className="text-3xl font-bold text-brand-dark-text mb-2">Exercices</Text>
-          <Text className="text-base text-brand-dark-secondary">
-            Phase actuelle : <Text className="font-semibold text-primary-400">{currentPhase}</Text>
+          <Text className="text-3xl font-bold text-brand-text mb-2">Exercices</Text>
+          <Text className="text-base text-text-secondary">
+            Phase actuelle : <Text className="font-semibold text-primary-500">{currentPhase}</Text>
           </Text>
         </View>
 
         {/* Categories Filter */}
         <View className="mb-6">
-          <Text className="text-lg font-semibold text-brand-dark-text mb-3">Catégories</Text>
+          <Text className="text-lg font-semibold text-brand-text mb-3">Catégories</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
             <TouchableOpacity
               onPress={() => setSelectedCategory('all')}
-              className={`mr-3 px-4 py-2 rounded-xl ${
-                selectedCategory === 'all' ? 'bg-primary-500' : 'bg-brand-dark-surface'
+              className={`mr-3 px-4 py-2 rounded-xl border ${
+                selectedCategory === 'all' ? 'bg-primary-500 border-primary-500' : 'bg-surface border-border'
               }`}
             >
               <Text className={`font-medium ${
-                selectedCategory === 'all' ? 'text-white' : 'text-brand-dark-text'
+                selectedCategory === 'all' ? 'text-white' : 'text-brand-text'
               }`}>
                 Tous
               </Text>
@@ -126,13 +126,13 @@ const ExercicesScreen = () => {
               <TouchableOpacity
                 key={category.id}
                 onPress={() => setSelectedCategory(category.id)}
-                className={`mr-3 px-4 py-2 rounded-xl flex-row items-center ${
-                  selectedCategory === category.id ? 'bg-primary-500' : 'bg-brand-dark-surface'
+                className={`mr-3 px-4 py-2 rounded-xl flex-row items-center border ${
+                  selectedCategory === category.id ? 'bg-primary-500 border-primary-500' : 'bg-surface border-border'
                 }`}
               >
                 <Text className="mr-2">{category.icon}</Text>
                 <Text className={`font-medium ${
-                  selectedCategory === category.id ? 'text-white' : 'text-brand-dark-text'
+                  selectedCategory === category.id ? 'text-white' : 'text-brand-text'
                 }`}>
                   {category.name}
                 </Text>
@@ -143,20 +143,20 @@ const ExercicesScreen = () => {
 
         {/* Exercises List */}
         <View className="mb-6">
-          <Text className="text-lg font-semibold text-brand-dark-text mb-4">
+          <Text className="text-lg font-semibold text-brand-text mb-4">
             Recommandés pour vous ({filteredExercises.length})
           </Text>
           <View className="flex-row flex-wrap justify-between">
             {filteredExercises.map((exercise: Exercise) => (
               <TouchableOpacity 
                 key={exercise.id}
-                className="bg-brand-dark-surface rounded-xl p-4 mb-4 w-[48%]"
+                className="bg-surface border border-border rounded-xl p-4 mb-4 w-[48%]"
               >
                 <View className="items-center mb-3">
                   <Image source={require('../../assets/logo.png')} className="w-24 h-24" resizeMode="contain" />
                 </View>
-                <Text className="text-white font-bold text-center text-base mb-1">{exercise.title}</Text>
-                <Text className="text-brand-dark-secondary text-center text-sm">{exercise.duration}</Text>
+                <Text className="text-brand-text font-bold text-center text-base mb-1">{exercise.title}</Text>
+                <Text className="text-text-secondary text-center text-sm">{exercise.duration}</Text>
               </TouchableOpacity>
             ))}
           </View>
