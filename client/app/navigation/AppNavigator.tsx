@@ -5,7 +5,6 @@ import LoginScreen from '../screens/LoginScreen';
 import MainPager from './MainPager';
 import CreateProgramScreen from '../screens/CreateProgramScreen';
 import WorkoutSessionScreen from '../screens/WorkoutSessionScreen';
-import ExercicesDetailsScreen from '../screens/ExerciseDetailsScreen';
 import ExerciseDetailScreen from "../screens/ExerciseDetailsScreen";
 
 const Stack = createNativeStackNavigator();

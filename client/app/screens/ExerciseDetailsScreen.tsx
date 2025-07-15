@@ -25,7 +25,7 @@ export default function ExerciseDetailScreen() {
             <Text className="text-base font-semibold text-black mb-2">Durée : {exercise.duration}</Text>
             <Text className="text-xl font-semibold text-black mb-2">Catégorie : </Text>
             <View className="flex-row flex-wrap gap-2 mb-4">
-                <Text className="px-3 py-2 bg-white rounded-full text-black font-medium text-xs">
+                <Text className="px-3 py-2 bg-white rounded-full text-brand-brown font-medium text-xs">
                     {exercise.category}
                 </Text>
             </View>

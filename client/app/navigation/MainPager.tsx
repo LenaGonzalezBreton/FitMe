@@ -36,7 +36,7 @@ const MainPager: React.FC<MainPagerProps> = ({ navigation }) => {
           <View
             key={index}
             className={`w-2 h-2 rounded-full mx-1 ${
-              page === index ? 'bg-white' : 'bg-gray-500'
+              page === index ? 'bg-brand-brown' : 'bg-brand-dark-secondary'
             }`}
           />
         ))}
