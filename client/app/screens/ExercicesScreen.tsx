@@ -35,7 +35,7 @@ const ExercicesScreen = () => {
       phase: 'Folliculaire',
       category: 'strength',
       description: 'Exercice complet pour les jambes et fessiers',
-      muscles:['Quadriceps', 'Fessiers']
+      muscles:['Quadriceps 🥵', 'Fessiers 🔥']
     },
     {
       id: 2,
@@ -45,7 +45,7 @@ const ExercicesScreen = () => {
       phase: 'Menstruelle',
       category: 'cardio',
       description: 'Cardio doux parfait pendant les règles',
-      muscles:['Quadriceps', 'Fessiers']
+      muscles:['Quadriceps 🥵', 'Fessiers 🔥']
     },
     {
       id: 3,
@@ -55,7 +55,7 @@ const ExercicesScreen = () => {
       phase: 'Ovulatoire',
       category: 'cardio',
       description: 'Entraînement fractionné haute intensité',
-      muscles:['Quadriceps', 'Fessiers']
+      muscles:['Quadriceps 🥵', 'Fessiers 🔥']
     },
     {
       id: 4,
@@ -65,7 +65,8 @@ const ExercicesScreen = () => {
       phase: 'Lutéale',
       category: 'flexibility',
       description: 'Étirements et relaxation profonde',
-      muscles:['Quadriceps', 'Fessiers']
+      muscles:['Quadriceps 🥵', 'Fessiers 🔥']
+
     },
     {
       id: 5,
@@ -75,7 +76,7 @@ const ExercicesScreen = () => {
       phase: 'Folliculaire',
       category: 'strength',
       description: 'Renforcement du haut du corps',
-      muscles:['Quadriceps', 'Fessiers']
+      muscles:['Quadriceps 🥵', 'Fessiers 🔥']
 
     },
     {
@@ -86,7 +87,8 @@ const ExercicesScreen = () => {
       phase: 'Menstruelle',
       category: 'recovery',
       description: 'Relaxation et bien-être mental',
-      muscles:['Quadriceps', 'Fessiers']
+      muscles:['Quadriceps 🥵', 'Fessiers 🔥']
+
     },
   ];
 
