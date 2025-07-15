@@ -116,64 +116,65 @@ const ExercicesScreen = () => {
             </Text>
           </View>
 
-        {/* Categories Filter */}
-        <View className="mb-6">
-          <Text className="text-lg font-semibold text-brand-dark-text mb-3">Catégories</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
-            <TouchableOpacity
-              onPress={() => setSelectedCategory('all')}
-              className={`mr-3 px-4 py-2 rounded-xl ${
-                selectedCategory === 'all' ? 'bg-primary-500' : 'bg-brand-dark-surface'
-              }`}
-            >
-              <Text className={`font-medium ${
-                selectedCategory === 'all' ? 'text-white' : 'text-brand-dark-text'
-              }`}>
-                Tous
-              </Text>
-            </TouchableOpacity>
-            
-            {exerciseCategories.map((category) => (
+          {/* Categories Filter */}
+          <View className="mb-6">
+            <Text className="text-lg font-semibold text-black mb-3">Catégories</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
               <TouchableOpacity
-                key={category.id}
-                onPress={() => setSelectedCategory(category.id)}
-                className={`mr-3 px-4 py-2 rounded-xl flex-row items-center ${
-                  selectedCategory === category.id ? 'bg-primary-500' : 'bg-brand-dark-surface'
-                }`}
+                  onPress={() => setSelectedCategory('all')}
+                  className={`mr-3 px-4 py-2 rounded-xl ${
+                      selectedCategory === 'all' ? 'bg-brand-dark-brown-btn' : 'bg-white'
+                  }`}
               >
-                <Text className="mr-2">{category.icon}</Text>
                 <Text className={`font-medium ${
-                  selectedCategory === category.id ? 'text-white' : 'text-brand-dark-text'
+                    selectedCategory === 'all' ? 'text-brand-dark-text' : 'text-brand-text'
                 }`}>
-                  {category.name}
+                  Tous
                 </Text>
               </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
 
-        {/* Exercises List */}
-        <View className="mb-6">
-          <Text className="text-lg font-semibold text-brand-dark-text mb-4">
-            Recommandés pour vous ({filteredExercises.length})
-          </Text>
-          <View className="flex-row flex-wrap justify-between">
-            {filteredExercises.map((exercise: Exercise) => (
-              <TouchableOpacity 
-                key={exercise.id}
-                className="bg-brand-dark-surface rounded-xl p-4 mb-4 w-[48%]"
-              >
-                <View className="items-center mb-3">
-                  <Image source={require('../../assets/logo.png')} className="w-24 h-24" resizeMode="contain" />
-                </View>
-                <Text className="text-white font-bold text-center text-base mb-1">{exercise.title}</Text>
-                <Text className="text-brand-dark-secondary text-center text-sm">{exercise.duration}</Text>
-              </TouchableOpacity>
-            ))}
+              {exerciseCategories.map((category) => (
+                  <TouchableOpacity
+                      key={category.id}
+                      onPress={() => setSelectedCategory(category.id)}
+                      className={`mr-3 px-4 py-2 rounded-xl flex-row items-center ${
+                          selectedCategory === category.id ? 'bg-brand-dark-brown-btn' : 'bg-white'
+                      }`}
+                  >
+                    <Text className="mr-2">{category.icon}</Text>
+                    <Text className={`font-medium ${
+                        selectedCategory === category.id ? 'text-brand-dark-text' : 'text-brand-text'
+                    }`}>
+                      {category.name}
+                    </Text>
+                  </TouchableOpacity>
+              ))}
+            </ScrollView>
           </View>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+
+          {/* Exercises List */}
+          <View className="mb-6">
+            <Text className="text-lg font-semibold text-black mb-4">
+              Recommandés pour vous ({filteredExercises.length})
+            </Text>
+            <View className="flex-row flex-wrap justify-between">
+              {filteredExercises.map((exercise: Exercise) => (
+                  <TouchableOpacity
+                      key={exercise.id}
+                      className="bg-white rounded-xl p-4 mb-4 w-[48%]"
+                      onPress={() => navigation.navigate('ExerciseDetail', { exercise })}
+                  >
+                    <View className="items-center mb-3">
+                      <Image source={require('../../assets/logo.png')} className="w-24 h-24" resizeMode="contain" />
+                    </View>
+                    <Text className="text-black font-bold text-center text-base mb-1">{exercise.title}</Text>
+                    <Text className="text-brand-dark-secondary text-center text-sm">{exercise.duration}</Text>
+                  </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
   );
 };
 
