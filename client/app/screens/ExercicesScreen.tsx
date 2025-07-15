@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, SafeAreaView, TouchableOpacity, Image } from 'react-native';
 import Tag from '../components/Tag';
+import { useNavigation } from '@react-navigation/native';
+
 
 interface Exercise {
   id: number;
@@ -10,6 +12,7 @@ interface Exercise {
   phase: string;
   category: 'cardio' | 'strength' | 'flexibility' | 'recovery';
   description: string;
+  muscles: string[];
 }
 
 const ExercicesScreen = () => {
@@ -31,7 +34,8 @@ const ExercicesScreen = () => {
       intensity: 'Modéré',
       phase: 'Folliculaire',
       category: 'strength',
-      description: 'Exercice complet pour les jambes et fessiers'
+      description: 'Exercice complet pour les jambes et fessiers',
+      muscles:['Quadriceps', 'Fessiers']
     },
     {
       id: 2,
@@ -40,7 +44,8 @@ const ExercicesScreen = () => {
       intensity: 'Léger',
       phase: 'Menstruelle',
       category: 'cardio',
-      description: 'Cardio doux parfait pendant les règles'
+      description: 'Cardio doux parfait pendant les règles',
+      muscles:['Quadriceps', 'Fessiers']
     },
     {
       id: 3,
@@ -49,7 +54,8 @@ const ExercicesScreen = () => {
       intensity: 'Intense',
       phase: 'Ovulatoire',
       category: 'cardio',
-      description: 'Entraînement fractionné haute intensité'
+      description: 'Entraînement fractionné haute intensité',
+      muscles:['Quadriceps', 'Fessiers']
     },
     {
       id: 4,
@@ -58,7 +64,8 @@ const ExercicesScreen = () => {
       intensity: 'Très léger',
       phase: 'Lutéale',
       category: 'flexibility',
-      description: 'Étirements et relaxation profonde'
+      description: 'Étirements et relaxation profonde',
+      muscles:['Quadriceps', 'Fessiers']
     },
     {
       id: 5,
@@ -67,7 +74,9 @@ const ExercicesScreen = () => {
       intensity: 'Modéré',
       phase: 'Folliculaire',
       category: 'strength',
-      description: 'Renforcement du haut du corps'
+      description: 'Renforcement du haut du corps',
+      muscles:['Quadriceps', 'Fessiers']
+
     },
     {
       id: 6,
@@ -76,7 +85,8 @@ const ExercicesScreen = () => {
       intensity: 'Très léger',
       phase: 'Menstruelle',
       category: 'recovery',
-      description: 'Relaxation et bien-être mental'
+      description: 'Relaxation et bien-être mental',
+      muscles:['Quadriceps', 'Fessiers']
     },
   ];
 
@@ -94,6 +104,7 @@ const ExercicesScreen = () => {
       default: return 'bg-text-tertiary text-white';
     }
   };
+  const navigation = useNavigation();
 
   return (
     <SafeAreaView className="flex-1 bg-brand-dark-bg">
@@ -152,6 +163,7 @@ const ExercicesScreen = () => {
               <TouchableOpacity 
                 key={exercise.id}
                 className="bg-brand-dark-surface rounded-xl p-4 mb-4 w-[48%]"
+                onPress={() => navigation.navigate('ExerciseDetail', { exercise })}
               >
                 <View className="items-center mb-3">
                   <Image source={require('../../assets/logo.png')} className="w-24 h-24" resizeMode="contain" />

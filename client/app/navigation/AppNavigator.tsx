@@ -5,6 +5,8 @@ import LoginScreen from '../screens/LoginScreen';
 import MainPager from './MainPager';
 import CreateProgramScreen from '../screens/CreateProgramScreen';
 import WorkoutSessionScreen from '../screens/WorkoutSessionScreen';
+import ExercicesDetailsScreen from '../screens/ExerciseDetailsScreen';
+import ExerciseDetailScreen from "../screens/ExerciseDetailsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -32,6 +34,16 @@ const AppNavigator = () => {
             headerBackVisible: false,
           }} 
         />
+          <Stack.Screen
+              name="ExerciseDetail"
+              component={ExerciseDetailScreen}
+              options={{
+                  headerShown: true,
+                  title: 'Détail de l’exercice',
+                  headerStyle: { backgroundColor: '#1C1C1E' },
+                  headerTintColor: '#FFFFFF',
+              }}
+          />
       </Stack.Navigator>
     </NavigationContainer>
   );
