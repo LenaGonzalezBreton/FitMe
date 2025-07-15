@@ -6,6 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { setupFirebase } from './config/firebase-config';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as fs from 'fs';
+import { Request, Response } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -30,6 +31,9 @@ async function bootstrap() {
     .addBearerAuth()
     .addTag('Auth', 'Authentification et gestion des utilisateurs')
     .addTag('Status', "Statut de l'application")
+    .addTag('Cycle', 'Gestion du cycle menstruel et des phases')
+    .addTag('Exercises', 'Exercices adaptés aux phases du cycle')
+    .addTag('Programs', "Génération de programmes d'entraînement personnalisés")
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
@@ -42,7 +46,7 @@ async function bootstrap() {
   console.log(`✅ Fichier OpenAPI généré: ${openApiJsonPath}`);
 
   // Route pour servir le JSON en temps réel (optionnel, pour la doc dynamique)
-  app.getHttpAdapter().get('/api-json', (req: any, res: any) => {
+  app.getHttpAdapter().get('/api-json', (req: Request, res: Response) => {
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.send(document);
@@ -54,4 +58,5 @@ async function bootstrap() {
   console.log(`📖 Swagger UI available at: ${await app.getUrl()}/api-docs`);
   console.log(`📄 OpenAPI JSON available at: ${await app.getUrl()}/api-json`);
 }
-bootstrap();
+
+void bootstrap();
