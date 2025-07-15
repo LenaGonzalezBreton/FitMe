@@ -21,7 +21,9 @@ import {
   TokenResponseDto,
 } from './dto/auth.dto';
 import { Public } from '../guards/public.decorator';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -31,6 +33,17 @@ export class AuthController {
   ) {}
 
   @Public()
+  @ApiOperation({ summary: "Inscription d'un nouvel utilisateur" })
+  @ApiBody({ type: RegisterDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Utilisateur inscrit',
+    type: AuthResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Erreur de validation ou utilisateur existant',
+  })
   @Post('register')
   async register(
     @Body() registerDto: RegisterDto,
@@ -70,6 +83,17 @@ export class AuthController {
   }
 
   @Public()
+  @ApiOperation({ summary: 'Connexion utilisateur' })
+  @ApiBody({ type: LoginDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Connexion réussie',
+    type: AuthResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Identifiants invalides',
+  })
   @Post('login')
   async login(
     @Body() loginDto: LoginDto,
@@ -100,6 +124,17 @@ export class AuthController {
   }
 
   @Public()
+  @ApiOperation({ summary: "Rafraîchissement du token d'accès" })
+  @ApiBody({ type: RefreshTokenDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Nouveaux tokens générés',
+    type: TokenResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Token de rafraîchissement invalide ou expiré',
+  })
   @Post('refresh')
   async refresh(
     @Body() refreshTokenDto: RefreshTokenDto,
@@ -125,6 +160,8 @@ export class AuthController {
     }
   }
 
+  @ApiOperation({ summary: "Récupérer le profil de l'utilisateur connecté" })
+  @ApiResponse({ status: 200, description: 'Profil utilisateur retourné' })
   @Get('profile')
   async getProfile(@Request() req: any) {
     return {
@@ -134,6 +171,10 @@ export class AuthController {
     };
   }
 
+  @ApiOperation({
+    summary: 'Route de test publique (aucune authentification requise)',
+  })
+  @ApiResponse({ status: 200, description: 'Réponse publique' })
   @Get('test-public')
   @Public()
   async testPublic() {
