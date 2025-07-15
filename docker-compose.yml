@@ -15,6 +15,10 @@ services:
       - redis
     env_file:
       - .env
+    environment:
+      - POSTGRES_HOST=postgres
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
 
   client:
     build:
@@ -25,8 +29,13 @@ services:
     volumes:
       - ./client:/usr/src/app
       - /usr/src/app/node_modules
+      - ./.docker/expo:/root/.expo # Persist expo configuration and login
+    env_file:
+      - .env
     environment:
       - EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0
+    stdin_open: true # Keep stdin open for interactivity
+    tty: true # Allocate a pseudo-TTY
 
   postgres:
     image: postgres:14-alpine

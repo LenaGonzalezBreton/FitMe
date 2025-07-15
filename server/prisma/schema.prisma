@@ -17,7 +17,7 @@ datasource db {
 // Generator configuration for Prisma Client
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  output   = "../node_modules/.prisma/client"
 } 
 
 // --- ÉNUMÉRATIONS ---

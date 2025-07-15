@@ -1,0 +1,3 @@
+[submodule "client/FitMe"]
+	path = client/FitMe
+	url = https://github.com/LenaGonzalezBreton/FitMe.git
