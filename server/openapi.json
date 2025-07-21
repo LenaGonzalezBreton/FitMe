@@ -188,6 +188,404 @@
         },
         "tags": [
           "Cycle"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/cycle/config": {
+      "get": {
+        "operationId": "CycleController_getCycleConfig",
+        "summary": "Récupérer la configuration du cycle",
+        "description": "Retourne les paramètres personnalisés du cycle menstruel",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Configuration récupérée avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CycleConfigResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Configuration non trouvée"
+          }
+        },
+        "tags": [
+          "Cycle"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "CycleController_updateCycleConfig",
+        "summary": "Mettre à jour la configuration du cycle",
+        "description": "Modifie les paramètres personnalisés du cycle menstruel",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCycleConfigDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Configuration mise à jour avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CycleConfigResponseDto"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Configuration créée avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CycleConfigResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides"
+          }
+        },
+        "tags": [
+          "Cycle"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/cycle/periods": {
+      "post": {
+        "operationId": "CycleController_logPeriod",
+        "summary": "Enregistrer des règles",
+        "description": "Logger manuellement le début et la fin des règles",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogPeriodDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Règles enregistrées avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogPeriodResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides"
+          }
+        },
+        "tags": [
+          "Cycle"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "CycleController_getPeriodsHistory",
+        "summary": "Récupérer l'historique des règles",
+        "description": "Liste chronologique des règles avec statistiques",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Nombre de cycles à retourner",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "description": "Nombre de cycles à ignorer",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "fromDate",
+            "required": false,
+            "in": "query",
+            "description": "Date de début (YYYY-MM-DD)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "toDate",
+            "required": false,
+            "in": "query",
+            "description": "Date de fin (YYYY-MM-DD)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Historique récupéré avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PeriodsHistoryResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Cycle"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/cycle/predictions": {
+      "get": {
+        "operationId": "CycleController_getCyclePredictions",
+        "summary": "Obtenir les prédictions du cycle",
+        "description": "Calculs intelligents des prochaines règles et ovulation",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Prédictions calculées avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CyclePredictionsResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pas assez de données pour les prédictions"
+          }
+        },
+        "tags": [
+          "Cycle"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/cycle/calendar": {
+      "get": {
+        "operationId": "CycleController_getCycleCalendar",
+        "summary": "Obtenir le calendrier du cycle",
+        "description": "Vue calendrier avec phases, prédictions et événements",
+        "parameters": [
+          {
+            "name": "startDate",
+            "required": false,
+            "in": "query",
+            "description": "Date de début (YYYY-MM-DD)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "months",
+            "required": false,
+            "in": "query",
+            "description": "Nombre de mois (défaut: 3)",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Calendrier généré avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CycleCalendarResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Cycle"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/cycle/symptoms": {
+      "post": {
+        "operationId": "CycleController_logSymptoms",
+        "summary": "Enregistrer des symptômes",
+        "description": "Logger les symptômes ressentis pour une date donnée",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogSymptomsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Symptômes enregistrés avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogSymptomsResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides"
+          }
+        },
+        "tags": [
+          "Cycle"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "CycleController_getSymptomsHistory",
+        "summary": "Récupérer l'historique des symptômes",
+        "description": "Analyse des patterns de symptômes avec statistiques par phases",
+        "parameters": [
+          {
+            "name": "fromDate",
+            "required": false,
+            "in": "query",
+            "description": "Date de début (YYYY-MM-DD)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "toDate",
+            "required": false,
+            "in": "query",
+            "description": "Date de fin (YYYY-MM-DD)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "symptomType",
+            "required": false,
+            "in": "query",
+            "description": "Type de symptôme spécifique",
+            "schema": {
+              "enum": [
+                "CRAMPS",
+                "BLOATING",
+                "HEADACHE",
+                "BACK_PAIN",
+                "BREAST_TENDERNESS",
+                "ACNE",
+                "MOOD_SWINGS",
+                "FATIGUE",
+                "NAUSEA",
+                "FOOD_CRAVINGS",
+                "CONSTIPATION",
+                "DIARRHEA",
+                "HOT_FLASHES",
+                "COLD_FLASHES",
+                "JOINT_PAIN",
+                "INSOMNIA"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Nombre d'entrées à retourner",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "description": "Nombre d'entrées à ignorer",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Historique des symptômes récupéré avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SymptomsHistoryResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Cycle"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     },
@@ -288,6 +686,48 @@
         },
         "tags": [
           "Exercises"
+        ]
+      },
+      "post": {
+        "operationId": "ExerciseController_createExercise",
+        "summary": "Créer un nouvel exercice",
+        "description": "Permet à un utilisateur authentifié de créer un exercice personnalisé",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateExerciseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Exercice créé avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateExerciseResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides pour la création de l'exercice"
+          },
+          "401": {
+            "description": "Non autorisé - token JWT requis"
+          }
+        },
+        "tags": [
+          "Exercises"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     },
@@ -1325,6 +1765,725 @@
           "message"
         ]
       },
+      "CycleConfigDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "Identifiant utilisateur",
+            "example": "user_123456789"
+          },
+          "isCycleTrackingEnabled": {
+            "type": "boolean",
+            "description": "Suivi du cycle activé",
+            "example": true
+          },
+          "usesExternalProvider": {
+            "type": "boolean",
+            "description": "Utilise un fournisseur externe (Apple Health, Google Fit)",
+            "example": false
+          },
+          "useMenopauseMode": {
+            "type": "boolean",
+            "description": "Mode ménopause activé",
+            "example": false
+          },
+          "averageCycleLength": {
+            "type": "number",
+            "description": "Durée moyenne du cycle en jours",
+            "example": 28,
+            "minimum": 21,
+            "maximum": 40
+          },
+          "averagePeriodLength": {
+            "type": "number",
+            "description": "Durée moyenne des règles en jours",
+            "example": 5,
+            "minimum": 3,
+            "maximum": 10
+          },
+          "prefersManualInput": {
+            "type": "boolean",
+            "description": "Préfère la saisie manuelle",
+            "example": false
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Date de création",
+            "example": "2024-01-15T10:30:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Date de dernière modification",
+            "example": "2024-01-15T10:30:00.000Z"
+          }
+        },
+        "required": [
+          "userId",
+          "isCycleTrackingEnabled",
+          "usesExternalProvider",
+          "useMenopauseMode",
+          "prefersManualInput",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CycleConfigResponseDto": {
+        "type": "object",
+        "properties": {
+          "config": {
+            "description": "Configuration du cycle",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CycleConfigDto"
+              }
+            ]
+          },
+          "message": {
+            "type": "string",
+            "description": "Message de confirmation",
+            "example": "Configuration du cycle récupérée avec succès"
+          }
+        },
+        "required": [
+          "config",
+          "message"
+        ]
+      },
+      "UpdateCycleConfigDto": {
+        "type": "object",
+        "properties": {
+          "isCycleTrackingEnabled": {
+            "type": "boolean",
+            "description": "Activer/désactiver le suivi du cycle",
+            "example": true
+          },
+          "usesExternalProvider": {
+            "type": "boolean",
+            "description": "Activer/désactiver le fournisseur externe",
+            "example": false
+          },
+          "useMenopauseMode": {
+            "type": "boolean",
+            "description": "Activer/désactiver le mode ménopause",
+            "example": false
+          },
+          "averageCycleLength": {
+            "type": "number",
+            "description": "Durée moyenne du cycle (21-40 jours)",
+            "example": 28,
+            "minimum": 21,
+            "maximum": 40
+          },
+          "averagePeriodLength": {
+            "type": "number",
+            "description": "Durée moyenne des règles (3-10 jours)",
+            "example": 5,
+            "minimum": 3,
+            "maximum": 10
+          },
+          "prefersManualInput": {
+            "type": "boolean",
+            "description": "Préférer la saisie manuelle",
+            "example": false
+          }
+        }
+      },
+      "LogPeriodDto": {
+        "type": "object",
+        "properties": {
+          "startDate": {
+            "type": "string",
+            "description": "Date de début des règles",
+            "example": "2024-01-15",
+            "format": "date"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "Date de fin des règles",
+            "example": "2024-01-20",
+            "format": "date"
+          },
+          "flowIntensity": {
+            "type": "number",
+            "description": "Intensité du flux (1=léger, 5=très fort)",
+            "example": 3,
+            "minimum": 1,
+            "maximum": 5
+          },
+          "notes": {
+            "type": "string",
+            "description": "Notes additionnelles",
+            "example": "Flux normal, quelques crampes le premier jour"
+          }
+        },
+        "required": [
+          "startDate"
+        ]
+      },
+      "PeriodDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifiant du cycle",
+            "example": "cycle_123456789"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Date de début des règles",
+            "example": "2024-01-15T00:00:00.000Z"
+          },
+          "periodLength": {
+            "type": "number",
+            "description": "Durée des règles en jours",
+            "example": 5
+          },
+          "cycleLength": {
+            "type": "number",
+            "description": "Durée totale du cycle en jours",
+            "example": 28
+          },
+          "isRegular": {
+            "type": "boolean",
+            "description": "Cycle régulier",
+            "example": true
+          },
+          "flowIntensity": {
+            "type": "number",
+            "description": "Intensité du flux moyenne",
+            "example": 3
+          },
+          "notes": {
+            "type": "string",
+            "description": "Notes sur ce cycle",
+            "example": "Cycle normal, pas de complications"
+          }
+        },
+        "required": [
+          "id",
+          "startDate",
+          "isRegular"
+        ]
+      },
+      "LogPeriodResponseDto": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "description": "Cycle créé ou mis à jour",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PeriodDto"
+              }
+            ]
+          },
+          "message": {
+            "type": "string",
+            "description": "Message de confirmation",
+            "example": "Règles enregistrées avec succès"
+          },
+          "isNewCycle": {
+            "type": "boolean",
+            "description": "Indique si un nouveau cycle a été créé",
+            "example": true
+          }
+        },
+        "required": [
+          "period",
+          "message",
+          "isNewCycle"
+        ]
+      },
+      "PeriodsHistoryResponseDto": {
+        "type": "object",
+        "properties": {
+          "periods": {
+            "description": "Liste des cycles/règles",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PeriodDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "Nombre total de cycles",
+            "example": 12
+          },
+          "averageCycleLength": {
+            "type": "number",
+            "description": "Durée moyenne du cycle",
+            "example": 28.5
+          },
+          "averagePeriodLength": {
+            "type": "number",
+            "description": "Durée moyenne des règles",
+            "example": 5.2
+          },
+          "regularityPercentage": {
+            "type": "number",
+            "description": "Pourcentage de cycles réguliers",
+            "example": 85.5
+          }
+        },
+        "required": [
+          "periods",
+          "total",
+          "averageCycleLength",
+          "averagePeriodLength",
+          "regularityPercentage"
+        ]
+      },
+      "CyclePredictionDto": {
+        "type": "object",
+        "properties": {
+          "nextPeriodStart": {
+            "type": "string",
+            "description": "Date prédite des prochaines règles",
+            "example": "2024-02-12T00:00:00.000Z"
+          },
+          "nextOvulation": {
+            "type": "string",
+            "description": "Date prédite de la prochaine ovulation",
+            "example": "2024-01-28T00:00:00.000Z"
+          },
+          "confidence": {
+            "type": "number",
+            "description": "Niveau de confiance de la prédiction (%)",
+            "example": 87.5,
+            "minimum": 0,
+            "maximum": 100
+          },
+          "currentCycleDay": {
+            "type": "number",
+            "description": "Jour actuel dans le cycle",
+            "example": 14
+          },
+          "currentPhase": {
+            "type": "string",
+            "description": "Phase actuelle du cycle",
+            "enum": [
+              "MENSTRUAL",
+              "FOLLICULAR",
+              "OVULATION",
+              "LUTEAL"
+            ],
+            "example": "OVULATION"
+          },
+          "daysUntilNextPeriod": {
+            "type": "number",
+            "description": "Jours jusqu'aux prochaines règles",
+            "example": 14
+          },
+          "daysUntilOvulation": {
+            "type": "number",
+            "description": "Jours jusqu'à la prochaine ovulation",
+            "example": 0
+          }
+        },
+        "required": [
+          "nextPeriodStart",
+          "nextOvulation",
+          "confidence",
+          "currentCycleDay",
+          "currentPhase",
+          "daysUntilNextPeriod",
+          "daysUntilOvulation"
+        ]
+      },
+      "CyclePredictionsResponseDto": {
+        "type": "object",
+        "properties": {
+          "predictions": {
+            "description": "Prédictions du cycle",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CyclePredictionDto"
+              }
+            ]
+          },
+          "message": {
+            "type": "string",
+            "description": "Message informatif",
+            "example": "Prédictions calculées avec 87% de confiance basées sur vos 6 derniers cycles"
+          }
+        },
+        "required": [
+          "predictions",
+          "message"
+        ]
+      },
+      "CalendarDayDto": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "description": "Date du jour",
+            "example": "2024-01-15"
+          },
+          "phase": {
+            "type": "string",
+            "description": "Phase du cycle ce jour",
+            "enum": [
+              "MENSTRUAL",
+              "FOLLICULAR",
+              "OVULATION",
+              "LUTEAL"
+            ],
+            "example": "MENSTRUAL"
+          },
+          "cycleDay": {
+            "type": "number",
+            "description": "Jour du cycle (1-40)",
+            "example": 1
+          },
+          "dayType": {
+            "type": "string",
+            "description": "Type de jour",
+            "example": "period_start",
+            "enum": [
+              "period_start",
+              "period_day",
+              "ovulation",
+              "fertile",
+              "normal",
+              "predicted_period",
+              "predicted_ovulation"
+            ]
+          },
+          "events": {
+            "description": "Événements/symptômes ce jour",
+            "example": [
+              "crampes",
+              "flux_fort"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "isPredicted": {
+            "type": "boolean",
+            "description": "Jour prédit ou confirmé",
+            "example": false
+          }
+        },
+        "required": [
+          "date",
+          "dayType",
+          "isPredicted"
+        ]
+      },
+      "CycleCalendarResponseDto": {
+        "type": "object",
+        "properties": {
+          "calendar": {
+            "description": "Jours du calendrier",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CalendarDayDto"
+            }
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Date de début du calendrier",
+            "example": "2024-01-01"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "Date de fin du calendrier",
+            "example": "2024-03-31"
+          },
+          "monthsCount": {
+            "type": "number",
+            "description": "Nombre de mois affichés",
+            "example": 3
+          },
+          "message": {
+            "type": "string",
+            "description": "Message informatif",
+            "example": "Calendrier du cycle pour 3 mois avec prédictions"
+          }
+        },
+        "required": [
+          "calendar",
+          "startDate",
+          "endDate",
+          "monthsCount",
+          "message"
+        ]
+      },
+      "LogSymptomDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Type de symptôme",
+            "enum": [
+              "CRAMPS",
+              "BLOATING",
+              "HEADACHE",
+              "BACK_PAIN",
+              "BREAST_TENDERNESS",
+              "ACNE",
+              "MOOD_SWINGS",
+              "FATIGUE",
+              "NAUSEA",
+              "FOOD_CRAVINGS",
+              "CONSTIPATION",
+              "DIARRHEA",
+              "HOT_FLASHES",
+              "COLD_FLASHES",
+              "JOINT_PAIN",
+              "INSOMNIA"
+            ],
+            "example": "CRAMPS"
+          },
+          "intensity": {
+            "type": "number",
+            "description": "Intensité du symptôme (1=léger, 5=très fort)",
+            "example": 3,
+            "minimum": 1,
+            "maximum": 5
+          },
+          "notes": {
+            "type": "string",
+            "description": "Notes sur le symptôme",
+            "example": "Crampes légères le matin, soulagées par chaleur"
+          }
+        },
+        "required": [
+          "type",
+          "intensity"
+        ]
+      },
+      "LogSymptomsDto": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "description": "Date des symptômes",
+            "example": "2024-01-15",
+            "format": "date"
+          },
+          "symptoms": {
+            "description": "Liste des symptômes ressentis",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogSymptomDto"
+            }
+          }
+        },
+        "required": [
+          "date",
+          "symptoms"
+        ]
+      },
+      "SymptomEntryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifiant du symptôme",
+            "example": "symptom_123456789"
+          },
+          "type": {
+            "type": "string",
+            "description": "Type de symptôme",
+            "enum": [
+              "CRAMPS",
+              "BLOATING",
+              "HEADACHE",
+              "BACK_PAIN",
+              "BREAST_TENDERNESS",
+              "ACNE",
+              "MOOD_SWINGS",
+              "FATIGUE",
+              "NAUSEA",
+              "FOOD_CRAVINGS",
+              "CONSTIPATION",
+              "DIARRHEA",
+              "HOT_FLASHES",
+              "COLD_FLASHES",
+              "JOINT_PAIN",
+              "INSOMNIA"
+            ],
+            "example": "CRAMPS"
+          },
+          "intensity": {
+            "type": "number",
+            "description": "Intensité (1-5)",
+            "example": 3
+          },
+          "notes": {
+            "type": "string",
+            "description": "Notes sur le symptôme",
+            "example": "Crampes légères le matin"
+          },
+          "date": {
+            "type": "string",
+            "description": "Date du symptôme",
+            "example": "2024-01-15T00:00:00.000Z"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Date de création",
+            "example": "2024-01-15T10:30:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "intensity",
+          "date",
+          "createdAt"
+        ]
+      },
+      "LogSymptomsResponseDto": {
+        "type": "object",
+        "properties": {
+          "symptoms": {
+            "description": "Symptômes enregistrés",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SymptomEntryDto"
+            }
+          },
+          "date": {
+            "type": "string",
+            "description": "Date des symptômes",
+            "example": "2024-01-15"
+          },
+          "message": {
+            "type": "string",
+            "description": "Message de confirmation",
+            "example": "3 symptômes enregistrés pour le 15 janvier 2024"
+          }
+        },
+        "required": [
+          "symptoms",
+          "date",
+          "message"
+        ]
+      },
+      "SymptomStatsDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Type de symptôme",
+            "enum": [
+              "CRAMPS",
+              "BLOATING",
+              "HEADACHE",
+              "BACK_PAIN",
+              "BREAST_TENDERNESS",
+              "ACNE",
+              "MOOD_SWINGS",
+              "FATIGUE",
+              "NAUSEA",
+              "FOOD_CRAVINGS",
+              "CONSTIPATION",
+              "DIARRHEA",
+              "HOT_FLASHES",
+              "COLD_FLASHES",
+              "JOINT_PAIN",
+              "INSOMNIA"
+            ],
+            "example": "CRAMPS"
+          },
+          "averageIntensity": {
+            "type": "number",
+            "description": "Intensité moyenne",
+            "example": 3.2
+          },
+          "occurrences": {
+            "type": "number",
+            "description": "Nombre d'occurrences",
+            "example": 15
+          },
+          "mostCommonPhase": {
+            "type": "string",
+            "description": "Phase du cycle la plus fréquente",
+            "enum": [
+              "MENSTRUAL",
+              "FOLLICULAR",
+              "OVULATION",
+              "LUTEAL"
+            ],
+            "example": "MENSTRUAL"
+          },
+          "phaseDistribution": {
+            "type": "object",
+            "description": "Pourcentage d'occurrence par phase",
+            "example": {
+              "MENSTRUAL": 80,
+              "FOLLICULAR": 10,
+              "OVULATION": 5,
+              "LUTEAL": 15
+            }
+          }
+        },
+        "required": [
+          "type",
+          "averageIntensity",
+          "occurrences",
+          "mostCommonPhase",
+          "phaseDistribution"
+        ]
+      },
+      "SymptomsHistoryResponseDto": {
+        "type": "object",
+        "properties": {
+          "symptoms": {
+            "description": "Historique des symptômes",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SymptomEntryDto"
+            }
+          },
+          "stats": {
+            "description": "Statistiques par type de symptôme",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SymptomStatsDto"
+            }
+          },
+          "periodStart": {
+            "type": "string",
+            "description": "Période analysée - date de début",
+            "example": "2024-01-01"
+          },
+          "periodEnd": {
+            "type": "string",
+            "description": "Période analysée - date de fin",
+            "example": "2024-01-31"
+          },
+          "totalEntries": {
+            "type": "number",
+            "description": "Nombre total d'entrées de symptômes",
+            "example": 45
+          },
+          "uniqueSymptomTypes": {
+            "type": "number",
+            "description": "Types de symptômes uniques",
+            "example": 8
+          },
+          "message": {
+            "type": "string",
+            "description": "Message informatif",
+            "example": "Analyse de 45 symptômes sur 31 jours - 8 types différents identifiés"
+          }
+        },
+        "required": [
+          "symptoms",
+          "stats",
+          "periodStart",
+          "periodEnd",
+          "totalEntries",
+          "uniqueSymptomTypes",
+          "message"
+        ]
+      },
       "ExerciseDto": {
         "type": "object",
         "properties": {
@@ -1511,6 +2670,60 @@
           "message"
         ]
       },
+      "CreateExerciseDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Titre de l'exercice",
+            "example": "Pompes modifiées"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description détaillée de l'exercice",
+            "example": "Pompes adaptées pour les débutants, genoux au sol"
+          },
+          "imageUrl": {
+            "type": "string",
+            "description": "URL de l'image de démonstration",
+            "example": "https://example.com/images/pompes-modifiees.jpg"
+          },
+          "durationMinutes": {
+            "type": "number",
+            "description": "Durée de l'exercice en minutes",
+            "example": 15
+          },
+          "intensity": {
+            "type": "string",
+            "description": "Niveau d'intensité de l'exercice",
+            "enum": [
+              "VERY_LOW",
+              "LOW",
+              "MODERATE",
+              "HIGH",
+              "VERY_HIGH"
+            ],
+            "example": "MODERATE"
+          },
+          "muscleZone": {
+            "type": "string",
+            "description": "Zone musculaire ciblée",
+            "enum": [
+              "UPPER_BODY",
+              "LOWER_BODY",
+              "CORE",
+              "FULL_BODY",
+              "CARDIO",
+              "FLEXIBILITY",
+              "BALANCE"
+            ],
+            "example": "UPPER_BODY"
+          }
+        },
+        "required": [
+          "title"
+        ]
+      },
       "ExerciseDetailsDto": {
         "type": "object",
         "properties": {
@@ -1622,6 +2835,28 @@
           "totalRatings",
           "createdAt",
           "updatedAt"
+        ]
+      },
+      "CreateExerciseResponseDto": {
+        "type": "object",
+        "properties": {
+          "exercise": {
+            "description": "Exercice créé avec succès",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ExerciseDetailsDto"
+              }
+            ]
+          },
+          "message": {
+            "type": "string",
+            "description": "Message de confirmation",
+            "example": "Exercice créé avec succès"
+          }
+        },
+        "required": [
+          "exercise",
+          "message"
         ]
       },
       "FavoriteExerciseDto": {

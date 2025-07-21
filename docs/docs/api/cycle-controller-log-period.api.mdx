@@ -1,0 +1,69 @@
+---
+id: cycle-controller-log-period
+title: "Enregistrer des règles"
+description: "Logger manuellement le début et la fin des règles"
+sidebar_label: "Enregistrer des règles"
+hide_title: true
+hide_table_of_contents: true
+api: eJy1VttOI0cQ/ZVWvSSRmmVsYLOxtA9kWSSivSCWKFIstGrPlMfN9nQPfQEsa/4lj/g75sei6vaYMUYLRBsJmfG4uupU1alTvQBToxVeGn1SwAjezXOF74z21iiF9qsy5SlaaQrgUKDLrazJFkbwwZQlWlYJHVAprFB7ppAV7XISPEPPlGBTqVmBjtn2rlTogEMtrKjQo3UwGl9wsHgV0PnfTTGH0SJ+lRYLGHkbkENutEft6SdR10rmEenupSMIC3D5DCtBT35eI4zATC4x9xTHUl5eoot2Xlh/JDz2TJ23UpdbaZEVK9Z5bKLHW1HVik4Ps+H+TjbYGRwAh6mxlfAwgoJCNBxQFy+Ltl2o7VDD7LFQU2VuTqhITvp5L6AO1QTtVsDOtF2yIrCpCrfs58Fb1S5LtJwdvPW2vXNsaqz/pQ9ij0MltaxCBaMBh0rcpueDhoM2PlX5+6l+IjMmikLSC02c2czzmMBoyk9xdhVQETNYbkVVoyNq1RYriZZdmmChaXiPLeNeiy84eOmjyw8de4+8gaZJZ1xttEuIh9mA/m0CPUs9YKgtltJ52y4J+DXmzIU8b+8I9g8iZp1mawtDHEOW23bZLpkJrJKOtf+kzDkIpT5PYTR+yrssnm7LSYHay6kU2hMjcgq80Zb45utguLd/8PrXN78R5/7PcTrPslH8e5Vl2d8ULdXoA+rSz54m+FGgfvUDMdSxcBsRibgxsxf69cYLUrlVpR71PXzTcJDuDMughO25nhijUOgt36nbtl2WQckYe+2LZPCHTHll5qj1Rmv3Xjq8LliW4yMcSQl0s1sLRy3PTbUeDLc1r5I2yj2R+gXrDXBvei8aDhU6J8pn0O5jMkww9FSSaNIvfdDPmPPYx094E/N7RiNPdCGvAjInWdBMm3CNomOKYO2SGpKGeqvHD8pTd0u3S3kDyWMSd7YStnup28+ybWU5MlrHRKW+FkoWmFrjRUkbGdb+HebBRrKNFzBBYdHSxm4uCJKfkWhBbVwUHUEDBLsxz92EnAbCob1eL/rO3xdSxkS5zutKLmNh0yu+ejjutt0ff50D76o/876OoEltz+4vEO+7gm4s/M1Vvd7MD9bq5nztrQfjpVuJg9RTE6myatCx9B+RHZ6ebEuKyQNdmyI1iarqp8PTE5YO7LDD+72Srgheo3NsIhwJEc2iWs0iq1A7YpECDlTy5H/wKlttKpHTpqKSUcsqEXeUFrHk7zv6o30gzxtoF/cr7z9e/Vbd83jrd2slpKZqBaviHowUGkMnLR2JLjjMiGSjMSwWE+HwT6uahl5fBbTzRK1rYaWYULHHJBIzFEUk6wK+4ZzUKQHfOScAZK4CAdna2w3vThzmOdb+u7b9OTj9/IXoOVldYitT0BkrboDHzxEAB1MnIaRbLr1bgBK6DFHOIPmkBomwsY0eDER/6Qs97yFcLJLFufmGummAr1Lx9J3Us2n+BU+KKwA=
+sidebar_class_name: "post api-method"
+info_path: docs/api/fitme-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Enregistrer des règles"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/cycle/periods"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Logger manuellement le début et la fin des règles
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"startDate":{"type":"string","description":"Date de début des règles","example":"2024-01-15","format":"date"},"endDate":{"type":"string","description":"Date de fin des règles","example":"2024-01-20","format":"date"},"flowIntensity":{"type":"number","description":"Intensité du flux (1=léger, 5=très fort)","example":3,"minimum":1,"maximum":5},"notes":{"type":"string","description":"Notes additionnelles","example":"Flux normal, quelques crampes le premier jour"}},"required":["startDate"],"title":"LogPeriodDto"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  responses={{"201":{"description":"Règles enregistrées avec succès","content":{"application/json":{"schema":{"type":"object","properties":{"period":{"description":"Cycle créé ou mis à jour","allOf":[{"type":"object","properties":{"id":{"type":"string","description":"Identifiant du cycle","example":"cycle_123456789"},"startDate":{"type":"string","description":"Date de début des règles","example":"2024-01-15T00:00:00.000Z"},"periodLength":{"type":"number","description":"Durée des règles en jours","example":5},"cycleLength":{"type":"number","description":"Durée totale du cycle en jours","example":28},"isRegular":{"type":"boolean","description":"Cycle régulier","example":true},"flowIntensity":{"type":"number","description":"Intensité du flux moyenne","example":3},"notes":{"type":"string","description":"Notes sur ce cycle","example":"Cycle normal, pas de complications"}},"required":["id","startDate","isRegular"],"title":"PeriodDto"}]},"message":{"type":"string","description":"Message de confirmation","example":"Règles enregistrées avec succès"},"isNewCycle":{"type":"boolean","description":"Indique si un nouveau cycle a été créé","example":true}},"required":["period","message","isNewCycle"],"title":"LogPeriodResponseDto"}}}},"400":{"description":"Données invalides"}}}
+ id="cycle-controller-log-period-responses">
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,69 @@
+---
+id: cycle-controller-get-cycle-calendar
+title: "Obtenir le calendrier du cycle"
+description: "Vue calendrier avec phases, prédictions et événements"
+sidebar_label: "Obtenir le calendrier du cycle"
+hide_title: true
+hide_table_of_contents: true
+api: eJylVttu4kgQ/ZVWvWxGMhtIZl94QyFZZUUuypBZRQhFjV2Gztjdnr6gQcgfsH+yft8/8I+tqhuwgWyS0T6B7a5Tp+vUbQ2qQM2tUPI6gT5crOIML5S0WmUZ6uc52vCKZygTriGCBE2sRUEm0IevDlnsP2qBmvElxqxYcIMmYoWuq0TEdNIwtKyulnUlMUdpDURQcM1ztKgN9CdrkDxH6IOxXNshtwgRaPzuhMYE+inPDEYgyOV3h3p1RIRMWIIsqauZs+zk6enpqXNz0xkOP0EEJl5gzqG/Brsqghst5BzKMtp5zpW0C/OTbm9VPtPeca6EYSdJXaXc2T47f9WtdPkMNZTllNyYQkmDhr6fdbv0sw9+0QR2XleyrnRdhRAbF8f130Q2VtKitGTMiyITsRfz9MUQwvqYgZq9YGwp/JqktyL4j7cCH5H4QzltWOJaMkO0ReNacwqKsJib970kpOuRCK9L6diLcuQKf/C8yOj8Wffsc6fb6/R+gzICn2bvo93TMc+fEpnFuMOVLof+BG4ub7+MHx4HI4jg6m40ur54HA0eIIK7r4+jwfj67hYiGD2OLwcjmLbpNIZlBB59yFfHYh8SooA2fE56nc/dT+1r9soIEr4ae5D3bkenKPuOYlWgFip59uXUuuzB681j4kVUS5f57IEIUhItoyKUSuc881IiVTMmz8Fq71VjOy0jwKWv8aNcqv9qOsCpWeWFrf/J0bRF2V5gArHmeYGU42nmfjynSluK/zuZ1xQ2CHO/5dc6MFMqQy5flyW0LMuUY7GSqdB5XbVZ+YZA2E2PmISsbjTbd0yMhfWSbJvokK+GVnmKTbf7YFXsGtxhQR5XSbdHeYky+Tn8VMh3wc875x48tMwL5UIDejvvD1olT1MRL+rKtPHPCRSN4fMPML4JB5mQKeWoFeke1Vb33FVbQSKfbwj4WdWaUXAobNxMvfZY2oZ0//4N8bbk7eH5sGn4QfySvFk+p+kXzpGhwdhpYVd+JM6Qa9TQn0xpXuRoF4qG9Bx96XK7gD6c+oudtqmiXoah2sL7QnMgNOEt6mY4+JoIr6LNnysfTqqJP8dNr19YW4S6kqny6mwueSXsDbLB/fVxTqnYUbH7zkDKZ78M7q9ZMOiwQTOwQuZZicawGTd1hcw4zahhe+FylMZqh9SI6HYBv/drdzMCeUwZSOwKZWzO/fDbDPa7mUUpAthxThySXjcj9f9sN5ugWfxhT4uMC0n14nRGDoJ0E9j634k3jWChjKVv6/WMG3zUWVnS67B9UFIkwvBZ1tpO/pP92yvRqwS/4epgB1vyzNE5oE3p477f3ove8L3bwhrHU3rQgjz7WohggTzxhbHeWA3iGAvbsjrahfYq6PdLymvuSIZmMOwXgUffDhu5amGv1+HEWH1DWZawpW7pGcppWZb/AtBA7BU=
+sidebar_class_name: "get api-method"
+info_path: docs/api/fitme-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Obtenir le calendrier du cycle"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/cycle/calendar"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Vue calendrier avec phases, prédictions et événements
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"startDate","required":false,"in":"query","description":"Date de début (YYYY-MM-DD)","schema":{"type":"string"}},{"name":"months","required":false,"in":"query","description":"Nombre de mois (défaut: 3)","schema":{"type":"number"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  responses={{"200":{"description":"Calendrier généré avec succès","content":{"application/json":{"schema":{"type":"object","properties":{"calendar":{"description":"Jours du calendrier","type":"array","items":{"type":"object","properties":{"date":{"type":"string","description":"Date du jour","example":"2024-01-15"},"phase":{"type":"string","description":"Phase du cycle ce jour","enum":["MENSTRUAL","FOLLICULAR","OVULATION","LUTEAL"],"example":"MENSTRUAL"},"cycleDay":{"type":"number","description":"Jour du cycle (1-40)","example":1},"dayType":{"type":"string","description":"Type de jour","example":"period_start","enum":["period_start","period_day","ovulation","fertile","normal","predicted_period","predicted_ovulation"]},"events":{"description":"Événements/symptômes ce jour","example":["crampes","flux_fort"],"type":"array","items":{"type":"string"}},"isPredicted":{"type":"boolean","description":"Jour prédit ou confirmé","example":false}},"required":["date","dayType","isPredicted"],"title":"CalendarDayDto"}},"startDate":{"type":"string","description":"Date de début du calendrier","example":"2024-01-01"},"endDate":{"type":"string","description":"Date de fin du calendrier","example":"2024-03-31"},"monthsCount":{"type":"number","description":"Nombre de mois affichés","example":3},"message":{"type":"string","description":"Message informatif","example":"Calendrier du cycle pour 3 mois avec prédictions"}},"required":["calendar","startDate","endDate","monthsCount","message"],"title":"CycleCalendarResponseDto"}}}}}}
+ id="cycle-controller-get-cycle-calendar-responses">
+  
+</StatusCodes>
+
+
+      

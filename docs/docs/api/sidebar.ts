@@ -82,6 +82,54 @@ const sidebar: SidebarsConfig = {
           label: "Récupérer la phase actuelle du cycle",
           className: "api-method get",
         },
+        {
+          type: "doc",
+          id: "api/cycle-controller-get-cycle-config",
+          label: "Récupérer la configuration du cycle",
+          className: "api-method get",
+        },
+        {
+          type: "doc",
+          id: "api/cycle-controller-update-cycle-config",
+          label: "Mettre à jour la configuration du cycle",
+          className: "api-method put",
+        },
+        {
+          type: "doc",
+          id: "api/cycle-controller-log-period",
+          label: "Enregistrer des règles",
+          className: "api-method post",
+        },
+        {
+          type: "doc",
+          id: "api/cycle-controller-get-periods-history",
+          label: "Récupérer l'historique des règles",
+          className: "api-method get",
+        },
+        {
+          type: "doc",
+          id: "api/cycle-controller-get-cycle-predictions",
+          label: "Obtenir les prédictions du cycle",
+          className: "api-method get",
+        },
+        {
+          type: "doc",
+          id: "api/cycle-controller-get-cycle-calendar",
+          label: "Obtenir le calendrier du cycle",
+          className: "api-method get",
+        },
+        {
+          type: "doc",
+          id: "api/cycle-controller-log-symptoms",
+          label: "Enregistrer des symptômes",
+          className: "api-method post",
+        },
+        {
+          type: "doc",
+          id: "api/cycle-controller-get-symptoms-history",
+          label: "Récupérer l'historique des symptômes",
+          className: "api-method get",
+        },
       ],
     },
     {
@@ -97,6 +145,12 @@ const sidebar: SidebarsConfig = {
           id: "api/exercise-controller-get-exercises",
           label: "Récupérer les exercices par phase de cycle",
           className: "api-method get",
+        },
+        {
+          type: "doc",
+          id: "api/exercise-controller-create-exercise",
+          label: "Créer un nouvel exercice",
+          className: "api-method post",
         },
         {
           type: "doc",
