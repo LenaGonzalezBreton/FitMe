@@ -1,0 +1,343 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/status-json": {
+      "get": {
+        "operationId": "StatusController_getAppStatusJson",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Get application status in JSON format",
+        "tags": [
+          "Status"
+        ]
+      }
+    },
+    "/": {
+      "get": {
+        "operationId": "StatusController_getAppStatusPage",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Status"
+        ]
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Utilisateur inscrit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erreur de validation ou utilisateur existant"
+          }
+        },
+        "summary": "Inscription d'un nouvel utilisateur",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Connexion réussie",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Identifiants invalides"
+          }
+        },
+        "summary": "Connexion utilisateur",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "operationId": "AuthController_refresh",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Nouveaux tokens générés",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token de rafraîchissement invalide ou expiré"
+          }
+        },
+        "summary": "Rafraîchissement du token d'accès",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/profile": {
+      "get": {
+        "operationId": "AuthController_getProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Profil utilisateur retourné"
+          }
+        },
+        "summary": "Récupérer le profil de l'utilisateur connecté",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/test-public": {
+      "get": {
+        "operationId": "AuthController_testPublic",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Réponse publique"
+          }
+        },
+        "summary": "Route de test publique (aucune authentification requise)",
+        "tags": [
+          "Auth"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "FitMe API",
+    "description": "Documentation de l'API FitMe - Application de fitness basée sur le cycle menstruel",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Authentification et gestion des utilisateurs"
+    },
+    {
+      "name": "Status",
+      "description": "Statut de l'application"
+    }
+  ],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "RegisterDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@example.com",
+            "description": "Adresse email"
+          },
+          "password": {
+            "type": "string",
+            "example": "motdepasse123",
+            "minLength": 8,
+            "description": "Mot de passe (min 8 caractères)"
+          },
+          "firstName": {
+            "type": "string",
+            "example": "Jane",
+            "description": "Prénom"
+          },
+          "profileType": {
+            "type": "string",
+            "example": "FEMALE",
+            "description": "Type de profil"
+          },
+          "contextType": {
+            "type": "string",
+            "example": "CYCLE",
+            "description": "Type de contexte"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "AuthResponseDto": {
+        "type": "object",
+        "properties": {
+          "tokens": {
+            "type": "object",
+            "properties": {
+              "accessToken": {
+                "type": "string",
+                "example": "eyJhbGciOiJIUzI1NiIs..."
+              },
+              "refreshToken": {
+                "type": "string",
+                "example": "eyJhbGciOiJIUzI1NiIs..."
+              },
+              "expiresIn": {
+                "type": "number",
+                "example": 900
+              }
+            },
+            "required": []
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "cuid_example"
+              },
+              "email": {
+                "type": "string",
+                "example": "user@example.com"
+              },
+              "firstName": {
+                "type": "string",
+                "example": "Jane"
+              },
+              "profileType": {
+                "type": "string",
+                "example": "FEMALE"
+              },
+              "contextType": {
+                "type": "string",
+                "example": "CYCLE"
+              }
+            },
+            "required": []
+          }
+        },
+        "required": [
+          "tokens",
+          "user"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@example.com",
+            "description": "Adresse email"
+          },
+          "password": {
+            "type": "string",
+            "example": "motdepasse123",
+            "description": "Mot de passe"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "RefreshTokenDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIs...",
+            "description": "Token de rafraîchissement JWT"
+          }
+        },
+        "required": [
+          "refreshToken"
+        ]
+      },
+      "TokenResponseDto": {
+        "type": "object",
+        "properties": {
+          "tokens": {
+            "type": "object",
+            "properties": {
+              "accessToken": {
+                "type": "string",
+                "example": "eyJhbGciOiJIUzI1NiIs..."
+              },
+              "refreshToken": {
+                "type": "string",
+                "example": "eyJhbGciOiJIUzI1NiIs..."
+              },
+              "expiresIn": {
+                "type": "number",
+                "example": 900
+              }
+            },
+            "required": []
+          }
+        },
+        "required": [
+          "tokens"
+        ]
+      }
+    }
+  }
+}

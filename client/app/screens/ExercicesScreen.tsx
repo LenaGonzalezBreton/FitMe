@@ -3,7 +3,6 @@ import { View, Text, ScrollView, SafeAreaView, TouchableOpacity, Image } from 'r
 import Tag from '../components/Tag';
 import { useNavigation } from '@react-navigation/native';
 
-
 interface Exercise {
   id: number;
   title: string;

@@ -1,0 +1,69 @@
+---
+id: auth-controller-login
+title: "Connexion utilisateur"
+description: "Connexion utilisateur"
+sidebar_label: "Connexion utilisateur"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVc1OGzEQfpXVXHoxIdBemlNTClUQFNSCqiqKKsc7yRp27a1nDKTRPhDPwYtV491ACiVIbXNIdu35/eabL0vwNQbN1rtRDgMYRi72vOPgyxLD99LPrQMFtQ66QsZAMBhPFAT8EZH4vc8XMFimVxswhwGHiAqMd4yO5UrXdWlNSrB9Qd7JGZkCKy1PvKgRBuCnF2hY8gQphy2S3GKlbblmRhysm4MCvNFVXcpRJAzvutee8RUoyJFMsLVklIbygESYtbEaaYXo2od8c9zKc45iiju7r58EPfac5Zile2gatQbAuKt6LdFEAVtOYY8Ezw/soWlaN6q9o7bb3f6O/Pyeac87hzfWuyzc3UYii/Df4GV/iY5ettPGINGZWG8GDReHxfSjsSf2cHT+c7TzyY6o1+tB6nQWkIp/C4I3tQ1Io/UILlZTDOsR3vb7j0YyaVQiysut2hdoYaLNv69epaK/YGijYGYD8Sdd4WbXQ+1Sljr4mS3xLBlucjjYPx4e7YtLosgNv+yy921PPB4D9ojTHVU6GNcILXrxuWPxA6/f/InKoxwd25nVjimz7kqXNkdKqVnPRVhSNIn+3A5EtqUlzRhl4hVy4UW0ak9plJoLGMC2jlxsr5SLMFzdyxahicHy4otsSDvxKerQMiOtjfTUHanu4cCHSrOM4+sZqBWUBXOdapet+/wgh/srZO/l608a9SBCj5SmUWDdzKeZdRAfWD7GbHg6eiJDH7yJFTpO6y+CVL4ano6y1mErGz5og1zOLDskyqaa7m4xoxiyEjOzMCVmFToS6RbdErja+Du9fqc22ojaSLuCdaXTBrpE4GfH81ut9xQUVm7XpbZOeo0hbU87uTHI5EBBO7uJgkIGOxjDcjnVhOehbBo5/hExLNqJXulg9VRwSlteoM5lmuMlXOKiLU6kcistgpiXUap4IpuNWnkMjcGaN9pO1rh3evJFWDHt/gkrn4tP0Neg0vcAQIFPKCS+pbMllNrNo56LbRtTPr8AZP+aeg==
+sidebar_class_name: "post api-method"
+info_path: docs/api/fitme-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Connexion utilisateur"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/auth/login"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Connexion utilisateur
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"email":{"type":"string","example":"user@example.com","description":"Adresse email"},"password":{"type":"string","example":"motdepasse123","description":"Mot de passe"}},"required":["email","password"],"title":"LoginDto"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  responses={{"201":{"description":"Connexion réussie","content":{"application/json":{"schema":{"type":"object","properties":{"tokens":{"type":"object","properties":{"accessToken":{"type":"string","example":"eyJhbGciOiJIUzI1NiIs..."},"refreshToken":{"type":"string","example":"eyJhbGciOiJIUzI1NiIs..."},"expiresIn":{"type":"number","example":900}},"required":[]},"user":{"type":"object","properties":{"id":{"type":"string","example":"cuid_example"},"email":{"type":"string","example":"user@example.com"},"firstName":{"type":"string","example":"Jane"},"profileType":{"type":"string","example":"FEMALE"},"contextType":{"type":"string","example":"CYCLE"}},"required":[]}},"required":["tokens","user"],"title":"AuthResponseDto"}}}},"401":{"description":"Identifiants invalides"}}}
+ id="auth-controller-login-responses">
+  
+</StatusCodes>
+
+
+      
