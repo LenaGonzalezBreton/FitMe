@@ -92,8 +92,8 @@ const CreateProgramScreen = () => {
                   </Text>
                 </View>
                 {selectedType === type.id && (
-                  <View className="bg-primary-500 rounded-full w-6 h-6 items-center justify-center">
-                    <Text className="text-brand-dark-bg text-sm">✓</Text>
+                  <View className="bg-brand-brown rounded-full w-6 h-6 items-center justify-center">
+                    <Text className="text-brand-cream text-sm">✓</Text>
                   </View>
                 )}
               </TouchableOpacity>

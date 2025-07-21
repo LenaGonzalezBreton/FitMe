@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, AppState } from 'react-native';
+import { View, Text, TouchableOpacity, SafeAreaView } from 'react-native';
 
 const formatTime = (time: number): string => {
   const minutes = Math.floor(time / 60);
@@ -8,48 +8,59 @@ const formatTime = (time: number): string => {
 };
 
 const ChronometerScreen = () => {
-  const [time, setTime] = useState(30 * 60);
+  const [time, setTime] = useState(0); // Commence à 00:00
   const [isActive, setIsActive] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    if (isActive && time > 0) {
+    if (isActive) {
       intervalRef.current = setInterval(() => {
-        setTime(t => t - 1);
+        setTime((prevTime) => prevTime + 1);
       }, 1000);
-    } else if (!isActive || time === 0) {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+    } else if (intervalRef.current) {
+      clearInterval(intervalRef.current);
     }
+
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [isActive, time]);
+  }, [isActive]);
 
   const handleStartStop = (): void => {
-      if(time === 0) {
-        setTime(30 * 60);
-        setIsActive(false);
-      } else {
-        setIsActive(!isActive);
-      }
+    setIsActive(!isActive);
+  };
+
+  const handleReset = (): void => {
+    setIsActive(false);
+    setTime(0);
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-brand-dark-bg justify-center items-center">
-      <Text className="text-sm text-brand-dark-secondary mb-4">Chronomètre</Text>
-      <Text className="text-8xl font-bold text-brand-dark-text mb-20">{formatTime(time)}</Text>
-      <View className="flex-row w-full justify-around">
-        <TouchableOpacity className="bg-brand-dark-gray-btn w-24 h-24 rounded-full justify-center items-center">
-          <Text className="text-brand-dark-text text-lg">Tour</Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-            onPress={handleStartStop}
-            className="bg-brand-dark-red-btn w-24 h-24 rounded-full justify-center items-center">
-          <Text className="text-brand-dark-text text-lg">{time === 0 ? "Recommencer" : (isActive ? 'Arrêter' : 'Démarrer')}</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+      <SafeAreaView className="flex-1 bg-brand-cream justify-center items-center">
+        <Text className="text-sm text-brand-dark-surface mb-4">Chronomètre</Text>
+        <Text className="text-8xl font-bold text-brand-dark-bg mb-20">
+          {formatTime(time)}
+        </Text>
+
+        <View className="flex-row w-full justify-around">
+          <TouchableOpacity
+              onPress={handleReset}
+              className="bg-brand-dark-gray-btn w-24 h-24 rounded-full justify-center items-center"
+          >
+            <Text className="text-brand-dark-text text-lg">Reset</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+              onPress={handleStartStop}
+              className="bg-brand-dark-red-btn w-24 h-24 rounded-full justify-center items-center"
+          >
+            <Text className="text-brand-dark-text text-lg">
+              {isActive ? 'Pause' : 'Démarrer'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
   );
 };
 
-export default ChronometerScreen; 
+export default ChronometerScreen;
