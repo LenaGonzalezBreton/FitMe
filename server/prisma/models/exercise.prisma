@@ -9,17 +9,20 @@ model Exercise {
   durationMinutes Int?      @map("duration_minutes")
   intensity       Intensity?
   muscleZone      MuscleZone? @map("muscle_zone")
+  createdBy       String?   @map("created_by") // null = system exercise, value = user ID
   
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
 
   // Relations
+  creator          User?             @relation("UserCreatedExercises", fields: [createdBy], references: [id], onDelete: SetNull)
   exerciseTags     ExerciseTag[]
   phaseExercises   PhaseExercise[]
   programExercises ProgramExercise[]
   favoriteExercises FavoriteExercise[]
   ratings          ExerciseRating[]
 
+  @@index([createdBy])
   @@map("exercise")
 }
 

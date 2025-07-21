@@ -8,6 +8,7 @@ import { AddToFavoritesUseCase } from './application/use-cases/add-to-favorites.
 import { RemoveFromFavoritesUseCase } from './application/use-cases/remove-from-favorites.use-case';
 import { GetFavoriteExercisesUseCase } from './application/use-cases/get-favorite-exercises.use-case';
 import { RateExerciseUseCase } from './application/use-cases/rate-exercise.use-case';
+import { CreateExerciseUseCase } from './application/use-cases/create-exercise.use-case';
 
 // Infrastructure Repositories
 import { PrismaExerciseRepository } from './infrastructure/prisma-exercise.repository';
@@ -37,6 +38,7 @@ import {
     RemoveFromFavoritesUseCase,
     GetFavoriteExercisesUseCase,
     RateExerciseUseCase,
+    CreateExerciseUseCase,
 
     // Repository Implementations
     {
@@ -63,6 +65,7 @@ import {
     RemoveFromFavoritesUseCase,
     GetFavoriteExercisesUseCase,
     RateExerciseUseCase,
+    CreateExerciseUseCase,
     EXERCISE_REPOSITORY_TOKEN,
     PHASE_EXERCISE_REPOSITORY_TOKEN,
     FAVORITE_EXERCISE_REPOSITORY_TOKEN,

@@ -34,6 +34,7 @@ export class Exercise {
     public readonly durationMinutes?: number,
     public readonly intensity?: Intensity,
     public readonly muscleZone?: MuscleZone,
+    public readonly createdBy?: string,
     public readonly createdAt?: Date,
     public readonly updatedAt?: Date,
   ) {}
@@ -72,6 +73,20 @@ export class Exercise {
       return `${hours}h${minutes > 0 ? ` ${minutes}min` : ''}`;
     }
     return `${minutes}min`;
+  }
+
+  /**
+   * Vérifie si l'exercice a été créé par un utilisateur
+   */
+  isUserCreated(): boolean {
+    return this.createdBy !== null && this.createdBy !== undefined;
+  }
+
+  /**
+   * Vérifie si l'exercice a été créé par un utilisateur spécifique
+   */
+  isCreatedBy(userId: string): boolean {
+    return this.createdBy === userId;
   }
 }
 

@@ -25,6 +25,7 @@ import { AddToFavoritesUseCase } from '../application/use-cases/add-to-favorites
 import { RemoveFromFavoritesUseCase } from '../application/use-cases/remove-from-favorites.use-case';
 import { GetFavoriteExercisesUseCase } from '../application/use-cases/get-favorite-exercises.use-case';
 import { RateExerciseUseCase } from '../application/use-cases/rate-exercise.use-case';
+import { CreateExerciseUseCase } from '../application/use-cases/create-exercise.use-case';
 import {
   ExerciseQueryDto,
   ExerciseListResponseDto,
@@ -33,6 +34,8 @@ import {
   FavoriteExercisesResponseDto,
   RateExerciseDto,
   RateExerciseResponseDto,
+  CreateExerciseDto,
+  CreateExerciseResponseDto,
 } from './dto/exercise.dto';
 import { CyclePhase } from '../../cycle/domain/cycle.entity';
 import { Intensity, MuscleZone } from '../domain/exercise.entity';
@@ -48,6 +51,7 @@ export class ExerciseController {
     private readonly removeFromFavoritesUseCase: RemoveFromFavoritesUseCase,
     private readonly getFavoriteExercisesUseCase: GetFavoriteExercisesUseCase,
     private readonly rateExerciseUseCase: RateExerciseUseCase,
+    private readonly createExerciseUseCase: CreateExerciseUseCase,
   ) {}
 
   @Get()
@@ -124,6 +128,79 @@ export class ExerciseController {
         error instanceof Error
           ? error.message
           : 'Erreur lors de la récupération des exercices';
+      throw new HttpException(message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Post()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Créer un nouvel exercice',
+    description:
+      'Permet à un utilisateur authentifié de créer un exercice personnalisé',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Exercice créé avec succès',
+    type: CreateExerciseResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: "Données invalides pour la création de l'exercice",
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Non autorisé - token JWT requis',
+  })
+  async createExercise(
+    @Body() createExerciseDto: CreateExerciseDto,
+    @Request() req: { user: { sub: string } },
+  ): Promise<CreateExerciseResponseDto> {
+    try {
+      const exercise = await this.createExerciseUseCase.execute({
+        userId: req.user.sub,
+        title: createExerciseDto.title,
+        description: createExerciseDto.description,
+        imageUrl: createExerciseDto.imageUrl,
+        durationMinutes: createExerciseDto.durationMinutes,
+        intensity: createExerciseDto.intensity,
+        muscleZone: createExerciseDto.muscleZone,
+      });
+
+      // Map domain entity to DTO
+      const exerciseDto = {
+        id: exercise.id,
+        title: exercise.title,
+        description: exercise.description,
+        imageUrl: exercise.imageUrl,
+        duration: exercise.durationMinutes,
+        formattedDuration: exercise.durationMinutes
+          ? `${exercise.durationMinutes} min`
+          : 'Variable',
+        intensity: exercise.intensity,
+        intensityLabel: this.getIntensityLabel(exercise.intensity),
+        muscleZone: exercise.muscleZone,
+        muscleZoneLabel: this.getMuscleZoneLabel(exercise.muscleZone),
+        isFavorite: false, // Newly created exercise is not in favorites by default
+        averageRating: 0, // No ratings yet
+        totalRatings: 0, // No ratings yet
+        userRating: undefined, // User hasn't rated it yet
+        createdAt:
+          exercise.createdAt?.toISOString() || new Date().toISOString(),
+        updatedAt:
+          exercise.updatedAt?.toISOString() || new Date().toISOString(),
+      };
+
+      return {
+        exercise: exerciseDto,
+        message: 'Exercice créé avec succès',
+      };
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Erreur lors de la création de l'exercice";
       throw new HttpException(message, HttpStatus.BAD_REQUEST);
     }
   }

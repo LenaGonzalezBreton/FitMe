@@ -5,6 +5,8 @@ import {
   Min,
   Max,
   IsString,
+  IsNotEmpty,
+  IsUrl,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -462,4 +464,72 @@ export class RateExerciseResponseDto {
     example: 4.3,
   })
   newAverageRating: number;
+}
+
+export class CreateExerciseDto {
+  @ApiProperty({
+    description: "Titre de l'exercice",
+    example: 'Pompes modifiées',
+  })
+  @IsString()
+  @IsNotEmpty()
+  title: string;
+
+  @ApiPropertyOptional({
+    description: "Description détaillée de l'exercice",
+    example: 'Pompes adaptées pour les débutants, genoux au sol',
+  })
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @ApiPropertyOptional({
+    description: "URL de l'image de démonstration",
+    example: 'https://example.com/images/pompes-modifiees.jpg',
+  })
+  @IsOptional()
+  @IsUrl()
+  imageUrl?: string;
+
+  @ApiPropertyOptional({
+    description: "Durée de l'exercice en minutes",
+    example: 15,
+  })
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Type(() => Number)
+  durationMinutes?: number;
+
+  @ApiPropertyOptional({
+    description: "Niveau d'intensité de l'exercice",
+    enum: Intensity,
+    example: Intensity.MODERATE,
+  })
+  @IsOptional()
+  @IsEnum(Intensity)
+  intensity?: Intensity;
+
+  @ApiPropertyOptional({
+    description: 'Zone musculaire ciblée',
+    enum: MuscleZone,
+    example: MuscleZone.UPPER_BODY,
+  })
+  @IsOptional()
+  @IsEnum(MuscleZone)
+  muscleZone?: MuscleZone;
+}
+
+export class CreateExerciseResponseDto {
+  @ApiProperty({
+    description: 'Exercice créé avec succès',
+    type: ExerciseDetailsDto,
+  })
+  exercise: ExerciseDetailsDto;
+
+  @ApiProperty({
+    description: 'Message de confirmation',
+    example: 'Exercice créé avec succès',
+  })
+  message: string;
 }
