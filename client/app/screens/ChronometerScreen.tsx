@@ -60,6 +60,7 @@ const ChronometerScreen = () => {
           </TouchableOpacity>
         </View>
       </SafeAreaView>
+
   );
 };
 

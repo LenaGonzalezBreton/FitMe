@@ -23,7 +23,7 @@ const WorkoutSessionScreen = () => {
   };
 
   const renderItem = ({ item }: { item: Exercise }) => (
-    <View className="bg-brand-dark-surface rounded-xl p-4 mb-4 flex-row items-center justify-between">
+    <View className="bg-surface border border-border rounded-xl p-4 mb-4 flex-row items-center justify-between">
       <View className="flex-row items-center">
         <Image
           source={require('../../assets/logo.png')}
@@ -31,23 +31,23 @@ const WorkoutSessionScreen = () => {
           resizeMode="contain"
         />
         <View>
-          <Text className="text-brand-dark-text font-semibold">{item.name}</Text>
-          <Text className="text-brand-dark-secondary">{item.details}</Text>
+          <Text className="text-brand-text font-semibold">{item.name}</Text>
+          <Text className="text-text-secondary">{item.details}</Text>
         </View>
       </View>
       <TouchableOpacity
         onPress={() => toggleCheck(item.id)}
-        className={`w-8 h-8 rounded-lg border-2 ${checked[item.id] ? 'bg-brand-text border-brand-text' : 'border-brand-dark-secondary'
+        className={`w-8 h-8 rounded-lg border-2 ${checked[item.id] ? 'bg-primary-500 border-primary-500' : 'border-border'
           }`}
       />
     </View>
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-brand-dark-bg">
+    <SafeAreaView className="flex-1 bg-brand-background">
       <View className="pt-16 px-6 flex-1">
-        <Text className="text-brand-dark-text text-center text-xl font-bold">Bonjour User !</Text>
-        <Text className="text-brand-dark-secondary text-center text-base mt-2 mb-8">
+        <Text className="text-brand-text text-center text-xl font-bold">Bonjour User !</Text>
+        <Text className="text-text-secondary text-center text-base mt-2 mb-8">
           Séance du jour : Push - Hypertrophie - 5 exos - ~45min
         </Text>
         <FlatList
@@ -57,9 +57,9 @@ const WorkoutSessionScreen = () => {
           showsVerticalScrollIndicator={false}
         />
         <TouchableOpacity
-          className="bg-brand-dark-brown-btn py-4 rounded-xl mt-4"
+          className="bg-primary-500 py-4 rounded-xl mt-4"
         >
-          <Text className="text-brand-dark-text text-center font-bold text-lg">
+          <Text className="text-white text-center font-bold text-lg">
             Démarrer la séance
           </Text>
         </TouchableOpacity>

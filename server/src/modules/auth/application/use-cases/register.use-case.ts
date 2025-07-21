@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, ConflictException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import {
   IUserRepository,
@@ -34,28 +34,30 @@ export class RegisterUseCase {
   ) {}
 
   async execute(request: RegisterRequest): Promise<RegisterResponse> {
+    const { email, password, firstName, profileType, contextType } = request;
+    
     // Vérifier si l'utilisateur existe déjà
-    const existingUser = await this.userRepository.findByEmail(request.email);
+    const existingUser = await this.userRepository.findByEmail(email);
     if (existingUser) {
-      throw new Error('Un utilisateur avec cet email existe déjà');
+      throw new ConflictException('Un utilisateur avec cet email existe déjà.');
     }
 
     // Valider le mot de passe
-    if (!request.password || request.password.length < 8) {
-      throw new Error('Le mot de passe doit contenir au moins 8 caractères');
+    if (!password || password.length < 8) {
+      throw new Error('Le mot de passe doit contenir au moins 8 caractères.');
     }
-
+    
     // Hasher le mot de passe
     const saltRounds = 12;
-    const passwordHash = await bcrypt.hash(request.password, saltRounds);
+    const passwordHash = await bcrypt.hash(password, saltRounds);
 
     // Créer les données utilisateur
     const userData: CreateUserData = {
-      email: request.email.toLowerCase().trim(),
+      email: email.toLowerCase().trim(),
       passwordHash,
-      firstName: request.firstName?.trim(),
-      profileType: (request.profileType as ProfileType) || ProfileType.FEMALE,
-      contextType: (request.contextType as ContextType) || ContextType.CYCLE,
+      firstName: firstName?.trim(),
+      profileType: (profileType as ProfileType) || ProfileType.FEMALE,
+      contextType: (contextType as ContextType) || ContextType.CYCLE,
     };
 
     // Créer l'utilisateur

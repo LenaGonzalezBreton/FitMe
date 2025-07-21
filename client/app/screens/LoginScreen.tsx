@@ -9,8 +9,12 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
+import { useAuth } from '../context/AuthContext';
 import { NavigationProp } from '@react-navigation/native';
+import api from '../utils/api';
 
 interface LoginScreenProps {
   navigation: NavigationProp<any, any>;
@@ -19,6 +23,30 @@ interface LoginScreenProps {
 const LoginScreen = ({ navigation }: LoginScreenProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const { login } = useAuth();
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Erreur', 'Veuillez remplir tous les champs.');
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const response = await api.post('/auth/login', {
+        email: email.toLowerCase().trim(),
+        password,
+      });
+
+      const { user, tokens } = response.data;
+      await login(user, tokens.accessToken);
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Une erreur est survenue.';
+      Alert.alert("Erreur de connexion", message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-brand-background">
@@ -60,16 +88,26 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
 
             <TouchableOpacity
               className="bg-surface mt-8 py-4 rounded-xl"
-              onPress={() =>
-                navigation.reset({
-                  index: 0,
-                  routes: [{ name: 'Main' }],
-                })
-              }
+              onPress={handleLogin}
+              disabled={isLoading}
             >
-              <Text className="text-brand-text text-center font-bold text-lg">
-                Poussez !
-              </Text>
+              {isLoading ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <Text className="text-brand-text text-center font-bold text-lg">
+                  Poussez !
+                </Text>
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+                className="mt-4"
+                onPress={() => navigation.navigate('Register')}
+                disabled={isLoading}
+            >
+                <Text className="text-brand-text text-center underline">
+                    Pas de compte ? Créez-en un !
+                </Text>
             </TouchableOpacity>
           </View>
 

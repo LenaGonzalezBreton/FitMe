@@ -4,13 +4,13 @@
     "/status-json": {
       "get": {
         "operationId": "StatusController_getAppStatusJson",
+        "summary": "Get application status in JSON format",
         "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "summary": "Get application status in JSON format",
         "tags": [
           "Status"
         ]
@@ -33,6 +33,7 @@
     "/auth/register": {
       "post": {
         "operationId": "AuthController_register",
+        "summary": "Inscription d'un nouvel utilisateur",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -59,7 +60,6 @@
             "description": "Erreur de validation ou utilisateur existant"
           }
         },
-        "summary": "Inscription d'un nouvel utilisateur",
         "tags": [
           "Auth"
         ]
@@ -68,6 +68,7 @@
     "/auth/login": {
       "post": {
         "operationId": "AuthController_login",
+        "summary": "Connexion utilisateur",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -94,7 +95,6 @@
             "description": "Identifiants invalides"
           }
         },
-        "summary": "Connexion utilisateur",
         "tags": [
           "Auth"
         ]
@@ -103,6 +103,7 @@
     "/auth/refresh": {
       "post": {
         "operationId": "AuthController_refresh",
+        "summary": "Rafraîchissement du token d'accès",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -129,7 +130,6 @@
             "description": "Token de rafraîchissement invalide ou expiré"
           }
         },
-        "summary": "Rafraîchissement du token d'accès",
         "tags": [
           "Auth"
         ]
@@ -138,13 +138,13 @@
     "/auth/profile": {
       "get": {
         "operationId": "AuthController_getProfile",
+        "summary": "Récupérer le profil de l'utilisateur connecté",
         "parameters": [],
         "responses": {
           "200": {
             "description": "Profil utilisateur retourné"
           }
         },
-        "summary": "Récupérer le profil de l'utilisateur connecté",
         "tags": [
           "Auth"
         ]
@@ -153,13 +153,13 @@
     "/auth/test-public": {
       "get": {
         "operationId": "AuthController_testPublic",
+        "summary": "Route de test publique (aucune authentification requise)",
         "parameters": [],
         "responses": {
           "200": {
             "description": "Réponse publique"
           }
         },
-        "summary": "Route de test publique (aucune authentification requise)",
         "tags": [
           "Auth"
         ]
@@ -245,8 +245,7 @@
                 "type": "number",
                 "example": 900
               }
-            },
-            "required": []
+            }
           },
           "user": {
             "type": "object",
@@ -271,8 +270,7 @@
                 "type": "string",
                 "example": "CYCLE"
               }
-            },
-            "required": []
+            }
           }
         },
         "required": [
@@ -330,8 +328,7 @@
                 "type": "number",
                 "example": 900
               }
-            },
-            "required": []
+            }
           }
         },
         "required": [

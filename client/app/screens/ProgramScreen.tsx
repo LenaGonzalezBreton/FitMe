@@ -193,8 +193,8 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
               {/* Program Header */}
               <View className="flex-row items-start justify-between mb-3">
                 <View className="flex-1">
-                  <View className="bg-brand-dark-brown-btn self-start px-3 py-1 rounded-full mb-2">
-                    <Text className="text-xs font-bold text-white uppercase tracking-wider">{program.objective}</Text>
+                  <View className="bg-primary-100 self-start px-3 py-1 rounded-full mb-2">
+                    <Text className="text-xs font-bold text-primary-700 uppercase tracking-wider">{program.objective}</Text>
                   </View>
                   <Text className="text-xl font-bold text-brand-dark-bg mb-1">
                     {program.title}

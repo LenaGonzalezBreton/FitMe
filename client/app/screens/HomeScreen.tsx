@@ -12,10 +12,10 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
   const nextWorkout = 'Squats + Cardio';
 
   const cyclePhases = [
-    { name: 'Menstruelle', current: false, color: 'bg-brand-dark-secondary' },
-    { name: 'Folliculaire', current: true, color: 'bg-primary-400' },
-    { name: 'Ovulatoire', current: false, color: 'bg-brand-dark-secondary' },
-    { name: 'Lutéale', current: false, color: 'bg-brand-dark-secondary' },
+    { name: 'Menstruelle', current: false, color: 'bg-border' },
+    { name: 'Folliculaire', current: true, color: 'bg-primary-500' },
+    { name: 'Ovulatoire', current: false, color: 'bg-border' },
+    { name: 'Lutéale', current: false, color: 'bg-border' },
   ];
 
   return (
@@ -55,7 +55,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
             <View className="flex-row space-x-2">
               {cyclePhases.map((phase: { name: string; current: boolean; color: string }) => (
                 <View key={phase.name} className="flex-1 h-2 rounded-full">
-                  <View className={`h-full rounded-full ${phase.current ? phase.color : 'bg-brand-dark-secondary'}`} />
+                  <View className={`h-full rounded-full ${phase.color}`} />
                 </View>
               ))}
             </View>
@@ -66,7 +66,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
         <View className="mb-6">
           <Text className="text-lg font-semibold text-brand-dark-bg mb-3">Prochain entraînement</Text>
           <TouchableOpacity 
-            className="bg-brand-dark-brown-btn rounded-xl p-6"
+            className="bg-primary-500 rounded-xl p-6"
             onPress={() => navigation.navigate('WorkoutSession')}
           >
             <View className="flex-row items-center justify-between">
@@ -80,7 +80,6 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
             </View>
           </TouchableOpacity>
         </View>
-
       </ScrollView>
     </SafeAreaView>
   );

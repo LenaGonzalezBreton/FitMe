@@ -63,7 +63,7 @@ const CreateProgramScreen = () => {
           <TextInput
             className="bg-white border border-brand-dark-secondary p-4 rounded-xl text-lg text-brand-dark-bg"
             placeholder="Mon super programme"
-            placeholderTextColor="#8E8E93"
+            placeholderTextColor="#A99985"
             value={programTitle}
             onChangeText={setProgramTitle}
           />
@@ -124,7 +124,7 @@ const CreateProgramScreen = () => {
                     {day}
                   </Text>
                   <Text className={`text-sm ${
-                    isDaySelected(day) ? 'text-primary-200' : 'text-brand-dark-secondary'
+                    isDaySelected(day) ? 'text-primary-200' : 'text-text-secondary'
                   }`}>
                     {isDaySelected(day) ? 'Séance prévue' : 'Jour de repos'}
                   </Text>
@@ -147,6 +147,7 @@ const CreateProgramScreen = () => {
               <View className="flex-row">
                 <Text className="text-brand-dark-secondary w-20">Titre:</Text>
                 <Text className="text-brand-dark-bg font-medium flex-1">
+
                   {programTitle || 'Non défini'}
                 </Text>
               </View>

@@ -7,6 +7,9 @@ import { getTypeOrmConfig } from './config/postgres.config';
 import { getRedisConfig } from './config/redis.config';
 import { StatusModule } from './modules/status/status.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { CycleModule } from './modules/cycle/cycle.module';
+import { ExerciseModule } from './modules/exercise/exercise.module';
+import { ProgramModule } from './modules/program/program.module';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { CoreModule } from './core/core.module';
 
@@ -30,6 +33,9 @@ import { CoreModule } from './core/core.module';
     }),
     StatusModule,
     AuthModule,
+    CycleModule,
+    ExerciseModule,
+    ProgramModule,
     CoreModule,
   ],
   controllers: [],

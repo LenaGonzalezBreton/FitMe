@@ -3,7 +3,7 @@ import * as os from 'os';
 import { PrismaService } from '../../core/prisma.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { Prisma } from 'generated/prisma';
+import { Prisma } from '@prisma/client';
 
 type DbVersion = { version: string };
 
