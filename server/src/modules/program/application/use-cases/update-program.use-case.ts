@@ -54,7 +54,14 @@ export class UpdateProgramUseCase {
     }
 
     // Prepare update data
-    const updateData: Partial<Program> = {};
+    const updateData: Partial<{
+      title?: string;
+      goal?: string;
+      startDate?: Date;
+      endDate?: Date;
+      isActive?: boolean;
+      isTemplate?: boolean;
+    }> = {};
 
     if (request.title !== undefined) updateData.title = request.title;
     if (request.goal !== undefined) updateData.goal = request.goal;

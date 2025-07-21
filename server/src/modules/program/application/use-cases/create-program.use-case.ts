@@ -1,5 +1,5 @@
 import { Injectable, Inject, ConflictException } from '@nestjs/common';
-import { Program } from '../../domain/program.entity';
+import { Program, ProgramExercise } from '../../domain/program.entity';
 import { IProgramRepository } from '../../domain/program.repository';
 import { PROGRAM_REPOSITORY_TOKEN } from '../../tokens';
 
@@ -46,15 +46,17 @@ export class CreateProgramUseCase {
       startDate: request.startDate,
       endDate: request.endDate,
       isTemplate: request.isTemplate,
-      exercises: request.exercises?.map((exercise) => ({
-        exerciseId: exercise.exerciseId,
-        order: exercise.order,
-        sets: exercise.sets,
-        reps: exercise.reps,
-        duration: exercise.duration,
-        restTime: exercise.restTime,
-        notes: exercise.notes,
-      })),
+      exercises: request.exercises?.map((exercise) =>
+        ProgramExercise.create({
+          exerciseId: exercise.exerciseId,
+          order: exercise.order,
+          sets: exercise.sets,
+          reps: exercise.reps,
+          duration: exercise.duration,
+          restTime: exercise.restTime,
+          notes: exercise.notes,
+        }),
+      ),
     });
 
     // Save to repository

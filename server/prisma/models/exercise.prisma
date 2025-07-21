@@ -14,9 +14,11 @@ model Exercise {
   updatedAt       DateTime  @updatedAt @map("updated_at")
 
   // Relations
-  exerciseTags    ExerciseTag[]
-  phaseExercises  PhaseExercise[]
+  exerciseTags     ExerciseTag[]
+  phaseExercises   PhaseExercise[]
   programExercises ProgramExercise[]
+  favoriteExercises FavoriteExercise[]
+  ratings          ExerciseRating[]
 
   @@map("exercise")
 }
@@ -109,4 +111,40 @@ model ProgramExercise {
   @@index([programId])
   @@index([order])
   @@map("program_exercise")
+}
+
+model FavoriteExercise {
+  id         String   @id @default(cuid())
+  userId     String   @map("user_id")
+  exerciseId String   @map("exercise_id")
+  
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, exerciseId])
+  @@index([userId])
+  @@map("favorite_exercise")
+}
+
+model ExerciseRating {
+  id         String   @id @default(cuid())
+  userId     String   @map("user_id")
+  exerciseId String   @map("exercise_id")
+  rating     Int      // 1-5 stars
+  comment    String?  @db.Text
+  
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, exerciseId])
+  @@index([userId])
+  @@index([exerciseId])
+  @@map("exercise_rating")
 } 

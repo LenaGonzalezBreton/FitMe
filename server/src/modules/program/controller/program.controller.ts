@@ -192,7 +192,9 @@ export class ProgramController {
       });
 
       return {
-        programs: result.programs.map(this.mapProgramToResponse),
+        programs: result.programs.map((program) =>
+          this.mapProgramToResponse(program),
+        ),
         total: result.total,
         offset: result.offset,
         limit: result.limit,
