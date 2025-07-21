@@ -68,6 +68,150 @@ const sidebar: SidebarsConfig = {
         },
       ],
     },
+    {
+      type: "category",
+      label: "Cycle",
+      link: {
+        type: "doc",
+        id: "api/cycle",
+      },
+      items: [
+        {
+          type: "doc",
+          id: "api/cycle-controller-get-current-phase",
+          label: "Récupérer la phase actuelle du cycle",
+          className: "api-method get",
+        },
+      ],
+    },
+    {
+      type: "category",
+      label: "Exercises",
+      link: {
+        type: "doc",
+        id: "api/exercises",
+      },
+      items: [
+        {
+          type: "doc",
+          id: "api/exercise-controller-get-exercises",
+          label: "Récupérer les exercices par phase de cycle",
+          className: "api-method get",
+        },
+        {
+          type: "doc",
+          id: "api/exercise-controller-get-favorite-exercises",
+          label: "Récupérer la liste des exercices favoris",
+          className: "api-method get",
+        },
+        {
+          type: "doc",
+          id: "api/exercise-controller-get-exercise-details",
+          label: "Récupérer les détails complets d'un exercice",
+          className: "api-method get",
+        },
+        {
+          type: "doc",
+          id: "api/exercise-controller-add-to-favorites",
+          label: "Ajouter un exercice aux favoris",
+          className: "api-method post",
+        },
+        {
+          type: "doc",
+          id: "api/exercise-controller-remove-from-favorites",
+          label: "Retirer un exercice des favoris",
+          className: "api-method delete",
+        },
+        {
+          type: "doc",
+          id: "api/exercise-controller-rate-exercise",
+          label: "Noter un exercice",
+          className: "api-method post",
+        },
+      ],
+    },
+    {
+      type: "category",
+      label: "Programs",
+      link: {
+        type: "doc",
+        id: "api/programs",
+      },
+      items: [
+        {
+          type: "doc",
+          id: "api/program-controller-generate-program",
+          label: "Générer un programme d'entraînement adapté à la phase de cycle",
+          className: "api-method post",
+        },
+        {
+          type: "doc",
+          id: "api/program-controller-create-program",
+          label: "Créer un nouveau programme",
+          className: "api-method post",
+        },
+        {
+          type: "doc",
+          id: "api/program-controller-get-user-programs",
+          label: "Récupérer les programmes de l'utilisateur",
+          className: "api-method get",
+        },
+        {
+          type: "doc",
+          id: "api/program-controller-get-program-by-id",
+          label: "Récupérer un programme par ID",
+          className: "api-method get",
+        },
+        {
+          type: "doc",
+          id: "api/program-controller-update-program",
+          label: "Mettre à jour un programme",
+          className: "api-method put",
+        },
+        {
+          type: "doc",
+          id: "api/program-controller-delete-program",
+          label: "Supprimer un programme",
+          className: "api-method delete",
+        },
+        {
+          type: "doc",
+          id: "api/program-controller-start-program",
+          label: "Démarrer un programme",
+          className: "api-method post",
+        },
+        {
+          type: "doc",
+          id: "api/program-controller-pause-program",
+          label: "Mettre en pause un programme",
+          className: "api-method put",
+        },
+        {
+          type: "doc",
+          id: "api/program-controller-resume-program",
+          label: "Reprendre un programme",
+          className: "api-method put",
+        },
+        {
+          type: "doc",
+          id: "api/program-controller-complete-program",
+          label: "Marquer un programme comme terminé",
+          className: "api-method put",
+        },
+        {
+          type: "doc",
+          id: "api/program-controller-get-program-status",
+          label: "Récupérer le statut d'un programme",
+          className: "api-method get",
+        },
+        {
+          type: "doc",
+          id: "api/program-controller-get-program-progress",
+          label: "Récupérer la progression d'un programme",
+          className: "api-method get",
+        },
+      ],
+    },
   ],
 };
 

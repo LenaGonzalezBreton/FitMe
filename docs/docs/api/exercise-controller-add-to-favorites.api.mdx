@@ -1,0 +1,69 @@
+---
+id: exercise-controller-add-to-favorites
+title: "Ajouter un exercice aux favoris"
+description: "Marque un exercice comme favori pour l'utilisateur connecté"
+sidebar_label: "Ajouter un exercice aux favoris"
+hide_title: true
+hide_table_of_contents: true
+api: eJylVdtu20YQ/ZXFvDgF6IhynLThm9DEgAOkNRIVASoIwWp3ZK1D7tK7s4IFgv+Sx+o7+GPFLGldIsMt2idRy52ZM3POGTbgavSSjLPXGgp4/4BemYC/OkvelSX6r1LrqbuSa+cNYYAMNAblTc0xUMBH6e8jimgFpliFQrmqQrFMIaJ20YvyLJIpTZCE0QvlrEVF3RYyqKWXFRL6AMWsASsrhAKMhgw83kfjUUNBPmIGhsvVklYnGK41WjJLIy2JaA3j0SjKsx2i7ruQdy4SeiHjwwCNewlqhZWEogF8kFVdcnFVrsYXry5fv/n5l7eQAW1qPg3kjb2Ftp0zslA7GzBw4EU+5p9jRO8fK6ey3fawrJBrVCJEpbq/GINyltASJ5F1XRqV6BjdBc7UHEAckLjFHSri2Xkmj0yPo8IQ5C0eXBwgnzDWX+QRKWeXxlepIGQHM/j3+NsMpNaoJ/TPld9JQqHPUs4fiNiXvsgvLs/z8fn49XScF6/yIs9f5nn+J7TtoSZmu4b3AOYZkKGUZXKk2k8DYe/IQdtyoss8f4I171mfpfOhF9Ap0hT6BOG/OStkJL7TbcW5IPcNrfjwZSoS5CHw8hmlWGcFeRfX3ba//PaZy7rb3nXfhZY2iBLDHl6bAclbNtPOy4HnElBFb2iTXLZA6dFDMZuzmiuklWPz1y4kWbHFChjhY/yoMbodLYdhsmvQr3vHHmT+zDrtpfiYfxAv8zEcZcPDlWPVQQEfvkz3HlsR1akFY5cuyWlg88rQRxSTm+tTSTkVK7SUJNyTNrm5Fn3AuZjsDcUvl4YshiAWMnRbFIHJRqE2qkRRoQ28aErIgLvr849f5oNFpWKFMzqeUyWTOYd9NRmWy+EWPNb3Eepm7/n/uz+HyRE+0KgupbGsnehLLtITOYMdkZBBkVbrjst5BitmvZhB0yxkwD982bZ8fB/Rb3qG19IbuWAiZg1oE/hZQ7GUZcBnOnvxaTDrT+K/L+gn+xsOpd0wV7KM/A8y+Iab/uPRztsMVih1UnkzvJgohTUdhJys2yM73Pz+mbUpI09xt9p+EHJK/ySepulvTHkTtO0OXtoMjLBt/wbqnp1c
+sidebar_class_name: "post api-method"
+info_path: docs/api/fitme-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Ajouter un exercice aux favoris"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/exercises/{id}/favorite"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Marque un exercice comme favori pour l'utilisateur connecté
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Identifiant unique de l'exercice à ajouter aux favoris","schema":{"example":"clh123456789","type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  responses={{"201":{"description":"Exercice ajouté aux favoris avec succès","content":{"application/json":{"schema":{"type":"object","properties":{"message":{"type":"string","description":"Message de confirmation","example":"Exercice ajouté aux favoris avec succès"},"addedAt":{"type":"string","description":"Date d'ajout aux favoris","example":"2024-01-15T10:30:00.000Z"}},"required":["message","addedAt"],"title":"AddToFavoritesResponseDto"}}}},"400":{"description":"Erreur lors de l'ajout aux favoris"},"401":{"description":"Non autorisé - token JWT requis"},"404":{"description":"Exercice non trouvé"},"409":{"description":"Exercice déjà dans les favoris"}}}
+ id="exercise-controller-add-to-favorites-responses">
+  
+</StatusCodes>
+
+
+      

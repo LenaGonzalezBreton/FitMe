@@ -1,0 +1,69 @@
+---
+id: exercise-controller-get-exercise-details
+title: "Récupérer les détails complets d'un exercice"
+description: "Retourne les détails d'un exercice spécifique avec moyennes de notation et informations détaillées"
+sidebar_label: "Récupérer les détails complets d'un exercice"
+hide_title: true
+hide_table_of_contents: true
+api: eJy9V9tSGzkQ/RWVXtitGrBNINn1m4lN4i0HKAc2m1AUJUttEDsjDbq48Lrmezb+jvmxrZbG9tgmhrzsC4w0091Hp7vVxzOqczDMSa36grZp7wkMlxbea+WMTlMwt3fgFrtdcEymliZUgOVG5mhH23QITnujgKRgiSjn4Ssi9rwiEEw5EJuXcy7H8tEDYRPgJNNTUAoNgCjtAgYCjkg11iYLy6WztJwDhs2ZYRk4MJa2r2dUsQxom0pBE2rg0UsDgrad8ZBQicBy5u630PYFKCfHkilHvAqABJB0bwGVJtTye8gYbc8oPLEsTzEKT+9bh2+Ojt++++13mlA3zXHXOiPVHS2KG4Rgc60sWDQ8bDbx33ro7pKbekBiIn/l3EZqrOe8/I4H5lo5UA49sTxPJQ+8NB4supvVcFZw9OgBuEOmDCbWyQgGqgTuQMQ1ntPZLS5Ymp6PA927Y0hRw1HRsov6zTgrpuEJbldUFwl10qXwsvczne3w+vnRM2cJ8yTXUlgiPOHa5BYDrPl5KUx3tarX547QvUWiBeYa65tDBsqRXHsTmuaBZSOwWP64GoO1Eou8SKjM2B1cmfRlXFfDQcQQTHbAuXcut+1GYyxdBvsszw+4zhrByjYWpWIbNhB28JDfBYp8vCY+SeVdzHgFR/lsBGabJm+QFQNcZxlTAhegSFbZ1wC1jouExqZ3ILpVoFckIkaIluV8/ZCt40yqQCB2kJVu+pxDUD6j7Wv6Z2/49XZw/oUmNP79dN7tDTuXPZrQj/0PH2kSPwnPN1uFJyfAPBF7i1jlfA3L0lkdzoCN4BVZDZ+tuUYWx4ap8l8m7XocLco5coKBMm95Ct+0erZzFge/urjoDW9Pzrtf49FXi/fnQzz96dVgsNzqDLv9c9wc9P7qn/QH/UvcPukMOmfve9u8YHCCOHzKpAHiDJtU3bKGuxZ3DfjPUQTkn414PyTqhK33v7SnbKKNdHWuRlqnwNT2JaZEGBpW1u9wsI4Ipmxs4OBtLSZOpSKhbAKG3cGQOTzJi010ph0sJuWPO/ro4A3ektqxNDp+RXue6WyEKUEjIvbK+YSlPk7dtd48fFck1FswPwVZaKWwN3NmSLrnnUylZQ68IYw7D2k9BHY/N8AciI57RdczF6jgppzHi6Ke2cPm4dF+s7XfOr5sNdtvmu1m86DZbH7DLPtc/GwQAUbJ8rvBJAg5rubvKyMWdVVyHWVKHGXPXXdbV8N2J6wV6mYtbRRAndP60W+W45RuyLqu07S42US9lA4/NhxWuic4KNDBUfNoW2osp6DSijij/aScB5Icw4K9Xrq1GCsDd69Rkt5B0Bqo5Nq0Np5mUhQo1cBMoh68wQX3RrrpZ9RFcUiNgBkwS7EUGjtuJdXDaUgFbdM/vlyuhB0OyYAO9WgomOrwp9J9AtK56G8XjeYex3qUsqFbOxd9Eg32SWcl4PDlWDoF1pIRs9gpNigBwqc8BZKBsnhhYMrxdNF/66BZSULGsYYRXa6ty1gYlpUaHpZz7vNybsCs6/GVwqsL881TzFaa8//T9RXnDp5cI09ZHNw+ip6Y+VUh4vdtKbBG7rV1+Go2GzGLIqkocPvRg5nGgpgwI9kI83Y9o0JafBa0PWaphR0H/2VYdcCv5BW/Fp5FX20yNcUcstTjiib0b5jGnyzFTZHQe2ACq/N6Vr3ocA65q5lsyf6i3hwfepe0KP4D5bjQtg==
+sidebar_class_name: "get api-method"
+info_path: docs/api/fitme-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Récupérer les détails complets d'un exercice"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/exercises/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retourne les détails d'un exercice spécifique avec moyennes de notation et informations détaillées
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Identifiant unique de l'exercice","schema":{"example":"clh123456789","type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  responses={{"200":{"description":"Détails de l'exercice retournés avec succès","content":{"application/json":{"schema":{"type":"object","properties":{"exercise":{"description":"Détails complets de l'exercice","allOf":[{"type":"object","properties":{"id":{"type":"string","description":"Identifiant de l'exercice","example":"exe_123456789"},"title":{"type":"string","description":"Nom de l'exercice","example":"Squats au poids du corps"},"description":{"type":"string","description":"Description détaillée de l'exercice","example":"Exercice de renforcement pour les jambes et les fessiers"},"imageUrl":{"type":"string","description":"URL de l'image de l'exercice","example":"https://fitme-app.com/images/exercises/squats.jpg"},"durationMinutes":{"type":"number","description":"Durée recommandée en minutes","example":15},"formattedDuration":{"type":"string","description":"Durée formatée","example":"15min"},"intensity":{"type":"string","enum":["VERY_LOW","LOW","MODERATE","HIGH","VERY_HIGH"],"description":"Niveau d'intensité","example":"MODERATE"},"intensityLabel":{"type":"string","description":"Label d'intensité en français","example":"Modérée"},"muscleZone":{"type":"string","enum":["UPPER_BODY","LOWER_BODY","CORE","FULL_BODY","CARDIO","FLEXIBILITY","BALANCE"],"description":"Zone musculaire travaillée","example":"LOWER_BODY"},"muscleZoneLabel":{"type":"string","description":"Label de zone musculaire en français","example":"Bas du corps"},"isFavorite":{"type":"boolean","description":"Indique si l'exercice est dans les favoris","example":true},"averageRating":{"type":"number","description":"Note moyenne de l'exercice","example":4.3},"totalRatings":{"type":"number","description":"Nombre total d'évaluations","example":127},"userRating":{"type":"number","description":"Note donnée par l'utilisateur actuel","example":5},"createdAt":{"type":"string","description":"Date de création","example":"2024-01-15T10:30:00.000Z"},"updatedAt":{"type":"string","description":"Date de dernière modification","example":"2024-01-15T10:30:00.000Z"}},"required":["id","title","formattedDuration","intensityLabel","muscleZoneLabel","isFavorite","averageRating","totalRatings","createdAt","updatedAt"],"title":"ExerciseDetailsDto"}]}},"required":["exercise"],"title":"ExerciseDetailsResponseDto"}}}},"404":{"description":"Exercice non trouvé"}}}
+ id="exercise-controller-get-exercise-details-responses">
+  
+</StatusCodes>
+
+
+      

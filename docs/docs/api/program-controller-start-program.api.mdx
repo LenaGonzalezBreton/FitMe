@@ -1,0 +1,69 @@
+---
+id: program-controller-start-program
+title: "Démarrer un programme"
+description: "Active un programme pour l'utilisateur. Désactive automatiquement les autres programmes actifs."
+sidebar_label: "Démarrer un programme"
+hide_title: true
+hide_table_of_contents: true
+api: eJy9V81uGzcQfpUBL0mAtb2SnTTRTY0awEXbGImLAHWMglqOJCZcckMOFQvCvkuO9XPoxYrh7kYry4mcHgoYsEXNzDf/83ktXIVeknb2XImRuPBu7mX50lnyzhj0fweSntpnkQmFofC6YgUxEuOC9BIhWqgaiRKhctGDeRRJGx0kYfTHMNncBtnIykiulKQ/RSzREhgM/OYxbG0EYOFZOBaZqKSXJRL6IEZXa2FliWIktBKZ8Pgpao9KjMhHzIRmlypJiz0/zyeg4ta+yEQoFlhKMVoLvJFlZdhoYRaD4enZ02c/PX8hMkGril8DeW3noq6vGTFUzgYMrDjMc/61i3TxNQ9qc1tK7ze3IJdYQIhFsfkniEwUzhJaYl1ZVUYXKf0nHwIbWPc8ax1w0w9YEKfCc7FIN/Ba9WRaJ+/G3XoD5xORfSvQOhOkid8faq0R7xt85YzRRTTSw8VCBoS35NHOaQGXXmqb8peJuZPmvrjuR0nSfZCfozYKQmdZRXYSZlvoiqEZKPXsRNIPxJRUQLFOH3OYD8+O8sHR4Ollno/Sz3Ge538xClp1B+NARGjVtxCG9yLo0AxYD2LqnEFp9zDeLZAW6IEW2PU56ABF9B4tmRU049eH5qFJIJdYVmY3ksMwOvRxJFBnpIcwkyYwROFREqoxHa7HSxbVzgLpEgPJsvpWPQb56HQnW7FSD0X5TQaCRv4/AOEN+kIHfOmi7YPZWE7R74H9kZ7BzaBTDKBtv1J95Oc9gLC/X37ZNdGrwmNnzQq0LUxUqPhrhSS1QQVLjZ+fbDea9F6uRCY0YRkOL5rOm/MHLJzOvXs2TrNuBsNTTqHzCv3h1L1mMc5cirRz5DvZG/D0I4UfqUqS79k4rXnRV+FwtFsbHiskzc8BHhfSwhTBSztHMPojwnvx/GgwfC+e7CRlkB8NnnI2VGxO8GGvJ60kpyBg4awKMHM+NfHRVAZU2ybbiSlPQQW61CUehnmDgZLNPs4U6TOi3cvXM7ZtHeEDMjZWKmVJGkgajfP94t65K0UM4CyLleCW6CFUiErUdf/8X/V7tGuu6693rVvAXXNOyIn6roXEKLrL1t6e7R3ZbvveVt7Znf0t199Fd9fFvltvWlLRulVn4iw/3Z/8ScMn5BzBOpt4lNdhcyuSwtn3qAjLk3dx2Um/OEBcPmy+NBQMXAS8qbRnTWYKcs48rJMOHE6JtHBMHisX0vZgBjYSJ+14hpO1VvVJyiXnFP2yIXPX/KGIXtPqLXOepn+mKH2zGhIRSseoecraP145X0oSI/Hru8vtUlsQVclFbWcuNWKb5VeafkcYX5zvD5MrInPQZqIUgnk0vjiHRuEIxltyxl/ONFkMAaYybG4RArNchGJVGIQSbeBzyk3D0TX2B8d5S/dkwXeCveMclTJNektl27qi36HRd51db2nj/8G626QS3tBJZaS26cD6RN+a+l6Jrr4iE6M0PU2JrzOx4EYYXYn1mlfSn97UNT9/iuhXTeGX0ms55fpcrYXSgf9WLWH4TuSP37QT+wT2Kf29Pncnz/LBW0oT+ZPIxEdcNf9G1Nd1JhYo0z26WrdfjIsCK+qp7DH1ut/5F6/fXoq6/hfF3JN5
+sidebar_class_name: "post api-method"
+info_path: docs/api/fitme-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Démarrer un programme"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/programs/{id}/start"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Active un programme pour l'utilisateur. Désactive automatiquement les autres programmes actifs.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"ID du programme","schema":{"example":"clh123456789","type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  responses={{"200":{"description":"Programme démarré avec succès","content":{"application/json":{"schema":{"type":"object","properties":{"id":{"type":"string","description":"Program ID","example":"clh123456789"},"title":{"type":"string","description":"Program title","example":"Follicular Phase Strength Training"},"goal":{"type":"object","description":"Program goal","example":"Build strength during follicular phase"},"startDate":{"type":"string","description":"Program start date","example":"2024-01-15T00:00:00.000Z"},"endDate":{"type":"object","description":"Program end date","example":"2024-02-15T00:00:00.000Z"},"isActive":{"type":"boolean","description":"Whether the program is currently active","example":true},"isTemplate":{"type":"boolean","description":"Whether this program is a template","example":false},"createdAt":{"type":"string","description":"Creation timestamp","example":"2024-01-15T10:30:00.000Z"},"updatedAt":{"type":"string","description":"Last update timestamp","example":"2024-01-15T10:30:00.000Z"},"exerciseCount":{"type":"number","description":"Number of exercises in the program","example":8},"exercises":{"description":"Exercises in this program (only included in detailed view)","type":"array","items":{"type":"object","properties":{"exerciseId":{"type":"string","description":"Exercise ID","example":"clh456789123"},"order":{"type":"number","description":"Order of this exercise in the program","example":1},"sets":{"type":"number","description":"Number of sets","example":3},"reps":{"type":"string","description":"Number of repetitions (can be range like \"8-12\")","example":"10-15"},"duration":{"type":"number","description":"Duration in seconds for time-based exercises","example":30},"restTime":{"type":"number","description":"Rest time in seconds between sets","example":60},"notes":{"type":"string","description":"Additional notes for this exercise","example":"Focus on form over speed"}},"required":["exerciseId","order"],"title":"ProgramExerciseDto"}}},"required":["id","title","goal","startDate","endDate","isActive","isTemplate","createdAt","updatedAt","exerciseCount"],"title":"ProgramResponseDto"}}}},"403":{"description":"Démarrage non autorisé"},"404":{"description":"Programme non trouvé"},"409":{"description":"Programme déjà actif ou expiré"}}}
+ id="program-controller-start-program-responses">
+  
+</StatusCodes>
+
+
+      
