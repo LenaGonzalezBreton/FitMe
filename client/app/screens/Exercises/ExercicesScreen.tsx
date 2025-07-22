@@ -1,18 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, SafeAreaView, TouchableOpacity, Image } from 'react-native';
-import Tag from '../components/Tag';
 import { useNavigation } from '@react-navigation/native';
-
-interface Exercise {
-  id: number;
-  title: string;
-  duration: string;
-  intensity: 'Très léger' | 'Léger' | 'Modéré' | 'Intense';
-  phase: string;
-  category: 'Cardio' | 'Strength 💪' | 'Flexibility' | 'Recovery';
-  description: string;
-  muscles: string[];
-}
+import { Exercise } from './types';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { AppStackParamList } from '../../types';
 
 const ExercicesScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -103,7 +94,10 @@ const ExercicesScreen = () => {
       default: return 'bg-text-tertiary text-black';
     }
   };
-  const navigation = useNavigation();
+
+  type ExercisesNavProp = NativeStackNavigationProp<AppStackParamList, 'Exercices'>;
+
+  const navigation = useNavigation<ExercisesNavProp>();
 
   return (
       <SafeAreaView className="flex-1 bg-brand-background">
@@ -165,7 +159,7 @@ const ExercicesScreen = () => {
                       onPress={() => navigation.navigate('ExerciseDetail', { exercise })}
                   >
                     <View className="items-center mb-3">
-                      <Image source={require('../../assets/logo.png')} className="w-24 h-24" resizeMode="contain" />
+                      <Image source={require('../../../assets/logo.png')} className="w-24 h-24" resizeMode="contain" />
                     </View>
                     <Text className="text-black font-bold text-center text-base mb-1">{exercise.title}</Text>
                     <Text className="text-brand-dark-secondary text-center text-sm">{exercise.duration}</Text>

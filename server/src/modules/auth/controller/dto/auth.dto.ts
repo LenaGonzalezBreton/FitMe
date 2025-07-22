@@ -1,5 +1,6 @@
-import { IsEmail, IsString, MinLength, IsOptional } from 'class-validator';
+import { IsEmail, IsString, MinLength, IsOptional, IsEnum, IsBoolean, IsInt, Min, Max } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { ObjectiveType, ExperienceLevel } from '../../domain/auth.repository';
 
 export class RegisterDto {
   @ApiProperty({
@@ -96,6 +97,8 @@ export class AuthResponseDto {
       firstName: { type: 'string', example: 'Jane' },
       profileType: { type: 'string', example: 'FEMALE' },
       contextType: { type: 'string', example: 'CYCLE' },
+      onboardingCompleted: { type: 'boolean', example: false },
+      experienceLevel: { type: 'string', example: 'INTERMEDIATE' },
     }),
     description: 'Informations utilisateur',
   })
@@ -105,6 +108,8 @@ export class AuthResponseDto {
     firstName?: string;
     profileType?: string;
     contextType?: string;
+    onboardingCompleted: boolean;
+    experienceLevel?: string;
   };
 }
 
@@ -122,4 +127,51 @@ export class TokenResponseDto {
     refreshToken: string;
     expiresIn: number;
   };
+}
+
+export class OnboardingDto {
+  @ApiProperty({
+    enum: ObjectiveType,
+    example: ObjectiveType.GENERAL_FITNESS,
+    description: "Objectif principal de l'utilisateur",
+  })
+  @IsEnum(ObjectiveType)
+  objective: ObjectiveType;
+
+  @ApiProperty({
+    enum: ExperienceLevel,
+    example: ExperienceLevel.INTERMEDIATE,
+    description: "Niveau d'expérience sportive de l'utilisateur",
+  })
+  @IsEnum(ExperienceLevel)
+  experienceLevel: ExperienceLevel;
+
+  @ApiProperty({
+    example: false,
+    description: "Indique si l'utilisatrice est en ménopause",
+  })
+  @IsBoolean()
+  isMenopausal: boolean;
+
+  @ApiProperty({
+    required: false,
+    example: 28,
+    description: 'Durée moyenne du cycle menstruel en jours',
+  })
+  @IsOptional()
+  @IsInt()
+  @Min(20)
+  @Max(45)
+  averageCycleLength?: number;
+
+  @ApiProperty({
+    required: false,
+    example: 5,
+    description: 'Durée moyenne des règles en jours',
+  })
+  @IsOptional()
+  @IsInt()
+  @Min(2)
+  @Max(10)
+  averagePeriodLength?: number;
 }

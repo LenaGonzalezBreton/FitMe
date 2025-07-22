@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
 // Core imports
 import { CoreModule } from '../../core/core.module';
+import { CycleModule } from '../cycle/cycle.module';
 
 // Domain
 // import { IUserRepository } from './domain/auth.repository';
@@ -13,6 +14,7 @@ import { CoreModule } from '../../core/core.module';
 import { RegisterUseCase } from './application/use-cases/register.use-case';
 import { LoginUseCase } from './application/use-cases/login.use-case';
 import { RefreshTokenUseCase } from './application/use-cases/refresh-token.use-case';
+import { CompleteOnboardingUseCase } from './application/use-cases/complete-onboarding.use-case';
 
 // Infrastructure
 import { PrismaUserRepository } from './infrastructure/prisma-user.repository';
@@ -35,6 +37,7 @@ import {
   imports: [
     CoreModule,
     ConfigModule,
+    CycleModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -54,6 +57,7 @@ import {
     RegisterUseCase,
     LoginUseCase,
     RefreshTokenUseCase,
+    CompleteOnboardingUseCase,
     {
       provide: USER_REPOSITORY_TOKEN,
       useClass: PrismaUserRepository,

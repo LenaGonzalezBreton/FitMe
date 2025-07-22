@@ -233,6 +233,12 @@ enum SportFrequency {
   VERY_ACTIVE
 }
 
+enum ExperienceLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
 enum UnitPreference {
   METRIC
   IMPERIAL
@@ -696,6 +702,8 @@ model User {
   isMenopausal    Boolean       @default(false) @map("is_menopausal")
   objective       String?
   sportFrequency  SportFrequency? @map("sport_frequency")
+  experienceLevel ExperienceLevel? @map("experience_level")
+  onboardingCompleted Boolean @default(false) @map("onboarding_completed")
   profileType     ProfileType   @default(FEMALE) @map("profile_type")
   contextType     ContextType   @default(CYCLE) @map("context_type")
   

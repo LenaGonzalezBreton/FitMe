@@ -1,17 +1,12 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { View, ActivityIndicator } from 'react-native';
-import LoginScreen from '../screens/LoginScreen';
-import RegisterScreen from '../screens/RegisterScreen';
-import CreateProgramScreen from '../screens/CreateProgramScreen';
-import WorkoutSessionScreen from '../screens/WorkoutSessionScreen';
 import { useAuth } from '../context/AuthContext';
-import MainPager from './MainPager';
+import { AuthStack } from './AuthStack';
+import { OnboardingStack } from './OnboardingStack';
+import { AppStack } from './AppStack';
 
-const Stack = createNativeStackNavigator();
-
-const AppNavigator = () => {
+export default function AppNavigator() {
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
@@ -24,38 +19,12 @@ const AppNavigator = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Login"
-        screenOptions={{ headerShown: false }}
-      >
-        {user ? (
-          <>
-            <Stack.Screen name="Main" component={MainPager} />
-            <Stack.Screen
-              name="WorkoutSession"
-              component={WorkoutSessionScreen}
-            />
-            <Stack.Screen
-              name="CreateProgram"
-              component={CreateProgramScreen}
-              options={{
-                headerShown: true,
-                title: 'Nouveau Programme',
-                headerStyle: { backgroundColor: '#1C1C1E' },
-                headerTintColor: '#FFFFFF',
-                headerBackVisible: false,
-              }}
-            />
-          </>
-        ) : (
-          <>
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="Register" component={RegisterScreen} />
-          </>
-        )}
-      </Stack.Navigator>
+      {user
+        ? user.onboardingCompleted
+          ? <AppStack />
+          : <OnboardingStack />
+        : <AuthStack />
+      }
     </NavigationContainer>
   );
-};
-
-export default AppNavigator; 
+}

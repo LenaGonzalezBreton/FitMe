@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native';
-import Tag from '../components/Tag';
+import Tag from '../../components/Tag';
 import { NavigationProp } from '@react-navigation/native';
 
 interface Program {

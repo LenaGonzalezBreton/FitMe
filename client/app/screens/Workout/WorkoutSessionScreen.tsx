@@ -26,7 +26,7 @@ const WorkoutSessionScreen = () => {
     <View className="bg-surface border border-border rounded-xl p-4 mb-4 flex-row items-center justify-between">
       <View className="flex-row items-center">
         <Image
-          source={require('../../assets/logo.png')}
+          source={require('../../../assets/logo.png')}
           className="w-12 h-12 mr-4"
           resizeMode="contain"
         />

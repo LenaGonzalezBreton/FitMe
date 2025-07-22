@@ -11,9 +11,9 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import { NavigationProp } from '@react-navigation/native';
-import api from '../utils/api';
+import api from '../../services/api';
 
 interface RegisterScreenProps {
     navigation: NavigationProp<any, any>;
