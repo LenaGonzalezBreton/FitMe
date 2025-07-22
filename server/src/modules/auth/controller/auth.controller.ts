@@ -38,10 +38,11 @@ import {
   OnboardingDto,
 } from './dto/auth.dto';
 import { Public } from '../guards/public.decorator';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { CompleteOnboardingUseCase } from '../application/use-cases/complete-onboarding.use-case';
 
 @ApiTags('Auth')
+@ApiBearerAuth()
 @Controller('auth')
 export class AuthController {
   constructor(

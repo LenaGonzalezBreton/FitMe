@@ -19,6 +19,7 @@ import {
   ApiBody,
   ApiParam,
   ApiQuery,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { GenerateProgramByPhaseUseCase } from '../application/use-cases/generate-program-by-phase.use-case';
 import { CreateProgramUseCase } from '../application/use-cases/create-program.use-case';
@@ -49,6 +50,7 @@ interface AuthenticatedRequest {
 }
 
 @ApiTags('Programs')
+@ApiBearerAuth()
 @Controller('programs')
 export class ProgramController {
   constructor(
