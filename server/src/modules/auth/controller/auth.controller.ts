@@ -38,7 +38,13 @@ import {
   OnboardingDto,
 } from './dto/auth.dto';
 import { Public } from '../guards/public.decorator';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { CompleteOnboardingUseCase } from '../application/use-cases/complete-onboarding.use-case';
 
 @ApiTags('Auth')
@@ -244,6 +250,8 @@ export class AuthController {
         objective: user.objective,
         sportFrequency: user.sportFrequency,
         isMenopausal: user.isMenopausal,
+        onboardingCompleted: user.onboardingCompleted,
+        experienceLevel: user.experienceLevel,
       },
     };
   }
