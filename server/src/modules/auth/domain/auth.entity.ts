@@ -3,8 +3,12 @@ interface PrismaUser {
   email: string;
   passwordHash: string;
   firstName?: string | null;
+  birthDate?: Date | null;
   profileType?: string | null;
   contextType?: string | null;
+  objective?: string | null;
+  sportFrequency?: string | null;
+  isMenopausal?: boolean | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -15,8 +19,12 @@ export class AuthUser {
     public readonly email: string,
     public readonly passwordHash: string,
     public readonly firstName?: string,
+    public readonly birthDate?: Date,
     public readonly profileType?: string,
     public readonly contextType?: string,
+    public readonly objective?: string,
+    public readonly sportFrequency?: string,
+    public readonly isMenopausal?: boolean,
     public readonly createdAt?: Date,
     public readonly updatedAt?: Date,
   ) {}
@@ -27,8 +35,12 @@ export class AuthUser {
       user.email,
       user.passwordHash,
       user.firstName ?? undefined,
+      user.birthDate ?? undefined,
       user.profileType ?? undefined,
       user.contextType ?? undefined,
+      user.objective ?? undefined,
+      user.sportFrequency ?? undefined,
+      user.isMenopausal ?? undefined,
       user.createdAt,
       user.updatedAt,
     );

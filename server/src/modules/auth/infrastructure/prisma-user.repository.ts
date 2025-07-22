@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../core/prisma.service';
-import { IUserRepository, CreateUserData } from '../domain/auth.repository';
+import {
+  IUserRepository,
+  CreateUserData,
+  UpdateProfileData,
+} from '../domain/auth.repository';
 import { AuthUser } from '../domain/auth.entity';
+import { $Enums } from '@prisma/client';
 
 @Injectable()
 export class PrismaUserRepository implements IUserRepository {
@@ -48,6 +53,29 @@ export class PrismaUserRepository implements IUserRepository {
     await this.prisma.user.update({
       where: { id: userId },
       data: { passwordHash: passwordHash },
+    });
+  }
+
+  async updateProfile(
+    userId: string,
+    profileData: UpdateProfileData,
+  ): Promise<AuthUser> {
+    const user = await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        firstName: profileData.firstName,
+        birthDate: profileData.birthDate,
+        profileType: profileData.profileType as any,
+        contextType: profileData.contextType as any,
+        objective: profileData.objective,
+        sportFrequency: profileData.sportFrequency as $Enums.SportFrequency,
+        isMenopausal: profileData.isMenopausal,
+      },
+    });
+
+    return AuthUser.fromPrismaUser({
+      ...user,
+      passwordHash: user.passwordHash,
     });
   }
 }

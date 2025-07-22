@@ -76,7 +76,7 @@ export class LogPeriodUseCase {
         // Notes peuvent être stockées dans un champ custom ou via relation
       };
 
-      period = await this.cycleRepository.update(existingCycle.id!, updateData);
+      period = await this.cycleRepository.update(existingCycle.id, updateData);
     } else {
       // Création d'un nouveau cycle
       const periodLength = request.endDate
