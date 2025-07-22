@@ -135,6 +135,37 @@
         ]
       }
     },
+    "/auth/onboarding": {
+      "post": {
+        "operationId": "AuthController_completeOnboarding",
+        "summary": "Compléter le questionnaire d'onboarding",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OnboardingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profil utilisateur mis à jour avec succès."
+          },
+          "400": {
+            "description": "Données invalides."
+          },
+          "404": {
+            "description": "Utilisateur non trouvé."
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
     "/auth/profile": {
       "get": {
         "operationId": "AuthController_getProfile",
@@ -3572,6 +3603,212 @@
         ]
       },
       "FavoriteExercisesResponseDto": {
+
+      }
+    },
+    "/cycle/current-phase": {
+      "get": {
+        "operationId": "CycleController_getCurrentPhase",
+        "summary": "Récupérer la phase actuelle du cycle",
+        "description": "Retourne la phase actuelle du cycle menstruel de l'utilisatrice connectée",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Phase actuelle retournée avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentPhaseResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Aucun cycle trouvé ou suivi des cycles désactivé"
+          }
+        },
+        "tags": [
+          "Cycle"
+        ]
+      }
+    },
+    "/exercises": {
+      "get": {
+        "operationId": "ExerciseController_getExercises",
+        "summary": "Récupérer les exercices par phase de cycle",
+        "description": "Retourne une liste d'exercices adaptés à la phase de cycle spécifiée",
+        "parameters": [
+          {
+            "name": "phase",
+            "required": false,
+            "in": "query",
+            "description": "Phase du cycle menstruel",
+            "schema": {
+              "enum": [
+                "MENSTRUAL",
+                "FOLLICULAR",
+                "OVULATION",
+                "LUTEAL"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "intensity",
+            "required": false,
+            "in": "query",
+            "description": "Niveau d'intensité souhaité",
+            "schema": {
+              "enum": [
+                "VERY_LOW",
+                "LOW",
+                "MODERATE",
+                "HIGH",
+                "VERY_HIGH"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "muscleZone",
+            "required": false,
+            "in": "query",
+            "description": "Zone musculaire ciblée",
+            "schema": {
+              "enum": [
+                "UPPER_BODY",
+                "LOWER_BODY",
+                "CORE",
+                "FULL_BODY",
+                "CARDIO",
+                "FLEXIBILITY",
+                "BALANCE"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "maxDuration",
+            "required": false,
+            "in": "query",
+            "description": "Durée maximale en minutes",
+            "schema": {
+              "minimum": 1,
+              "maximum": 300,
+              "example": 45,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Nombre maximum d'exercices à retourner (défaut: 20)",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "example": 20,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des exercices retournée avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExerciseListResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Paramètres invalides"
+          }
+        },
+        "tags": [
+          "Exercises"
+        ]
+      }
+    },
+    "/programs/generate": {
+      "post": {
+        "operationId": "ProgramController_generateProgram",
+        "summary": "Générer un programme d'entraînement adapté à la phase de cycle",
+        "description": "Crée un programme personnalisé basé sur la phase actuelle du cycle menstruel et les préférences",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateProgramDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Programme généré avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeneratedProgramResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Aucun cycle trouvé ou suivi des cycles désactivé"
+          }
+        },
+        "tags": [
+          "Programs"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "FitMe API",
+    "description": "Documentation de l'API FitMe - Application de fitness basée sur le cycle menstruel",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Authentification et gestion des utilisateurs"
+    },
+    {
+      "name": "Status",
+      "description": "Statut de l'application"
+    },
+    {
+      "name": "Cycle",
+      "description": "Gestion du cycle menstruel et des phases"
+    },
+    {
+      "name": "Exercises",
+      "description": "Exercices adaptés aux phases du cycle"
+    },
+    {
+      "name": "Programs",
+      "description": "Génération de programmes d'entraînement personnalisés"
+    }
+  ],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "RegisterDto": {
+
         "type": "object",
         "properties": {
           "favorites": {
@@ -3694,6 +3931,7 @@
               }
             ]
           },
+
           "isNewRating": {
             "type": "boolean",
             "description": "Indique si c'est une nouvelle évaluation ou une mise à jour",
@@ -3703,6 +3941,39 @@
             "type": "number",
             "description": "Nouvelle note moyenne de l'exercice",
             "example": 4.3
+
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "cuid_example"
+              },
+              "email": {
+                "type": "string",
+                "example": "user@example.com"
+              },
+              "firstName": {
+                "type": "string",
+                "example": "Jane"
+              },
+              "profileType": {
+                "type": "string",
+                "example": "FEMALE"
+              },
+              "contextType": {
+                "type": "string",
+                "example": "CYCLE"
+              },
+              "onboardingCompleted": {
+                "type": "boolean",
+                "example": false
+              },
+              "experienceLevel": {
+                "type": "string",
+                "example": "INTERMEDIATE"
+              }
+            }
           }
         },
         "required": [
@@ -3960,6 +4231,7 @@
           "limit"
         ]
       },
+
       "UpdateProgramDto": {
         "type": "object",
         "properties": {
@@ -3994,6 +4266,394 @@
             "example": false
           }
         }
+      "OnboardingDto": {
+        "type": "object",
+        "properties": {
+          "objective": {
+            "type": "string",
+            "enum": [
+              "WEIGHT_LOSS",
+              "MUSCLE_GAIN",
+              "ENDURANCE",
+              "STRENGTH",
+              "FLEXIBILITY",
+              "GENERAL_FITNESS",
+              "STRESS_REDUCTION",
+              "ENERGY_BOOST"
+            ],
+            "example": "GENERAL_FITNESS",
+            "description": "Objectif principal de l'utilisateur"
+          },
+          "experienceLevel": {
+            "type": "string",
+            "enum": [
+              "BEGINNER",
+              "INTERMEDIATE",
+              "ADVANCED"
+            ],
+            "example": "INTERMEDIATE",
+            "description": "Niveau d'expérience sportive de l'utilisateur"
+          },
+          "isMenopausal": {
+            "type": "boolean",
+            "example": false,
+            "description": "Indique si l'utilisatrice est en ménopause"
+          },
+          "averageCycleLength": {
+            "type": "number",
+            "example": 28,
+            "description": "Durée moyenne du cycle menstruel en jours"
+          },
+          "averagePeriodLength": {
+            "type": "number",
+            "example": 5,
+            "description": "Durée moyenne des règles en jours"
+          }
+        },
+        "required": [
+          "objective",
+          "experienceLevel",
+          "isMenopausal"
+        ]
+      },
+      "CurrentPhaseDataDto": {
+        "type": "object",
+        "properties": {
+          "phase": {
+            "type": "string",
+            "enum": [
+              "MENSTRUAL",
+              "FOLLICULAR",
+              "OVULATION",
+              "LUTEAL"
+            ],
+            "example": "FOLLICULAR",
+            "description": "Phase actuelle du cycle menstruel"
+          },
+          "cycleDay": {
+            "type": "number",
+            "example": 12,
+            "description": "Jour actuel dans le cycle (1-28 généralement)",
+            "minimum": 1,
+            "maximum": 40
+          },
+          "cycleLength": {
+            "type": "number",
+            "example": 28,
+            "description": "Durée totale du cycle en jours",
+            "minimum": 21,
+            "maximum": 35
+          },
+          "periodLength": {
+            "type": "number",
+            "example": 5,
+            "description": "Durée des règles en jours",
+            "minimum": 3,
+            "maximum": 8
+          },
+          "daysUntilNextPhase": {
+            "type": "number",
+            "example": 2,
+            "description": "Nombre de jours avant la prochaine phase",
+            "minimum": 0
+          },
+          "phaseDescription": {
+            "type": "string",
+            "example": "Phase folliculaire - Énergie croissante, idéale pour commencer de nouveaux défis",
+            "description": "Description détaillée de la phase actuelle et de ses caractéristiques"
+          },
+          "recommendations": {
+            "example": [
+              "Commencer à augmenter l'intensité progressivement",
+              "Exercices cardiovasculaires modérés",
+              "Renforcement musculaire avec poids légers"
+            ],
+            "description": "Liste des recommandations spécifiques à cette phase",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "phase",
+          "cycleDay",
+          "cycleLength",
+          "periodLength",
+          "daysUntilNextPhase",
+          "phaseDescription",
+          "recommendations"
+        ]
+      },
+      "CurrentPhaseResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true,
+            "description": "Indique si la requête a été traitée avec succès"
+          },
+          "data": {
+            "description": "Données détaillées sur la phase actuelle du cycle",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CurrentPhaseDataDto"
+              }
+            ]
+          },
+          "message": {
+            "type": "string",
+            "example": "Vous êtes actuellement en Phase folliculaire - Énergie croissante, idéale pour commencer de nouveaux défis",
+            "description": "Message descriptif sur la phase actuelle"
+          }
+        },
+        "required": [
+          "success",
+          "data",
+          "message"
+        ]
+      },
+      "ExerciseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "exe_123456789",
+            "description": "Identifiant unique de l'exercice"
+          },
+          "title": {
+            "type": "string",
+            "example": "Squats au poids du corps",
+            "description": "Nom de l'exercice"
+          },
+          "description": {
+            "type": "string",
+            "example": "Exercice de renforcement pour les jambes et les fessiers",
+            "description": "Description détaillée de l'exercice et de ses bénéfices"
+          },
+          "imageUrl": {
+            "type": "string",
+            "example": "https://fitme-app.com/images/exercises/squats.jpg",
+            "description": "URL de l'image ou vidéo démonstrative de l'exercice"
+          },
+          "durationMinutes": {
+            "type": "number",
+            "example": 15,
+            "description": "Durée recommandée en minutes"
+          },
+          "formattedDuration": {
+            "type": "string",
+            "example": "15min",
+            "description": "Durée formatée de manière lisible"
+          },
+          "intensity": {
+            "type": "string",
+            "enum": [
+              "VERY_LOW",
+              "LOW",
+              "MODERATE",
+              "HIGH",
+              "VERY_HIGH"
+            ],
+            "example": "MODERATE",
+            "description": "Niveau d'intensité de l'exercice"
+          },
+          "intensityLabel": {
+            "type": "string",
+            "example": "Modérée",
+            "description": "Label français du niveau d'intensité"
+          },
+          "muscleZone": {
+            "type": "string",
+            "enum": [
+              "UPPER_BODY",
+              "LOWER_BODY",
+              "CORE",
+              "FULL_BODY",
+              "CARDIO",
+              "FLEXIBILITY",
+              "BALANCE"
+            ],
+            "example": "LOWER_BODY",
+            "description": "Zone musculaire principalement travaillée"
+          },
+          "muscleZoneLabel": {
+            "type": "string",
+            "example": "Bas du corps",
+            "description": "Label français de la zone musculaire"
+          },
+          "isRecommendedForPhase": {
+            "type": "boolean",
+            "example": true,
+            "description": "Indique si cet exercice est spécialement recommandé pour la phase de cycle"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "formattedDuration",
+          "intensityLabel",
+          "muscleZoneLabel",
+          "isRecommendedForPhase"
+        ]
+      },
+      "PhaseInfoDto": {
+        "type": "object",
+        "properties": {
+          "phase": {
+            "type": "string",
+            "enum": [
+              "MENSTRUAL",
+              "FOLLICULAR",
+              "OVULATION",
+              "LUTEAL"
+            ],
+            "example": "FOLLICULAR",
+            "description": "Phase du cycle menstruel"
+          },
+          "phaseLabel": {
+            "type": "string",
+            "example": "Phase Folliculaire",
+            "description": "Nom complet en français de la phase"
+          },
+          "recommendedIntensity": {
+            "type": "string",
+            "enum": [
+              "VERY_LOW",
+              "LOW",
+              "MODERATE",
+              "HIGH",
+              "VERY_HIGH"
+            ],
+            "example": "MODERATE",
+            "description": "Intensité recommandée pour cette phase"
+          },
+          "description": {
+            "type": "string",
+            "example": "Énergie croissante. Moment idéal pour augmenter progressivement l'intensité.",
+            "description": "Description détaillée des caractéristiques de cette phase"
+          }
+        },
+        "required": [
+          "phase",
+          "phaseLabel",
+          "recommendedIntensity",
+          "description"
+        ]
+      },
+      "ExerciseListDataDto": {
+        "type": "object",
+        "properties": {
+          "exercises": {
+            "description": "Liste des exercices correspondant aux critères",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExerciseDto"
+            }
+          },
+          "phaseInfo": {
+            "description": "Informations sur la phase de cycle et recommandations",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PhaseInfoDto"
+              }
+            ]
+          },
+          "totalCount": {
+            "type": "number",
+            "example": 15,
+            "description": "Nombre total d'exercices retournés"
+          }
+        },
+        "required": [
+          "exercises",
+          "phaseInfo",
+          "totalCount"
+        ]
+      },
+      "ExerciseListResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true,
+            "description": "Indique si la requête a été traitée avec succès"
+          },
+          "data": {
+            "description": "Données de la réponse contenant exercices et informations de phase",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ExerciseListDataDto"
+              }
+            ]
+          },
+          "message": {
+            "type": "string",
+            "example": "15 exercice(s) trouvé(s) pour la phase Phase Folliculaire",
+            "description": "Message descriptif du résultat de la recherche"
+          }
+        },
+        "required": [
+          "success",
+          "data",
+          "message"
+        ]
+      },
+      "GenerateProgramDto": {
+        "type": "object",
+        "properties": {
+          "duration": {
+            "type": "number",
+            "example": 30,
+            "description": "Durée souhaitée en minutes (défaut: 30)"
+          },
+          "focusZone": {
+            "type": "string",
+            "enum": [
+              "UPPER_BODY",
+              "LOWER_BODY",
+              "CORE",
+              "FULL_BODY",
+              "CARDIO",
+              "FLEXIBILITY",
+              "BALANCE"
+            ],
+            "example": "FULL_BODY",
+            "description": "Zone musculaire à privilégier"
+          },
+          "sessionType": {
+            "type": "string",
+            "enum": [
+              "cardio",
+              "strength",
+              "flexibility",
+              "mixed"
+            ],
+            "example": "mixed",
+            "description": "Type de séance souhaité"
+          }
+        }
+      },
+      "GeneratedProgramResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "type": "object"
+          },
+          "message": {
+            "type": "string",
+            "example": "Programme \"Énergie Croissante - Complet 30min\" généré avec succès pour votre Phase Folliculaire"
+          }
+        },
+        "required": [
+          "success",
+          "data",
+          "message"
+        ]
       }
     }
   }

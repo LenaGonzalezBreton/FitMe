@@ -12,9 +12,9 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import { NavigationProp } from '@react-navigation/native';
-import api from '../utils/api';
+import api from '../../services/api';
 
 interface LoginScreenProps {
   navigation: NavigationProp<any, any>;
@@ -113,7 +113,7 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
 
           <View className="items-center pb-8">
             <Image
-              source={require('../../assets/logo.png')}
+              source={require('../../../assets/logo.png')}
               className="w-48 h-48"
               resizeMode="contain"
             />

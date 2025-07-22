@@ -28,6 +28,8 @@ export interface LoginResponse {
     firstName?: string;
     profileType?: string;
     contextType?: string;
+    onboardingCompleted: boolean;
+    experienceLevel?: string;
   };
 }
 
@@ -73,6 +75,8 @@ export class LoginUseCase {
         firstName: user.firstName,
         profileType: user.profileType,
         contextType: user.contextType,
+        onboardingCompleted: user.onboardingCompleted,
+        experienceLevel: user.experienceLevel,
       },
     };
   }

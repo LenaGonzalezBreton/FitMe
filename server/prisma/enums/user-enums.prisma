@@ -33,6 +33,12 @@ enum SportFrequency {
   VERY_ACTIVE
 }
 
+enum ExperienceLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
 enum UnitPreference {
   METRIC
   IMPERIAL

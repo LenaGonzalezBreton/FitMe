@@ -8,6 +8,23 @@ export enum ProfileType {
   OTHER = 'OTHER',
 }
 
+export enum ExperienceLevel {
+  BEGINNER = 'BEGINNER',
+  INTERMEDIATE = 'INTERMEDIATE',
+  ADVANCED = 'ADVANCED',
+}
+
+export enum ObjectiveType {
+  WEIGHT_LOSS = 'WEIGHT_LOSS',
+  MUSCLE_GAIN = 'MUSCLE_GAIN',
+  ENDURANCE = 'ENDURANCE',
+  STRENGTH = 'STRENGTH',
+  FLEXIBILITY = 'FLEXIBILITY',
+  GENERAL_FITNESS = 'GENERAL_FITNESS',
+  STRESS_REDUCTION = 'STRESS_REDUCTION',
+  ENERGY_BOOST = 'ENERGY_BOOST',
+}
+
 export enum ContextType {
   CYCLE = 'CYCLE',
   GENERAL = 'GENERAL',
@@ -15,10 +32,21 @@ export enum ContextType {
   NONE = 'NONE',
 }
 
+export interface OnboardingProfileData {
+  objective: ObjectiveType;
+  experienceLevel: ExperienceLevel;
+  isMenopausal: boolean;
+  onboardingCompleted: boolean;
+}
+
 export interface IUserRepository {
   findByEmail(email: string): Promise<AuthUser | null>;
   findById(userId: string): Promise<AuthUser | null>;
   create(userData: CreateUserData): Promise<AuthUser>;
+  updateOnboardingProfile(
+    userId: string,
+    data: OnboardingProfileData,
+  ): Promise<AuthUser>;
   updatePassword(userId: string, passwordHash: string): Promise<void>;
   updateProfile(
     userId: string,

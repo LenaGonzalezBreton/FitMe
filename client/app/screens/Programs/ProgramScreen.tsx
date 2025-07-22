@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native';
-import Tag from '../components/Tag';
+import Tag from '../../components/Tag';
 import { NavigationProp } from '@react-navigation/native';
 
 interface Program {
@@ -129,27 +129,27 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-brand-background">
+    <SafeAreaView className="flex-1 bg-brand-cream">
       <ScrollView className="flex-1 px-6">
         {/* Header */}
         <View className="pt-16 pb-6">
-          <Text className="text-3xl font-bold text-brand-text mb-2">Programmes</Text>
-          <Text className="text-base text-text-secondary">
+          <Text className="text-3xl font-bold text-brand-dark-bg mb-2">Programmes</Text>
+          <Text className="text-base text-brand-dark-surface">
             Gérez vos entraînements personnalisés
           </Text>
         </View>
 
         {/* Tabs */}
         <View className="mb-6">
-          <View className="flex-row bg-surface border border-border rounded-xl p-1">
+          <View className="flex-row bg-white rounded-xl p-1">
             <TouchableOpacity
               onPress={() => setActiveTab('mes-programmes')}
               className={`flex-1 py-3 px-4 rounded-lg ${
-                activeTab === 'mes-programmes' ? 'bg-primary-500' : 'bg-transparent'
+                activeTab === 'mes-programmes' ? 'bg-brand-brown' : 'bg-transparent'
               }`}
             >
               <Text className={`text-center font-medium ${
-                activeTab === 'mes-programmes' ? 'text-white' : 'text-text-secondary'
+                activeTab === 'mes-programmes' ? 'text-white' : 'text-brand-dark-surface'
               }`}>
                 Mes Programmes
               </Text>
@@ -158,11 +158,11 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
             <TouchableOpacity
               onPress={() => setActiveTab('recommandes')}
               className={`flex-1 py-3 px-4 rounded-lg ${
-                activeTab === 'recommandes' ? 'bg-primary-500' : 'bg-transparent'
+                activeTab === 'recommandes' ? 'bg-brand-brown' : 'bg-transparent'
               }`}
             >
               <Text className={`text-center font-medium ${
-                activeTab === 'recommandes' ? 'text-white' : 'text-text-secondary'
+                activeTab === 'recommandes' ? 'text-white' : 'text-brand-dark-surface'
               }`}>
                 Recommandés
               </Text>
@@ -173,7 +173,7 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
         {/* Create Program Button */}
         <TouchableOpacity
           onPress={() => navigation.navigate('CreateProgram')}
-          className="bg-primary-500 rounded-xl p-4 mb-6 flex-row items-center justify-center"
+          className="bg-brand-brown rounded-xl p-4 mb-6 flex-row items-center justify-center"
         >
           <Text className="text-white text-xl mr-2">+</Text>
           <Text className="text-white font-bold text-lg">Créer un nouveau programme</Text>
@@ -181,14 +181,14 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
 
         {/* Programs List */}
         <View className="mb-6">
-          <Text className="text-lg font-semibold text-brand-text mb-4">
+          <Text className="text-lg font-semibold text-brand-dark-bg mb-4">
             {activeTab === 'mes-programmes' ? 'Vos programmes actifs' : 'Programmes recommandés'}
           </Text>
           
           {currentPrograms.map((program: Program) => (
             <TouchableOpacity
               key={program.id}
-              className="bg-surface border border-border rounded-xl p-4 mb-4"
+              className="bg-white rounded-xl p-4 mb-4"
             >
               {/* Program Header */}
               <View className="flex-row items-start justify-between mb-3">
@@ -196,10 +196,10 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
                   <View className="bg-primary-100 self-start px-3 py-1 rounded-full mb-2">
                     <Text className="text-xs font-bold text-primary-700 uppercase tracking-wider">{program.objective}</Text>
                   </View>
-                  <Text className="text-xl font-bold text-brand-text mb-1">
+                  <Text className="text-xl font-bold text-brand-dark-bg mb-1">
                     {program.title}
                   </Text>
-                  <Text className="text-sm text-text-secondary mb-2">
+                  <Text className="text-sm text-brand-dark-surface mb-2">
                     {program.description}
                   </Text>
                 </View>
@@ -210,16 +210,16 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
               <View className="mb-4">
                 <View className="flex-row justify-between mb-2">
                   <View className="flex-1 mr-4">
-                    <Text className="text-xs text-text-secondary">Durée</Text>
-                    <Text className="text-sm font-medium text-brand-text">{program.duration}</Text>
+                    <Text className="text-xs text-brand-dark-surface">Durée</Text>
+                    <Text className="text-sm font-medium text-brand-dark-bg">{program.duration}</Text>
                   </View>
                   <View className="flex-1 mr-4">
-                    <Text className="text-xs text-text-secondary">Séances/sem</Text>
-                    <Text className="text-sm font-medium text-brand-text">{program.workouts}</Text>
+                    <Text className="text-xs text-brand-dark-surface">Séances/sem</Text>
+                    <Text className="text-sm font-medium text-brand-dark-bg">{program.workouts}</Text>
                   </View>
                   <View className="flex-1">
-                    <Text className="text-xs text-text-secondary">Dernière fois</Text>
-                    <Text className="text-sm font-medium text-brand-text" numberOfLines={1} ellipsizeMode="tail">{program.lastWorkout}</Text>
+                    <Text className="text-xs text-brand-dark-surface">Dernière fois</Text>
+                    <Text className="text-sm font-medium text-brand-dark-bg" numberOfLines={1} ellipsizeMode="tail">{program.lastWorkout}</Text>
                   </View>
                 </View>
               </View>
@@ -227,8 +227,8 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
               {/* Progress Bar */}
               <View className="mb-4">
                 <View className="flex-row justify-between items-center mb-2">
-                  <Text className="text-sm font-medium text-brand-text">Progression</Text>
-                  <Text className="text-sm text-text-secondary">{program.progress}%</Text>
+                  <Text className="text-sm font-medium text-brand-dark-bg">Progression</Text>
+                  <Text className="text-sm text-brand-dark-surface">{program.progress}%</Text>
                 </View>
                 <View className="bg-border h-2 rounded-full">
                   <View 
@@ -261,7 +261,7 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
                   </View>
                 </ScrollView>
               </View>
-              <TouchableOpacity className="bg-primary-500 px-4 py-3 rounded-lg mt-3">
+              <TouchableOpacity className="bg-brand-brown px-4 py-3 rounded-lg mt-3">
                 <Text className="text-white font-bold text-center">
                   {program.progress === 0 ? 'Commencer' : 'Continuer'}
                 </Text>
@@ -271,20 +271,20 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
         </View>
 
         {/* Quick Stats */}
-        <View className="bg-surface border border-border rounded-xl p-4 mb-8">
-          <Text className="text-lg font-semibold text-brand-text mb-4">Vos statistiques</Text>
+        <View className="bg-brand-cream rounded-xl p-4 mb-8">
+          <Text className="text-lg font-semibold text-brand-dark-bg mb-4">Vos statistiques</Text>
           <View className="flex-row justify-between">
             <View className="items-center">
               <Text className="text-2xl font-bold text-primary-400">3</Text>
-              <Text className="text-sm text-text-secondary">Programmes</Text>
+              <Text className="text-sm text-brand-dark-surface">Programmes</Text>
             </View>
             <View className="items-center">
               <Text className="text-2xl font-bold text-accent-400">12</Text>
-              <Text className="text-sm text-text-secondary">Séances total</Text>
+              <Text className="text-sm text-brand-dark-surface">Séances total</Text>
             </View>
             <View className="items-center">
               <Text className="text-2xl font-bold text-success">7</Text>
-              <Text className="text-sm text-text-secondary">Jours streak</Text>
+              <Text className="text-sm text-brand-dark-surface">Jours streak</Text>
             </View>
           </View>
         </View>

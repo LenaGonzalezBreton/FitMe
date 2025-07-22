@@ -23,6 +23,8 @@ export interface RegisterResponse {
     firstName?: string;
     profileType?: string;
     contextType?: string;
+    onboardingCompleted: boolean;
+    experienceLevel?: string;
   };
 }
 
@@ -70,6 +72,8 @@ export class RegisterUseCase {
         firstName: user.firstName,
         profileType: user.profileType,
         contextType: user.contextType,
+        onboardingCompleted: user.onboardingCompleted,
+        experienceLevel: user.experienceLevel,
       },
     };
   }

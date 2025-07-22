@@ -9,6 +9,7 @@ import {
   Get,
   Put,
   Request,
+  NotFoundException,
 } from '@nestjs/common';
 import { Request as ExpressRequest } from 'express';
 import { RegisterUseCase } from '../application/use-cases/register.use-case';
@@ -34,9 +35,12 @@ import {
   PreferencesResponseDto,
   UpdateWorkoutPreferencesDto,
   UpdateNotificationPreferencesDto,
+
+  OnboardingDto,
 } from './dto/auth.dto';
 import { Public } from '../guards/public.decorator';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import { CompleteOnboardingUseCase } from '../application/use-cases/complete-onboarding.use-case';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -45,11 +49,15 @@ export class AuthController {
     private readonly registerUseCase: RegisterUseCase,
     private readonly loginUseCase: LoginUseCase,
     private readonly refreshTokenUseCase: RefreshTokenUseCase,
+
     private readonly updateProfileUseCase: UpdateProfileUseCase,
     private readonly changePasswordUseCase: ChangePasswordUseCase,
     private readonly getSettingsUseCase: GetSettingsUseCase,
     private readonly updateSettingsUseCase: UpdateSettingsUseCase,
     private readonly getPreferencesUseCase: GetPreferencesUseCase,
+
+    private readonly completeOnboardingUseCase: CompleteOnboardingUseCase,
+
   ) {}
 
   @Public()
@@ -177,6 +185,43 @@ export class AuthController {
           ? error.message
           : 'Erreur lors du rafraîchissement du token';
       throw new HttpException(message, HttpStatus.UNAUTHORIZED);
+    }
+  }
+
+  @Post('onboarding')
+  @ApiOperation({ summary: "Compléter le questionnaire d'onboarding" })
+  @ApiResponse({
+    status: 200,
+    description: 'Profil utilisateur mis à jour avec succès.',
+  })
+  @ApiResponse({ status: 400, description: 'Données invalides.' })
+  @ApiResponse({ status: 404, description: 'Utilisateur non trouvé.' })
+  async completeOnboarding(
+    @Request() req: any,
+    @Body() onboardingDto: OnboardingDto,
+  ) {
+    try {
+      const userId = req.user.id;
+      const updatedUser = await this.completeOnboardingUseCase.execute({
+        userId,
+        ...onboardingDto,
+      });
+
+      return {
+        success: true,
+        message: 'Profil mis à jour avec succès.',
+        user: updatedUser,
+      };
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Erreur lors de la mise à jour du profil.";
+      const statusCode =
+        error instanceof NotFoundException
+          ? HttpStatus.NOT_FOUND
+          : HttpStatus.BAD_REQUEST;
+      throw new HttpException(message, statusCode);
     }
   }
 
