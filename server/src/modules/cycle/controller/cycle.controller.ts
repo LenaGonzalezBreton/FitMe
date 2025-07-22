@@ -635,7 +635,7 @@ export class CycleController {
 
       const symptomsDto = result.symptoms.map((symptom) => ({
         id: symptom.id,
-        type: symptom.type as SymptomType,
+        type: symptom.type,
         intensity: symptom.intensity,
         notes: symptom.notes,
         date: symptom.date.toISOString(),
@@ -643,7 +643,7 @@ export class CycleController {
       }));
 
       const statsDto = result.stats.map((stat) => ({
-        type: stat.type as SymptomType,
+        type: stat.type,
         averageIntensity: stat.averageIntensity,
         occurrences: stat.occurrences,
         mostCommonPhase: stat.mostCommonPhase,
