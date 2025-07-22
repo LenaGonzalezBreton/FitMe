@@ -1,0 +1,69 @@
+---
+id: exercise-controller-remove-from-favorites
+title: "Retirer un exercice des favoris"
+description: "Retire un exercice des favoris de l'utilisateur connecté"
+sidebar_label: "Retirer un exercice des favoris"
+hide_title: true
+hide_table_of_contents: true
+api: eJylVMtu2zAQ/BViL20BpnbS9KVb0NiAg7YIXBc5GEZBU+uYCEUq5NKIIehfeqy/wz9WrCS7zqM5tCdJlHZndmZWFfgSgyLj3SiHDAZ3GLSJ+Mk7Ct5aDD8CFn6Fw+CLoVr5YAgjSMgx6mBKLoQMxkgmoEhOYNNAo8gxikVTEEWOwr5IZKyJijAFob1zqGm7AQmlCqpAwhAhm1bgVIGQgclBQsDbZALmkFFIKMEwVqlo+YjAKEdHZmGUI5GcuU3Ygu7pbH+K0JAMh8xAQtRLLBRkFeCdKkrL4Nouj0/enL599/7DR5BA65JPIwXjrqGuZ8wslt5FjFx40u/z5T6jwQ65gd1u7gmiVqhFTFpvf0WoJZz2jx93+OqdUIm4YLsRR4L8DTpxcTURjS5d4ekz0M47QcGnFcMrF4U9GL2uJZC6ZtX3tkeYSYioUzC0buyYowoYIJvOeOwCaek5JzlaJGzcoyVk0MNdh15l8rq36KLCAmNYteYe9P7Gqrfq7RCq1gpWujuS3c3Qh0IRZHBxNfljx5KobIYwbuG5nAw17g0NfUFxdjl6lJJzr1OBjpq8twE5uxyJtuBInJWlNXr/cmHIYYxiruJ2gyKmICwKvdYWRYEuciYtSODp2v7Hr/sgQXtHShNkFbMrfaRCOSbYRXvc5fAv2/KQddU0REf/uWedbIR31CutMo7zk4JlhNbFKexdBAlZs4J7I2cSlj4Sf1VVcxXxe7B1zce3CcO6tXelglFzdmFaQW4i3+eQLZSN+MxYL8fdor8S/77IT87XHSq3ZqOUTfwEEm5w3f5k6ll9EOvzwefBZAASVGJBql39g0A24z3ZuqraLya8q3W9R2p2l8Hq+jdTYee9
+sidebar_class_name: "delete api-method"
+info_path: docs/api/fitme-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Retirer un exercice des favoris"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"delete"}
+  path={"/exercises/{id}/favorite"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retire un exercice des favoris de l'utilisateur connecté
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Identifiant unique de l'exercice à retirer des favoris","schema":{"example":"clh123456789","type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  responses={{"200":{"description":"Exercice retiré des favoris avec succès"},"401":{"description":"Non autorisé - token JWT requis"},"404":{"description":"Exercice non trouvé dans les favoris"}}}
+ id="exercise-controller-remove-from-favorites-responses">
+  
+</StatusCodes>
+
+
+      

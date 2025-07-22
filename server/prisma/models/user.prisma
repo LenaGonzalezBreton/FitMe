@@ -35,6 +35,9 @@ model User {
   logs                Log[]
   refreshTokens       RefreshToken[]
   authSessions        AuthSession[]
+  favoriteExercises   FavoriteExercise[]
+  exerciseRatings     ExerciseRating[]
+  createdExercises    Exercise[]        @relation("UserCreatedExercises")
 
   @@map("user")
 } 

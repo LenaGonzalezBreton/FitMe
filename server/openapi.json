@@ -173,7 +173,225 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Profil utilisateur retourné"
+            "description": "Profil utilisateur retourné",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      },
+      "put": {
+        "operationId": "AuthController_updateProfile",
+        "summary": "Mettre à jour le profil de l'utilisateur connecté",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profil mis à jour avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides ou erreur de validation"
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/change-password": {
+      "post": {
+        "operationId": "AuthController_changePassword",
+        "summary": "Changer le mot de passe de l'utilisateur connecté",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mot de passe mis à jour avec succès"
+          },
+          "400": {
+            "description": "Données invalides ou erreur de validation"
+          },
+          "401": {
+            "description": "Mot de passe actuel incorrect"
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/settings": {
+      "get": {
+        "operationId": "AuthController_getSettings",
+        "summary": "Récupérer tous les paramètres de l'utilisateur connecté",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Paramètres utilisateur récupérés avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingsResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      },
+      "put": {
+        "operationId": "AuthController_updateSettings",
+        "summary": "Mettre à jour les paramètres de l'utilisateur connecté",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSettingsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paramètres mis à jour avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateSettingsResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides ou erreur de validation"
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/preferences": {
+      "get": {
+        "operationId": "AuthController_getPreferences",
+        "summary": "Récupérer toutes les préférences de l'utilisateur connecté",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Préférences utilisateur récupérées avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreferencesResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/preferences/workouts": {
+      "put": {
+        "operationId": "AuthController_updateWorkoutPreferences",
+        "summary": "Mettre à jour les préférences d'entraînement",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateWorkoutPreferencesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Préférences d'entraînement mises à jour avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateSettingsResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides ou erreur de validation"
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/preferences/notifications": {
+      "put": {
+        "operationId": "AuthController_updateNotificationPreferences",
+        "summary": "Mettre à jour les préférences de notifications",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateNotificationPreferencesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Préférences de notifications mises à jour avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateSettingsResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides ou erreur de validation"
           }
         },
         "tags": [
@@ -194,6 +412,3198 @@
         "tags": [
           "Auth"
         ]
+      }
+    },
+    "/cycle/current-phase": {
+      "get": {
+        "operationId": "CycleController_getCurrentPhase",
+        "summary": "Récupérer la phase actuelle du cycle",
+        "description": "Retourne la phase actuelle du cycle menstruel de l'utilisatrice connectée",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Phase actuelle retournée avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentPhaseResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Aucun cycle trouvé ou suivi des cycles désactivé"
+          }
+        },
+        "tags": [
+          "Cycle"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/cycle/config": {
+      "get": {
+        "operationId": "CycleController_getCycleConfig",
+        "summary": "Récupérer la configuration du cycle",
+        "description": "Retourne les paramètres personnalisés du cycle menstruel",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Configuration récupérée avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CycleConfigResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Configuration non trouvée"
+          }
+        },
+        "tags": [
+          "Cycle"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "CycleController_updateCycleConfig",
+        "summary": "Mettre à jour la configuration du cycle",
+        "description": "Modifie les paramètres personnalisés du cycle menstruel",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCycleConfigDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Configuration mise à jour avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CycleConfigResponseDto"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Configuration créée avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CycleConfigResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides"
+          }
+        },
+        "tags": [
+          "Cycle"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/cycle/periods": {
+      "post": {
+        "operationId": "CycleController_logPeriod",
+        "summary": "Enregistrer des règles",
+        "description": "Logger manuellement le début et la fin des règles",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogPeriodDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Règles enregistrées avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogPeriodResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides"
+          }
+        },
+        "tags": [
+          "Cycle"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "CycleController_getPeriodsHistory",
+        "summary": "Récupérer l'historique des règles",
+        "description": "Liste chronologique des règles avec statistiques",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Nombre de cycles à retourner",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "description": "Nombre de cycles à ignorer",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "fromDate",
+            "required": false,
+            "in": "query",
+            "description": "Date de début (YYYY-MM-DD)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "toDate",
+            "required": false,
+            "in": "query",
+            "description": "Date de fin (YYYY-MM-DD)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Historique récupéré avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PeriodsHistoryResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Cycle"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/cycle/predictions": {
+      "get": {
+        "operationId": "CycleController_getCyclePredictions",
+        "summary": "Obtenir les prédictions du cycle",
+        "description": "Calculs intelligents des prochaines règles et ovulation",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Prédictions calculées avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CyclePredictionsResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pas assez de données pour les prédictions"
+          }
+        },
+        "tags": [
+          "Cycle"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/cycle/calendar": {
+      "get": {
+        "operationId": "CycleController_getCycleCalendar",
+        "summary": "Obtenir le calendrier du cycle",
+        "description": "Vue calendrier avec phases, prédictions et événements",
+        "parameters": [
+          {
+            "name": "startDate",
+            "required": false,
+            "in": "query",
+            "description": "Date de début (YYYY-MM-DD)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "months",
+            "required": false,
+            "in": "query",
+            "description": "Nombre de mois (défaut: 3)",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Calendrier généré avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CycleCalendarResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Cycle"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/cycle/symptoms": {
+      "post": {
+        "operationId": "CycleController_logSymptoms",
+        "summary": "Enregistrer des symptômes",
+        "description": "Logger les symptômes ressentis pour une date donnée",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogSymptomsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Symptômes enregistrés avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogSymptomsResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides"
+          }
+        },
+        "tags": [
+          "Cycle"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "CycleController_getSymptomsHistory",
+        "summary": "Récupérer l'historique des symptômes",
+        "description": "Analyse des patterns de symptômes avec statistiques par phases",
+        "parameters": [
+          {
+            "name": "fromDate",
+            "required": false,
+            "in": "query",
+            "description": "Date de début (YYYY-MM-DD)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "toDate",
+            "required": false,
+            "in": "query",
+            "description": "Date de fin (YYYY-MM-DD)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "symptomType",
+            "required": false,
+            "in": "query",
+            "description": "Type de symptôme spécifique",
+            "schema": {
+              "enum": [
+                "CRAMPS",
+                "BLOATING",
+                "HEADACHE",
+                "BACK_PAIN",
+                "BREAST_TENDERNESS",
+                "ACNE",
+                "MOOD_SWINGS",
+                "FATIGUE",
+                "NAUSEA",
+                "FOOD_CRAVINGS",
+                "CONSTIPATION",
+                "DIARRHEA",
+                "HOT_FLASHES",
+                "COLD_FLASHES",
+                "JOINT_PAIN",
+                "INSOMNIA"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Nombre d'entrées à retourner",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "description": "Nombre d'entrées à ignorer",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Historique des symptômes récupéré avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SymptomsHistoryResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Cycle"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/exercises": {
+      "get": {
+        "operationId": "ExerciseController_getExercises",
+        "summary": "Récupérer les exercices par phase de cycle",
+        "description": "Retourne une liste d'exercices adaptés à la phase de cycle spécifiée",
+        "parameters": [
+          {
+            "name": "phase",
+            "required": false,
+            "in": "query",
+            "description": "Phase du cycle menstruel",
+            "schema": {
+              "enum": [
+                "MENSTRUAL",
+                "FOLLICULAR",
+                "OVULATION",
+                "LUTEAL"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "intensity",
+            "required": false,
+            "in": "query",
+            "description": "Niveau d'intensité souhaité",
+            "schema": {
+              "enum": [
+                "VERY_LOW",
+                "LOW",
+                "MODERATE",
+                "HIGH",
+                "VERY_HIGH"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "muscleZone",
+            "required": false,
+            "in": "query",
+            "description": "Zone musculaire ciblée",
+            "schema": {
+              "enum": [
+                "UPPER_BODY",
+                "LOWER_BODY",
+                "CORE",
+                "FULL_BODY",
+                "CARDIO",
+                "FLEXIBILITY",
+                "BALANCE"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "maxDuration",
+            "required": false,
+            "in": "query",
+            "description": "Durée maximale en minutes",
+            "schema": {
+              "minimum": 1,
+              "maximum": 300,
+              "example": 45,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Nombre maximum d'exercices à retourner (défaut: 20)",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "example": 20,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des exercices retournée avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExerciseListResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Paramètres invalides"
+          }
+        },
+        "tags": [
+          "Exercises"
+        ]
+      },
+      "post": {
+        "operationId": "ExerciseController_createExercise",
+        "summary": "Créer un nouvel exercice",
+        "description": "Permet à un utilisateur authentifié de créer un exercice personnalisé",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateExerciseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Exercice créé avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateExerciseResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides pour la création de l'exercice"
+          },
+          "401": {
+            "description": "Non autorisé - token JWT requis"
+          }
+        },
+        "tags": [
+          "Exercises"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/exercises/favorites": {
+      "get": {
+        "operationId": "ExerciseController_getFavoriteExercises",
+        "summary": "Récupérer la liste des exercices favoris",
+        "description": "Retourne tous les exercices marqués comme favoris par l'utilisateur connecté",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Liste des exercices favoris retournée avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FavoriteExercisesResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé - token JWT requis"
+          }
+        },
+        "tags": [
+          "Exercises"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/exercises/{id}": {
+      "get": {
+        "operationId": "ExerciseController_getExerciseDetails",
+        "summary": "Récupérer les détails complets d'un exercice",
+        "description": "Retourne les détails d'un exercice spécifique avec moyennes de notation et informations détaillées",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Identifiant unique de l'exercice",
+            "schema": {
+              "example": "clh123456789",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Détails de l'exercice retournés avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExerciseDetailsResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Exercice non trouvé"
+          }
+        },
+        "tags": [
+          "Exercises"
+        ]
+      }
+    },
+    "/exercises/{id}/favorite": {
+      "post": {
+        "operationId": "ExerciseController_addToFavorites",
+        "summary": "Ajouter un exercice aux favoris",
+        "description": "Marque un exercice comme favori pour l'utilisateur connecté",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Identifiant unique de l'exercice à ajouter aux favoris",
+            "schema": {
+              "example": "clh123456789",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Exercice ajouté aux favoris avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddToFavoritesResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erreur lors de l'ajout aux favoris"
+          },
+          "401": {
+            "description": "Non autorisé - token JWT requis"
+          },
+          "404": {
+            "description": "Exercice non trouvé"
+          },
+          "409": {
+            "description": "Exercice déjà dans les favoris"
+          }
+        },
+        "tags": [
+          "Exercises"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "ExerciseController_removeFromFavorites",
+        "summary": "Retirer un exercice des favoris",
+        "description": "Retire un exercice des favoris de l'utilisateur connecté",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Identifiant unique de l'exercice à retirer des favoris",
+            "schema": {
+              "example": "clh123456789",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Exercice retiré des favoris avec succès"
+          },
+          "401": {
+            "description": "Non autorisé - token JWT requis"
+          },
+          "404": {
+            "description": "Exercice non trouvé dans les favoris"
+          }
+        },
+        "tags": [
+          "Exercises"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/exercises/{id}/rate": {
+      "post": {
+        "operationId": "ExerciseController_rateExercise",
+        "summary": "Noter un exercice",
+        "description": "Permet à l'utilisateur de noter un exercice de 1 à 5 étoiles",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Identifiant unique de l'exercice à noter",
+            "schema": {
+              "example": "clh123456789",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RateExerciseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Exercice noté avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateExerciseResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données de notation invalides"
+          },
+          "401": {
+            "description": "Non autorisé - token JWT requis"
+          },
+          "404": {
+            "description": "Exercice non trouvé"
+          }
+        },
+        "tags": [
+          "Exercises"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/programs/generate": {
+      "post": {
+        "operationId": "ProgramController_generateProgram",
+        "summary": "Générer un programme d'entraînement adapté à la phase de cycle",
+        "description": "Crée un programme personnalisé basé sur la phase actuelle du cycle menstruel et les préférences",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateProgramDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Programme généré avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeneratedProgramResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Aucun cycle trouvé ou suivi des cycles désactivé"
+          }
+        },
+        "tags": [
+          "Programs"
+        ]
+      }
+    },
+    "/programs": {
+      "post": {
+        "operationId": "ProgramController_createProgram",
+        "summary": "Créer un nouveau programme",
+        "description": "Crée un programme d'entraînement personnalisé avec exercices",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProgramDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Programme créé avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgramResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides"
+          },
+          "409": {
+            "description": "Conflit (date de fin avant date de début)"
+          }
+        },
+        "tags": [
+          "Programs"
+        ]
+      },
+      "get": {
+        "operationId": "ProgramController_getUserPrograms",
+        "summary": "Récupérer les programmes de l'utilisateur",
+        "description": "Liste tous les programmes de l'utilisateur avec filtres et pagination",
+        "parameters": [
+          {
+            "name": "isActive",
+            "required": false,
+            "in": "query",
+            "description": "Filter by active status",
+            "schema": {
+              "example": true,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "isTemplate",
+            "required": false,
+            "in": "query",
+            "description": "Filter by template status",
+            "schema": {
+              "example": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "startDateFrom",
+            "required": false,
+            "in": "query",
+            "description": "Filter programs starting from this date",
+            "schema": {
+              "example": "2024-01-01",
+              "type": "string"
+            }
+          },
+          {
+            "name": "startDateTo",
+            "required": false,
+            "in": "query",
+            "description": "Filter programs starting until this date",
+            "schema": {
+              "example": "2024-12-31",
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Number of programs to return (max 100)",
+            "schema": {
+              "default": 20,
+              "example": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "description": "Number of programs to skip",
+            "schema": {
+              "default": 0,
+              "example": 0,
+              "type": "number"
+            }
+          },
+          {
+            "description": "Filter by active status",
+            "required": false,
+            "name": "isActive",
+            "in": "query",
+            "schema": {
+              "example": true,
+              "type": "boolean"
+            }
+          },
+          {
+            "description": "Filter by template status",
+            "required": false,
+            "name": "isTemplate",
+            "in": "query",
+            "schema": {
+              "example": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "description": "Filter programs starting from this date",
+            "required": false,
+            "name": "startDateFrom",
+            "in": "query",
+            "schema": {
+              "example": "2024-01-01",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Filter programs starting until this date",
+            "required": false,
+            "name": "startDateTo",
+            "in": "query",
+            "schema": {
+              "example": "2024-12-31",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Number of programs to return (max 100)",
+            "required": false,
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "default": 20,
+              "example": 20,
+              "type": "number"
+            }
+          },
+          {
+            "description": "Number of programs to skip",
+            "required": false,
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "default": 0,
+              "example": 0,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des programmes récupérée avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgramListResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Programs"
+        ]
+      }
+    },
+    "/programs/{id}": {
+      "get": {
+        "operationId": "ProgramController_getProgramById",
+        "summary": "Récupérer un programme par ID",
+        "description": "Récupère les détails complets d'un programme spécifique",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID du programme",
+            "schema": {
+              "example": "clh123456789",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Programme récupéré avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgramResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Accès non autorisé"
+          },
+          "404": {
+            "description": "Programme non trouvé"
+          }
+        },
+        "tags": [
+          "Programs"
+        ]
+      },
+      "put": {
+        "operationId": "ProgramController_updateProgram",
+        "summary": "Mettre à jour un programme",
+        "description": "Met à jour les propriétés d'un programme existant",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID du programme",
+            "schema": {
+              "example": "clh123456789",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProgramDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Programme mis à jour avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgramResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Modification non autorisée"
+          },
+          "404": {
+            "description": "Programme non trouvé"
+          },
+          "409": {
+            "description": "Conflit (date de fin avant date de début)"
+          }
+        },
+        "tags": [
+          "Programs"
+        ]
+      },
+      "delete": {
+        "operationId": "ProgramController_deleteProgram",
+        "summary": "Supprimer un programme",
+        "description": "Supprime définitivement un programme et ses exercices associés",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID du programme",
+            "schema": {
+              "example": "clh123456789",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Programme supprimé avec succès"
+          },
+          "403": {
+            "description": "Suppression non autorisée"
+          },
+          "404": {
+            "description": "Programme non trouvé"
+          }
+        },
+        "tags": [
+          "Programs"
+        ]
+      }
+    },
+    "/programs/{id}/start": {
+      "post": {
+        "operationId": "ProgramController_startProgram",
+        "summary": "Démarrer un programme",
+        "description": "Active un programme pour l'utilisateur. Désactive automatiquement les autres programmes actifs.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID du programme",
+            "schema": {
+              "example": "clh123456789",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Programme démarré avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgramResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Démarrage non autorisé"
+          },
+          "404": {
+            "description": "Programme non trouvé"
+          },
+          "409": {
+            "description": "Programme déjà actif ou expiré"
+          }
+        },
+        "tags": [
+          "Programs"
+        ]
+      }
+    },
+    "/programs/{id}/pause": {
+      "put": {
+        "operationId": "ProgramController_pauseProgram",
+        "summary": "Mettre en pause un programme",
+        "description": "Désactive temporairement un programme actif",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID du programme",
+            "schema": {
+              "example": "clh123456789",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Programme mis en pause avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgramResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Programs"
+        ]
+      }
+    },
+    "/programs/{id}/resume": {
+      "put": {
+        "operationId": "ProgramController_resumeProgram",
+        "summary": "Reprendre un programme",
+        "description": "Réactive un programme en pause",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID du programme",
+            "schema": {
+              "example": "clh123456789",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Programme repris avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgramResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Programs"
+        ]
+      }
+    },
+    "/programs/{id}/complete": {
+      "put": {
+        "operationId": "ProgramController_completeProgram",
+        "summary": "Marquer un programme comme terminé",
+        "description": "Marque un programme comme terminé et le désactive",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID du programme",
+            "schema": {
+              "example": "clh123456789",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Programme marqué comme terminé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgramResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Programs"
+        ]
+      }
+    },
+    "/programs/{id}/status": {
+      "get": {
+        "operationId": "ProgramController_getProgramStatus",
+        "summary": "Récupérer le statut d'un programme",
+        "description": "Récupère des informations détaillées sur le statut et la progression d'un programme",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID du programme",
+            "schema": {
+              "example": "clh123456789",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Statut du programme récupéré avec succès"
+          }
+        },
+        "tags": [
+          "Programs"
+        ]
+      }
+    },
+    "/programs/{id}/progress": {
+      "get": {
+        "operationId": "ProgramController_getProgramProgress",
+        "summary": "Récupérer la progression d'un programme",
+        "description": "Récupère les informations de progression détaillées d'un programme",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID du programme",
+            "schema": {
+              "example": "clh123456789",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Progression du programme récupérée avec succès"
+          }
+        },
+        "tags": [
+          "Programs"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "FitMe API",
+    "description": "Documentation de l'API FitMe - Application de fitness basée sur le cycle menstruel",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Authentification et gestion des utilisateurs"
+    },
+    {
+      "name": "Status",
+      "description": "Statut de l'application"
+    },
+    {
+      "name": "Cycle",
+      "description": "Gestion du cycle menstruel et des phases"
+    },
+    {
+      "name": "Exercises",
+      "description": "Exercices adaptés aux phases du cycle"
+    },
+    {
+      "name": "Programs",
+      "description": "Génération de programmes d'entraînement personnalisés"
+    }
+  ],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "RegisterDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@example.com",
+            "description": "Adresse email"
+          },
+          "password": {
+            "type": "string",
+            "example": "motdepasse123",
+            "minLength": 8,
+            "description": "Mot de passe (min 8 caractères)"
+          },
+          "firstName": {
+            "type": "string",
+            "example": "Jane",
+            "description": "Prénom"
+          },
+          "profileType": {
+            "type": "string",
+            "example": "FEMALE",
+            "description": "Type de profil"
+          },
+          "contextType": {
+            "type": "string",
+            "example": "CYCLE",
+            "description": "Type de contexte"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "AuthResponseDto": {
+        "type": "object",
+        "properties": {
+          "tokens": {
+            "type": "object",
+            "properties": {
+              "accessToken": {
+                "type": "string",
+                "example": "eyJhbGciOiJIUzI1NiIs..."
+              },
+              "refreshToken": {
+                "type": "string",
+                "example": "eyJhbGciOiJIUzI1NiIs..."
+              },
+              "expiresIn": {
+                "type": "number",
+                "example": 900
+              }
+            }
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "cuid_example"
+              },
+              "email": {
+                "type": "string",
+                "example": "user@example.com"
+              },
+              "firstName": {
+                "type": "string",
+                "example": "Jane"
+              },
+              "profileType": {
+                "type": "string",
+                "example": "FEMALE"
+              },
+              "contextType": {
+                "type": "string",
+                "example": "CYCLE"
+              }
+            }
+          }
+        },
+        "required": [
+          "tokens",
+          "user"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@example.com",
+            "description": "Adresse email"
+          },
+          "password": {
+            "type": "string",
+            "example": "motdepasse123",
+            "description": "Mot de passe"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "RefreshTokenDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIs...",
+            "description": "Token de rafraîchissement JWT"
+          }
+        },
+        "required": [
+          "refreshToken"
+        ]
+      },
+      "TokenResponseDto": {
+        "type": "object",
+        "properties": {
+          "tokens": {
+            "type": "object",
+            "properties": {
+              "accessToken": {
+                "type": "string",
+                "example": "eyJhbGciOiJIUzI1NiIs..."
+              },
+              "refreshToken": {
+                "type": "string",
+                "example": "eyJhbGciOiJIUzI1NiIs..."
+              },
+              "expiresIn": {
+                "type": "number",
+                "example": 900
+              }
+            }
+          }
+        },
+        "required": [
+          "tokens"
+        ]
+      },
+      "ProfileResponseDto": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "cuid_example"
+              },
+              "email": {
+                "type": "string",
+                "example": "user@example.com"
+              },
+              "firstName": {
+                "type": "string",
+                "example": "Jane"
+              },
+              "birthDate": {
+                "type": "string",
+                "example": "1990-05-15"
+              },
+              "profileType": {
+                "type": "string",
+                "example": "FEMALE"
+              },
+              "contextType": {
+                "type": "string",
+                "example": "CYCLE"
+              },
+              "objective": {
+                "type": "string",
+                "example": "WEIGHT_LOSS"
+              },
+              "sportFrequency": {
+                "type": "string",
+                "example": "3_TIMES_WEEK"
+              },
+              "isMenopausal": {
+                "type": "boolean",
+                "example": false
+              }
+            }
+          }
+        },
+        "required": [
+          "user"
+        ]
+      },
+      "UpdateProfileDto": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "example": "Jane",
+            "description": "Prénom"
+          },
+          "birthDate": {
+            "type": "string",
+            "example": "1990-05-15",
+            "description": "Date de naissance (format YYYY-MM-DD)"
+          },
+          "profileType": {
+            "type": "string",
+            "example": "FEMALE",
+            "description": "Type de profil (FEMALE, MALE, NON_BINARY, OTHER)",
+            "enum": [
+              "FEMALE",
+              "MALE",
+              "NON_BINARY",
+              "OTHER"
+            ]
+          },
+          "contextType": {
+            "type": "string",
+            "example": "CYCLE",
+            "description": "Type de contexte (CYCLE, GENERAL, MENOPAUSE, NONE)",
+            "enum": [
+              "CYCLE",
+              "GENERAL",
+              "MENOPAUSE",
+              "NONE"
+            ]
+          },
+          "objective": {
+            "type": "string",
+            "example": "WEIGHT_LOSS",
+            "description": "Objectif principal"
+          },
+          "sportFrequency": {
+            "type": "string",
+            "example": "3_TIMES_WEEK",
+            "description": "Fréquence de sport"
+          },
+          "isMenopausal": {
+            "type": "boolean",
+            "example": false,
+            "description": "Statut ménopause"
+          }
+        }
+      },
+      "ChangePasswordDto": {
+        "type": "object",
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "example": "ancienMotDePasse123",
+            "description": "Mot de passe actuel"
+          },
+          "newPassword": {
+            "type": "string",
+            "example": "nouveauMotDePasse123",
+            "minLength": 8,
+            "description": "Nouveau mot de passe (min 8 caractères)"
+          }
+        },
+        "required": [
+          "currentPassword",
+          "newPassword"
+        ]
+      },
+      "SettingsResponseDto": {
+        "type": "object",
+        "properties": {
+          "settings": {
+            "type": "object",
+            "properties": {
+              "unitPreference": {
+                "type": "string",
+                "example": "METRIC",
+                "enum": [
+                  "METRIC",
+                  "IMPERIAL"
+                ]
+              },
+              "notificationEnabled": {
+                "type": "boolean",
+                "example": true
+              },
+              "notificationTime": {
+                "type": "string",
+                "example": "08:00:00"
+              }
+            }
+          },
+          "reminders": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "cuid_example"
+              },
+              "type": {
+                "type": "string",
+                "example": "PERIOD_START"
+              },
+              "enabled": {
+                "type": "boolean",
+                "example": true
+              },
+              "time": {
+                "type": "string",
+                "example": "08:00:00"
+              }
+            }
+          },
+          "objectives": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "cuid_example"
+              },
+              "type": {
+                "type": "string",
+                "example": "WEIGHT_LOSS"
+              },
+              "note": {
+                "type": "string",
+                "example": "Perdre 5kg en 3 mois"
+              }
+            }
+          },
+          "featureFlags": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "cuid_example"
+              },
+              "feature": {
+                "type": "string",
+                "example": "ADVANCED_ANALYTICS"
+              },
+              "isEnabled": {
+                "type": "boolean",
+                "example": true
+              }
+            }
+          }
+        },
+        "required": [
+          "settings",
+          "reminders",
+          "objectives",
+          "featureFlags"
+        ]
+      },
+      "UpdateSettingsDto": {
+        "type": "object",
+        "properties": {
+          "settings": {
+            "type": "object",
+            "properties": {
+              "unitPreference": {
+                "type": "string",
+                "example": "METRIC",
+                "enum": [
+                  "METRIC",
+                  "IMPERIAL"
+                ]
+              },
+              "notificationEnabled": {
+                "type": "boolean",
+                "example": true
+              },
+              "notificationTime": {
+                "type": "string",
+                "example": "08:00:00"
+              }
+            }
+          },
+          "reminders": {
+            "description": "Rappels à mettre à jour",
+            "example": [
+              {
+                "type": "PERIOD_START",
+                "enabled": true,
+                "time": "08:00:00"
+              }
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "objectives": {
+            "description": "Objectifs à mettre à jour",
+            "example": [
+              {
+                "type": "WEIGHT_LOSS",
+                "note": "Perdre 5kg en 3 mois"
+              }
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "featureFlags": {
+            "description": "Flags de fonctionnalités à mettre à jour",
+            "example": [
+              {
+                "feature": "ADVANCED_ANALYTICS",
+                "isEnabled": true
+              }
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "settings"
+        ]
+      },
+      "UpdateSettingsResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Paramètres mis à jour avec succès",
+            "description": "Message de confirmation"
+          },
+          "settings": {
+            "type": "object",
+            "properties": {
+              "unitPreference": {
+                "type": "string",
+                "example": "METRIC"
+              },
+              "notificationEnabled": {
+                "type": "boolean",
+                "example": true
+              },
+              "notificationTime": {
+                "type": "string",
+                "example": "08:00:00"
+              }
+            }
+          },
+          "updatedReminders": {
+            "type": "number",
+            "example": 2,
+            "description": "Nombre de rappels mis à jour"
+          },
+          "updatedObjectives": {
+            "type": "number",
+            "example": 1,
+            "description": "Nombre d'objectifs mis à jour"
+          },
+          "updatedFeatureFlags": {
+            "type": "number",
+            "example": 3,
+            "description": "Nombre de feature flags mis à jour"
+          }
+        },
+        "required": [
+          "message",
+          "settings",
+          "updatedReminders",
+          "updatedObjectives",
+          "updatedFeatureFlags"
+        ]
+      },
+      "PreferencesResponseDto": {
+        "type": "object",
+        "properties": {
+          "general": {
+            "type": "object",
+            "properties": {
+              "unitPreference": {
+                "type": "string",
+                "example": "METRIC",
+                "enum": [
+                  "METRIC",
+                  "IMPERIAL"
+                ]
+              },
+              "notificationEnabled": {
+                "type": "boolean",
+                "example": true
+              },
+              "notificationTime": {
+                "type": "string",
+                "example": "08:00:00"
+              }
+            }
+          },
+          "workouts": {
+            "type": "object",
+            "description": "Préférences d'entraînement",
+            "example": {
+              "objectives": [
+                {
+                  "id": "cuid_example",
+                  "type": "WEIGHT_LOSS",
+                  "note": "Perdre 5kg en 3 mois"
+                }
+              ],
+              "reminders": [
+                {
+                  "id": "cuid_example",
+                  "type": "EXERCISE",
+                  "enabled": true,
+                  "time": "08:00:00"
+                }
+              ]
+            }
+          },
+          "notifications": {
+            "type": "object",
+            "description": "Préférences de notifications",
+            "example": {
+              "reminders": [
+                {
+                  "id": "cuid_example",
+                  "type": "PERIOD_START",
+                  "enabled": true,
+                  "time": "08:00:00"
+                }
+              ],
+              "generalEnabled": true,
+              "defaultTime": "08:00:00"
+            }
+          }
+        },
+        "required": [
+          "general",
+          "workouts",
+          "notifications"
+        ]
+      },
+      "UpdateWorkoutPreferencesDto": {
+        "type": "object",
+        "properties": {
+          "objectives": {
+            "description": "Objectifs d'entraînement à mettre à jour",
+            "example": [
+              {
+                "type": "WEIGHT_LOSS",
+                "note": "Perdre 5kg en 3 mois"
+              }
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "reminders": {
+            "description": "Rappels d'entraînement à mettre à jour",
+            "example": [
+              {
+                "type": "EXERCISE",
+                "enabled": true,
+                "time": "08:00:00"
+              }
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "UpdateNotificationPreferencesDto": {
+        "type": "object",
+        "properties": {
+          "generalEnabled": {
+            "type": "boolean",
+            "example": true,
+            "description": "Activer/désactiver les notifications générales"
+          },
+          "defaultTime": {
+            "type": "string",
+            "example": "08:00:00",
+            "description": "Heure par défaut des notifications (HH:MM:SS)"
+          },
+          "reminders": {
+            "description": "Rappels de notifications à mettre à jour",
+            "example": [
+              {
+                "type": "PERIOD_START",
+                "enabled": true,
+                "time": "08:00:00"
+              }
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "CurrentPhaseDataDto": {
+        "type": "object",
+        "properties": {
+          "phase": {
+            "type": "string",
+            "enum": [
+              "MENSTRUAL",
+              "FOLLICULAR",
+              "OVULATION",
+              "LUTEAL"
+            ],
+            "example": "FOLLICULAR",
+            "description": "Phase actuelle du cycle menstruel"
+          },
+          "cycleDay": {
+            "type": "number",
+            "example": 12,
+            "description": "Jour actuel dans le cycle (1-28 généralement)",
+            "minimum": 1,
+            "maximum": 40
+          },
+          "cycleLength": {
+            "type": "number",
+            "example": 28,
+            "description": "Durée totale du cycle en jours",
+            "minimum": 21,
+            "maximum": 35
+          },
+          "periodLength": {
+            "type": "number",
+            "example": 5,
+            "description": "Durée des règles en jours",
+            "minimum": 3,
+            "maximum": 8
+          },
+          "daysUntilNextPhase": {
+            "type": "number",
+            "example": 2,
+            "description": "Nombre de jours avant la prochaine phase",
+            "minimum": 0
+          },
+          "phaseDescription": {
+            "type": "string",
+            "example": "Phase folliculaire - Énergie croissante, idéale pour commencer de nouveaux défis",
+            "description": "Description détaillée de la phase actuelle et de ses caractéristiques"
+          },
+          "recommendations": {
+            "example": [
+              "Commencer à augmenter l'intensité progressivement",
+              "Exercices cardiovasculaires modérés",
+              "Renforcement musculaire avec poids légers"
+            ],
+            "description": "Liste des recommandations spécifiques à cette phase",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "phase",
+          "cycleDay",
+          "cycleLength",
+          "periodLength",
+          "daysUntilNextPhase",
+          "phaseDescription",
+          "recommendations"
+        ]
+      },
+      "CurrentPhaseResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true,
+            "description": "Indique si la requête a été traitée avec succès"
+          },
+          "data": {
+            "description": "Données détaillées sur la phase actuelle du cycle",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CurrentPhaseDataDto"
+              }
+            ]
+          },
+          "message": {
+            "type": "string",
+            "example": "Vous êtes actuellement en Phase folliculaire - Énergie croissante, idéale pour commencer de nouveaux défis",
+            "description": "Message descriptif sur la phase actuelle"
+          }
+        },
+        "required": [
+          "success",
+          "data",
+          "message"
+        ]
+      },
+      "CycleConfigDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "Identifiant utilisateur",
+            "example": "user_123456789"
+          },
+          "isCycleTrackingEnabled": {
+            "type": "boolean",
+            "description": "Suivi du cycle activé",
+            "example": true
+          },
+          "usesExternalProvider": {
+            "type": "boolean",
+            "description": "Utilise un fournisseur externe (Apple Health, Google Fit)",
+            "example": false
+          },
+          "useMenopauseMode": {
+            "type": "boolean",
+            "description": "Mode ménopause activé",
+            "example": false
+          },
+          "averageCycleLength": {
+            "type": "number",
+            "description": "Durée moyenne du cycle en jours",
+            "example": 28,
+            "minimum": 21,
+            "maximum": 40
+          },
+          "averagePeriodLength": {
+            "type": "number",
+            "description": "Durée moyenne des règles en jours",
+            "example": 5,
+            "minimum": 3,
+            "maximum": 10
+          },
+          "prefersManualInput": {
+            "type": "boolean",
+            "description": "Préfère la saisie manuelle",
+            "example": false
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Date de création",
+            "example": "2024-01-15T10:30:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Date de dernière modification",
+            "example": "2024-01-15T10:30:00.000Z"
+          }
+        },
+        "required": [
+          "userId",
+          "isCycleTrackingEnabled",
+          "usesExternalProvider",
+          "useMenopauseMode",
+          "prefersManualInput",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CycleConfigResponseDto": {
+        "type": "object",
+        "properties": {
+          "config": {
+            "description": "Configuration du cycle",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CycleConfigDto"
+              }
+            ]
+          },
+          "message": {
+            "type": "string",
+            "description": "Message de confirmation",
+            "example": "Configuration du cycle récupérée avec succès"
+          }
+        },
+        "required": [
+          "config",
+          "message"
+        ]
+      },
+      "UpdateCycleConfigDto": {
+        "type": "object",
+        "properties": {
+          "isCycleTrackingEnabled": {
+            "type": "boolean",
+            "description": "Activer/désactiver le suivi du cycle",
+            "example": true
+          },
+          "usesExternalProvider": {
+            "type": "boolean",
+            "description": "Activer/désactiver le fournisseur externe",
+            "example": false
+          },
+          "useMenopauseMode": {
+            "type": "boolean",
+            "description": "Activer/désactiver le mode ménopause",
+            "example": false
+          },
+          "averageCycleLength": {
+            "type": "number",
+            "description": "Durée moyenne du cycle (21-40 jours)",
+            "example": 28,
+            "minimum": 21,
+            "maximum": 40
+          },
+          "averagePeriodLength": {
+            "type": "number",
+            "description": "Durée moyenne des règles (3-10 jours)",
+            "example": 5,
+            "minimum": 3,
+            "maximum": 10
+          },
+          "prefersManualInput": {
+            "type": "boolean",
+            "description": "Préférer la saisie manuelle",
+            "example": false
+          }
+        }
+      },
+      "LogPeriodDto": {
+        "type": "object",
+        "properties": {
+          "startDate": {
+            "type": "string",
+            "description": "Date de début des règles",
+            "example": "2024-01-15",
+            "format": "date"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "Date de fin des règles",
+            "example": "2024-01-20",
+            "format": "date"
+          },
+          "flowIntensity": {
+            "type": "number",
+            "description": "Intensité du flux (1=léger, 5=très fort)",
+            "example": 3,
+            "minimum": 1,
+            "maximum": 5
+          },
+          "notes": {
+            "type": "string",
+            "description": "Notes additionnelles",
+            "example": "Flux normal, quelques crampes le premier jour"
+          }
+        },
+        "required": [
+          "startDate"
+        ]
+      },
+      "PeriodDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifiant du cycle",
+            "example": "cycle_123456789"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Date de début des règles",
+            "example": "2024-01-15T00:00:00.000Z"
+          },
+          "periodLength": {
+            "type": "number",
+            "description": "Durée des règles en jours",
+            "example": 5
+          },
+          "cycleLength": {
+            "type": "number",
+            "description": "Durée totale du cycle en jours",
+            "example": 28
+          },
+          "isRegular": {
+            "type": "boolean",
+            "description": "Cycle régulier",
+            "example": true
+          },
+          "flowIntensity": {
+            "type": "number",
+            "description": "Intensité du flux moyenne",
+            "example": 3
+          },
+          "notes": {
+            "type": "string",
+            "description": "Notes sur ce cycle",
+            "example": "Cycle normal, pas de complications"
+          }
+        },
+        "required": [
+          "id",
+          "startDate",
+          "isRegular"
+        ]
+      },
+      "LogPeriodResponseDto": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "description": "Cycle créé ou mis à jour",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PeriodDto"
+              }
+            ]
+          },
+          "message": {
+            "type": "string",
+            "description": "Message de confirmation",
+            "example": "Règles enregistrées avec succès"
+          },
+          "isNewCycle": {
+            "type": "boolean",
+            "description": "Indique si un nouveau cycle a été créé",
+            "example": true
+          }
+        },
+        "required": [
+          "period",
+          "message",
+          "isNewCycle"
+        ]
+      },
+      "PeriodsHistoryResponseDto": {
+        "type": "object",
+        "properties": {
+          "periods": {
+            "description": "Liste des cycles/règles",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PeriodDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "Nombre total de cycles",
+            "example": 12
+          },
+          "averageCycleLength": {
+            "type": "number",
+            "description": "Durée moyenne du cycle",
+            "example": 28.5
+          },
+          "averagePeriodLength": {
+            "type": "number",
+            "description": "Durée moyenne des règles",
+            "example": 5.2
+          },
+          "regularityPercentage": {
+            "type": "number",
+            "description": "Pourcentage de cycles réguliers",
+            "example": 85.5
+          }
+        },
+        "required": [
+          "periods",
+          "total",
+          "averageCycleLength",
+          "averagePeriodLength",
+          "regularityPercentage"
+        ]
+      },
+      "CyclePredictionDto": {
+        "type": "object",
+        "properties": {
+          "nextPeriodStart": {
+            "type": "string",
+            "description": "Date prédite des prochaines règles",
+            "example": "2024-02-12T00:00:00.000Z"
+          },
+          "nextOvulation": {
+            "type": "string",
+            "description": "Date prédite de la prochaine ovulation",
+            "example": "2024-01-28T00:00:00.000Z"
+          },
+          "confidence": {
+            "type": "number",
+            "description": "Niveau de confiance de la prédiction (%)",
+            "example": 87.5,
+            "minimum": 0,
+            "maximum": 100
+          },
+          "currentCycleDay": {
+            "type": "number",
+            "description": "Jour actuel dans le cycle",
+            "example": 14
+          },
+          "currentPhase": {
+            "type": "string",
+            "description": "Phase actuelle du cycle",
+            "enum": [
+              "MENSTRUAL",
+              "FOLLICULAR",
+              "OVULATION",
+              "LUTEAL"
+            ],
+            "example": "OVULATION"
+          },
+          "daysUntilNextPeriod": {
+            "type": "number",
+            "description": "Jours jusqu'aux prochaines règles",
+            "example": 14
+          },
+          "daysUntilOvulation": {
+            "type": "number",
+            "description": "Jours jusqu'à la prochaine ovulation",
+            "example": 0
+          }
+        },
+        "required": [
+          "nextPeriodStart",
+          "nextOvulation",
+          "confidence",
+          "currentCycleDay",
+          "currentPhase",
+          "daysUntilNextPeriod",
+          "daysUntilOvulation"
+        ]
+      },
+      "CyclePredictionsResponseDto": {
+        "type": "object",
+        "properties": {
+          "predictions": {
+            "description": "Prédictions du cycle",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CyclePredictionDto"
+              }
+            ]
+          },
+          "message": {
+            "type": "string",
+            "description": "Message informatif",
+            "example": "Prédictions calculées avec 87% de confiance basées sur vos 6 derniers cycles"
+          }
+        },
+        "required": [
+          "predictions",
+          "message"
+        ]
+      },
+      "CalendarDayDto": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "description": "Date du jour",
+            "example": "2024-01-15"
+          },
+          "phase": {
+            "type": "string",
+            "description": "Phase du cycle ce jour",
+            "enum": [
+              "MENSTRUAL",
+              "FOLLICULAR",
+              "OVULATION",
+              "LUTEAL"
+            ],
+            "example": "MENSTRUAL"
+          },
+          "cycleDay": {
+            "type": "number",
+            "description": "Jour du cycle (1-40)",
+            "example": 1
+          },
+          "dayType": {
+            "type": "string",
+            "description": "Type de jour",
+            "example": "period_start",
+            "enum": [
+              "period_start",
+              "period_day",
+              "ovulation",
+              "fertile",
+              "normal",
+              "predicted_period",
+              "predicted_ovulation"
+            ]
+          },
+          "events": {
+            "description": "Événements/symptômes ce jour",
+            "example": [
+              "crampes",
+              "flux_fort"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "isPredicted": {
+            "type": "boolean",
+            "description": "Jour prédit ou confirmé",
+            "example": false
+          }
+        },
+        "required": [
+          "date",
+          "dayType",
+          "isPredicted"
+        ]
+      },
+      "CycleCalendarResponseDto": {
+        "type": "object",
+        "properties": {
+          "calendar": {
+            "description": "Jours du calendrier",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CalendarDayDto"
+            }
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Date de début du calendrier",
+            "example": "2024-01-01"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "Date de fin du calendrier",
+            "example": "2024-03-31"
+          },
+          "monthsCount": {
+            "type": "number",
+            "description": "Nombre de mois affichés",
+            "example": 3
+          },
+          "message": {
+            "type": "string",
+            "description": "Message informatif",
+            "example": "Calendrier du cycle pour 3 mois avec prédictions"
+          }
+        },
+        "required": [
+          "calendar",
+          "startDate",
+          "endDate",
+          "monthsCount",
+          "message"
+        ]
+      },
+      "LogSymptomDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Type de symptôme",
+            "enum": [
+              "CRAMPS",
+              "BLOATING",
+              "HEADACHE",
+              "BACK_PAIN",
+              "BREAST_TENDERNESS",
+              "ACNE",
+              "MOOD_SWINGS",
+              "FATIGUE",
+              "NAUSEA",
+              "FOOD_CRAVINGS",
+              "CONSTIPATION",
+              "DIARRHEA",
+              "HOT_FLASHES",
+              "COLD_FLASHES",
+              "JOINT_PAIN",
+              "INSOMNIA"
+            ],
+            "example": "CRAMPS"
+          },
+          "intensity": {
+            "type": "number",
+            "description": "Intensité du symptôme (1=léger, 5=très fort)",
+            "example": 3,
+            "minimum": 1,
+            "maximum": 5
+          },
+          "notes": {
+            "type": "string",
+            "description": "Notes sur le symptôme",
+            "example": "Crampes légères le matin, soulagées par chaleur"
+          }
+        },
+        "required": [
+          "type",
+          "intensity"
+        ]
+      },
+      "LogSymptomsDto": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "description": "Date des symptômes",
+            "example": "2024-01-15",
+            "format": "date"
+          },
+          "symptoms": {
+            "description": "Liste des symptômes ressentis",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogSymptomDto"
+            }
+          }
+        },
+        "required": [
+          "date",
+          "symptoms"
+        ]
+      },
+      "SymptomEntryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifiant du symptôme",
+            "example": "symptom_123456789"
+          },
+          "type": {
+            "type": "string",
+            "description": "Type de symptôme",
+            "enum": [
+              "CRAMPS",
+              "BLOATING",
+              "HEADACHE",
+              "BACK_PAIN",
+              "BREAST_TENDERNESS",
+              "ACNE",
+              "MOOD_SWINGS",
+              "FATIGUE",
+              "NAUSEA",
+              "FOOD_CRAVINGS",
+              "CONSTIPATION",
+              "DIARRHEA",
+              "HOT_FLASHES",
+              "COLD_FLASHES",
+              "JOINT_PAIN",
+              "INSOMNIA"
+            ],
+            "example": "CRAMPS"
+          },
+          "intensity": {
+            "type": "number",
+            "description": "Intensité (1-5)",
+            "example": 3
+          },
+          "notes": {
+            "type": "string",
+            "description": "Notes sur le symptôme",
+            "example": "Crampes légères le matin"
+          },
+          "date": {
+            "type": "string",
+            "description": "Date du symptôme",
+            "example": "2024-01-15T00:00:00.000Z"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Date de création",
+            "example": "2024-01-15T10:30:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "intensity",
+          "date",
+          "createdAt"
+        ]
+      },
+      "LogSymptomsResponseDto": {
+        "type": "object",
+        "properties": {
+          "symptoms": {
+            "description": "Symptômes enregistrés",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SymptomEntryDto"
+            }
+          },
+          "date": {
+            "type": "string",
+            "description": "Date des symptômes",
+            "example": "2024-01-15"
+          },
+          "message": {
+            "type": "string",
+            "description": "Message de confirmation",
+            "example": "3 symptômes enregistrés pour le 15 janvier 2024"
+          }
+        },
+        "required": [
+          "symptoms",
+          "date",
+          "message"
+        ]
+      },
+      "SymptomStatsDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Type de symptôme",
+            "enum": [
+              "CRAMPS",
+              "BLOATING",
+              "HEADACHE",
+              "BACK_PAIN",
+              "BREAST_TENDERNESS",
+              "ACNE",
+              "MOOD_SWINGS",
+              "FATIGUE",
+              "NAUSEA",
+              "FOOD_CRAVINGS",
+              "CONSTIPATION",
+              "DIARRHEA",
+              "HOT_FLASHES",
+              "COLD_FLASHES",
+              "JOINT_PAIN",
+              "INSOMNIA"
+            ],
+            "example": "CRAMPS"
+          },
+          "averageIntensity": {
+            "type": "number",
+            "description": "Intensité moyenne",
+            "example": 3.2
+          },
+          "occurrences": {
+            "type": "number",
+            "description": "Nombre d'occurrences",
+            "example": 15
+          },
+          "mostCommonPhase": {
+            "type": "string",
+            "description": "Phase du cycle la plus fréquente",
+            "enum": [
+              "MENSTRUAL",
+              "FOLLICULAR",
+              "OVULATION",
+              "LUTEAL"
+            ],
+            "example": "MENSTRUAL"
+          },
+          "phaseDistribution": {
+            "type": "object",
+            "description": "Pourcentage d'occurrence par phase",
+            "example": {
+              "MENSTRUAL": 80,
+              "FOLLICULAR": 10,
+              "OVULATION": 5,
+              "LUTEAL": 15
+            }
+          }
+        },
+        "required": [
+          "type",
+          "averageIntensity",
+          "occurrences",
+          "mostCommonPhase",
+          "phaseDistribution"
+        ]
+      },
+      "SymptomsHistoryResponseDto": {
+        "type": "object",
+        "properties": {
+          "symptoms": {
+            "description": "Historique des symptômes",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SymptomEntryDto"
+            }
+          },
+          "stats": {
+            "description": "Statistiques par type de symptôme",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SymptomStatsDto"
+            }
+          },
+          "periodStart": {
+            "type": "string",
+            "description": "Période analysée - date de début",
+            "example": "2024-01-01"
+          },
+          "periodEnd": {
+            "type": "string",
+            "description": "Période analysée - date de fin",
+            "example": "2024-01-31"
+          },
+          "totalEntries": {
+            "type": "number",
+            "description": "Nombre total d'entrées de symptômes",
+            "example": 45
+          },
+          "uniqueSymptomTypes": {
+            "type": "number",
+            "description": "Types de symptômes uniques",
+            "example": 8
+          },
+          "message": {
+            "type": "string",
+            "description": "Message informatif",
+            "example": "Analyse de 45 symptômes sur 31 jours - 8 types différents identifiés"
+          }
+        },
+        "required": [
+          "symptoms",
+          "stats",
+          "periodStart",
+          "periodEnd",
+          "totalEntries",
+          "uniqueSymptomTypes",
+          "message"
+        ]
+      },
+      "ExerciseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "exe_123456789",
+            "description": "Identifiant unique de l'exercice"
+          },
+          "title": {
+            "type": "string",
+            "example": "Squats au poids du corps",
+            "description": "Nom de l'exercice"
+          },
+          "description": {
+            "type": "string",
+            "example": "Exercice de renforcement pour les jambes et les fessiers",
+            "description": "Description détaillée de l'exercice et de ses bénéfices"
+          },
+          "imageUrl": {
+            "type": "string",
+            "example": "https://fitme-app.com/images/exercises/squats.jpg",
+            "description": "URL de l'image ou vidéo démonstrative de l'exercice"
+          },
+          "durationMinutes": {
+            "type": "number",
+            "example": 15,
+            "description": "Durée recommandée en minutes"
+          },
+          "formattedDuration": {
+            "type": "string",
+            "example": "15min",
+            "description": "Durée formatée de manière lisible"
+          },
+          "intensity": {
+            "type": "string",
+            "enum": [
+              "VERY_LOW",
+              "LOW",
+              "MODERATE",
+              "HIGH",
+              "VERY_HIGH"
+            ],
+            "example": "MODERATE",
+            "description": "Niveau d'intensité de l'exercice"
+          },
+          "intensityLabel": {
+            "type": "string",
+            "example": "Modérée",
+            "description": "Label français du niveau d'intensité"
+          },
+          "muscleZone": {
+            "type": "string",
+            "enum": [
+              "UPPER_BODY",
+              "LOWER_BODY",
+              "CORE",
+              "FULL_BODY",
+              "CARDIO",
+              "FLEXIBILITY",
+              "BALANCE"
+            ],
+            "example": "LOWER_BODY",
+            "description": "Zone musculaire principalement travaillée"
+          },
+          "muscleZoneLabel": {
+            "type": "string",
+            "example": "Bas du corps",
+            "description": "Label français de la zone musculaire"
+          },
+          "isRecommendedForPhase": {
+            "type": "boolean",
+            "example": true,
+            "description": "Indique si cet exercice est spécialement recommandé pour la phase de cycle"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "formattedDuration",
+          "intensityLabel",
+          "muscleZoneLabel",
+          "isRecommendedForPhase"
+        ]
+      },
+      "PhaseInfoDto": {
+        "type": "object",
+        "properties": {
+          "phase": {
+            "type": "string",
+            "enum": [
+              "MENSTRUAL",
+              "FOLLICULAR",
+              "OVULATION",
+              "LUTEAL"
+            ],
+            "example": "FOLLICULAR",
+            "description": "Phase du cycle menstruel"
+          },
+          "phaseLabel": {
+            "type": "string",
+            "example": "Phase Folliculaire",
+            "description": "Nom complet en français de la phase"
+          },
+          "recommendedIntensity": {
+            "type": "string",
+            "enum": [
+              "VERY_LOW",
+              "LOW",
+              "MODERATE",
+              "HIGH",
+              "VERY_HIGH"
+            ],
+            "example": "MODERATE",
+            "description": "Intensité recommandée pour cette phase"
+          },
+          "description": {
+            "type": "string",
+            "example": "Énergie croissante. Moment idéal pour augmenter progressivement l'intensité.",
+            "description": "Description détaillée des caractéristiques de cette phase"
+          }
+        },
+        "required": [
+          "phase",
+          "phaseLabel",
+          "recommendedIntensity",
+          "description"
+        ]
+      },
+      "ExerciseListDataDto": {
+        "type": "object",
+        "properties": {
+          "exercises": {
+            "description": "Liste des exercices correspondant aux critères",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExerciseDto"
+            }
+          },
+          "phaseInfo": {
+            "description": "Informations sur la phase de cycle et recommandations",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PhaseInfoDto"
+              }
+            ]
+          },
+          "totalCount": {
+            "type": "number",
+            "example": 15,
+            "description": "Nombre total d'exercices retournés"
+          }
+        },
+        "required": [
+          "exercises",
+          "phaseInfo",
+          "totalCount"
+        ]
+      },
+      "ExerciseListResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true,
+            "description": "Indique si la requête a été traitée avec succès"
+          },
+          "data": {
+            "description": "Données de la réponse contenant exercices et informations de phase",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ExerciseListDataDto"
+              }
+            ]
+          },
+          "message": {
+            "type": "string",
+            "example": "15 exercice(s) trouvé(s) pour la phase Phase Folliculaire",
+            "description": "Message descriptif du résultat de la recherche"
+          }
+        },
+        "required": [
+          "success",
+          "data",
+          "message"
+        ]
+      },
+      "CreateExerciseDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Titre de l'exercice",
+            "example": "Pompes modifiées"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description détaillée de l'exercice",
+            "example": "Pompes adaptées pour les débutants, genoux au sol"
+          },
+          "imageUrl": {
+            "type": "string",
+            "description": "URL de l'image de démonstration",
+            "example": "https://example.com/images/pompes-modifiees.jpg"
+          },
+          "durationMinutes": {
+            "type": "number",
+            "description": "Durée de l'exercice en minutes",
+            "example": 15
+          },
+          "intensity": {
+            "type": "string",
+            "description": "Niveau d'intensité de l'exercice",
+            "enum": [
+              "VERY_LOW",
+              "LOW",
+              "MODERATE",
+              "HIGH",
+              "VERY_HIGH"
+            ],
+            "example": "MODERATE"
+          },
+          "muscleZone": {
+            "type": "string",
+            "description": "Zone musculaire ciblée",
+            "enum": [
+              "UPPER_BODY",
+              "LOWER_BODY",
+              "CORE",
+              "FULL_BODY",
+              "CARDIO",
+              "FLEXIBILITY",
+              "BALANCE"
+            ],
+            "example": "UPPER_BODY"
+          }
+        },
+        "required": [
+          "title"
+        ]
+      },
+      "ExerciseDetailsDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifiant de l'exercice",
+            "example": "exe_123456789"
+          },
+          "title": {
+            "type": "string",
+            "description": "Nom de l'exercice",
+            "example": "Squats au poids du corps"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description détaillée de l'exercice",
+            "example": "Exercice de renforcement pour les jambes et les fessiers"
+          },
+          "imageUrl": {
+            "type": "string",
+            "description": "URL de l'image de l'exercice",
+            "example": "https://fitme-app.com/images/exercises/squats.jpg"
+          },
+          "durationMinutes": {
+            "type": "number",
+            "description": "Durée recommandée en minutes",
+            "example": 15
+          },
+          "formattedDuration": {
+            "type": "string",
+            "description": "Durée formatée",
+            "example": "15min"
+          },
+          "intensity": {
+            "type": "string",
+            "enum": [
+              "VERY_LOW",
+              "LOW",
+              "MODERATE",
+              "HIGH",
+              "VERY_HIGH"
+            ],
+            "description": "Niveau d'intensité",
+            "example": "MODERATE"
+          },
+          "intensityLabel": {
+            "type": "string",
+            "description": "Label d'intensité en français",
+            "example": "Modérée"
+          },
+          "muscleZone": {
+            "type": "string",
+            "enum": [
+              "UPPER_BODY",
+              "LOWER_BODY",
+              "CORE",
+              "FULL_BODY",
+              "CARDIO",
+              "FLEXIBILITY",
+              "BALANCE"
+            ],
+            "description": "Zone musculaire travaillée",
+            "example": "LOWER_BODY"
+          },
+          "muscleZoneLabel": {
+            "type": "string",
+            "description": "Label de zone musculaire en français",
+            "example": "Bas du corps"
+          },
+          "isFavorite": {
+            "type": "boolean",
+            "description": "Indique si l'exercice est dans les favoris",
+            "example": true
+          },
+          "averageRating": {
+            "type": "number",
+            "description": "Note moyenne de l'exercice",
+            "example": 4.3
+          },
+          "totalRatings": {
+            "type": "number",
+            "description": "Nombre total d'évaluations",
+            "example": 127
+          },
+          "userRating": {
+            "type": "number",
+            "description": "Note donnée par l'utilisateur actuel",
+            "example": 5
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Date de création",
+            "example": "2024-01-15T10:30:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Date de dernière modification",
+            "example": "2024-01-15T10:30:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "formattedDuration",
+          "intensityLabel",
+          "muscleZoneLabel",
+          "isFavorite",
+          "averageRating",
+          "totalRatings",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreateExerciseResponseDto": {
+        "type": "object",
+        "properties": {
+          "exercise": {
+            "description": "Exercice créé avec succès",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ExerciseDetailsDto"
+              }
+            ]
+          },
+          "message": {
+            "type": "string",
+            "description": "Message de confirmation",
+            "example": "Exercice créé avec succès"
+          }
+        },
+        "required": [
+          "exercise",
+          "message"
+        ]
+      },
+      "FavoriteExerciseDto": {
+        "type": "object",
+        "properties": {
+          "exercise": {
+            "description": "Informations de l'exercice",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ExerciseDetailsDto"
+              }
+            ]
+          },
+          "addedToFavoritesAt": {
+            "type": "string",
+            "description": "Date d'ajout aux favoris",
+            "example": "2024-01-15T10:30:00.000Z"
+          },
+          "averageRating": {
+            "type": "number",
+            "description": "Note moyenne de l'exercice",
+            "example": 4.3
+          },
+          "totalRatings": {
+            "type": "number",
+            "description": "Nombre total d'évaluations",
+            "example": 127
+          },
+          "userRating": {
+            "type": "number",
+            "description": "Note donnée par l'utilisateur",
+            "example": 5
+          }
+        },
+        "required": [
+          "exercise",
+          "addedToFavoritesAt",
+          "averageRating",
+          "totalRatings"
+        ]
+      },
+      "FavoriteExercisesResponseDto": {
+
       }
     },
     "/cycle/current-phase": {
@@ -398,60 +3808,140 @@
     },
     "schemas": {
       "RegisterDto": {
+
         "type": "object",
         "properties": {
-          "email": {
-            "type": "string",
-            "example": "user@example.com",
-            "description": "Adresse email"
+          "favorites": {
+            "description": "Liste des exercices favoris avec détails",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FavoriteExerciseDto"
+            }
           },
-          "password": {
-            "type": "string",
-            "example": "motdepasse123",
-            "minLength": 8,
-            "description": "Mot de passe (min 8 caractères)"
-          },
-          "firstName": {
-            "type": "string",
-            "example": "Jane",
-            "description": "Prénom"
-          },
-          "profileType": {
-            "type": "string",
-            "example": "FEMALE",
-            "description": "Type de profil"
-          },
-          "contextType": {
-            "type": "string",
-            "example": "CYCLE",
-            "description": "Type de contexte"
+          "total": {
+            "type": "number",
+            "description": "Nombre total d'exercices favoris",
+            "example": 12
           }
         },
         "required": [
-          "email",
-          "password"
+          "favorites",
+          "total"
         ]
       },
-      "AuthResponseDto": {
+      "ExerciseDetailsResponseDto": {
         "type": "object",
         "properties": {
-          "tokens": {
-            "type": "object",
-            "properties": {
-              "accessToken": {
-                "type": "string",
-                "example": "eyJhbGciOiJIUzI1NiIs..."
-              },
-              "refreshToken": {
-                "type": "string",
-                "example": "eyJhbGciOiJIUzI1NiIs..."
-              },
-              "expiresIn": {
-                "type": "number",
-                "example": 900
+          "exercise": {
+            "description": "Détails complets de l'exercice",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ExerciseDetailsDto"
               }
-            }
+            ]
+          }
+        },
+        "required": [
+          "exercise"
+        ]
+      },
+      "AddToFavoritesResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message de confirmation",
+            "example": "Exercice ajouté aux favoris avec succès"
           },
+          "addedAt": {
+            "type": "string",
+            "description": "Date d'ajout aux favoris",
+            "example": "2024-01-15T10:30:00.000Z"
+          }
+        },
+        "required": [
+          "message",
+          "addedAt"
+        ]
+      },
+      "RateExerciseDto": {
+        "type": "object",
+        "properties": {
+          "rating": {
+            "type": "number",
+            "description": "Note de 1 à 5 étoiles",
+            "example": 4,
+            "minimum": 1,
+            "maximum": 5
+          },
+          "comment": {
+            "type": "string",
+            "description": "Commentaire optionnel sur l'exercice",
+            "example": "Excellent exercice pour le renforcement des jambes !"
+          }
+        },
+        "required": [
+          "rating"
+        ]
+      },
+      "ExerciseRatingDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifiant de l'évaluation",
+            "example": "rat_123456789"
+          },
+          "rating": {
+            "type": "number",
+            "description": "Note de 1 à 5 étoiles",
+            "example": 4
+          },
+          "comment": {
+            "type": "string",
+            "description": "Commentaire sur l'exercice",
+            "example": "Excellent exercice pour le renforcement des jambes !"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Date de création de l'évaluation",
+            "example": "2024-01-15T10:30:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Date de dernière modification",
+            "example": "2024-01-15T10:30:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "rating",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "RateExerciseResponseDto": {
+        "type": "object",
+        "properties": {
+          "rating": {
+            "description": "Évaluation créée ou mise à jour",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ExerciseRatingDto"
+              }
+            ]
+          },
+
+          "isNewRating": {
+            "type": "boolean",
+            "description": "Indique si c'est une nouvelle évaluation ou une mise à jour",
+            "example": true
+          },
+          "newAverageRating": {
+            "type": "number",
+            "description": "Nouvelle note moyenne de l'exercice",
+            "example": 4.3
+
           "user": {
             "type": "object",
             "properties": {
@@ -487,67 +3977,295 @@
           }
         },
         "required": [
-          "tokens",
-          "user"
+          "rating",
+          "isNewRating",
+          "newAverageRating"
         ]
       },
-      "LoginDto": {
+      "GenerateProgramDto": {
         "type": "object",
         "properties": {
-          "email": {
-            "type": "string",
-            "example": "user@example.com",
-            "description": "Adresse email"
+          "duration": {
+            "type": "number",
+            "example": 30,
+            "description": "Durée souhaitée en minutes (défaut: 30)"
           },
-          "password": {
+          "focusZone": {
             "type": "string",
-            "example": "motdepasse123",
-            "description": "Mot de passe"
+            "enum": [
+              "UPPER_BODY",
+              "LOWER_BODY",
+              "CORE",
+              "FULL_BODY",
+              "CARDIO",
+              "FLEXIBILITY",
+              "BALANCE"
+            ],
+            "example": "FULL_BODY",
+            "description": "Zone musculaire à privilégier"
+          },
+          "sessionType": {
+            "type": "string",
+            "enum": [
+              "cardio",
+              "strength",
+              "flexibility",
+              "mixed"
+            ],
+            "example": "mixed",
+            "description": "Type de séance souhaité"
+          }
+        }
+      },
+      "GeneratedProgramResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "type": "object"
+          },
+          "message": {
+            "type": "string",
+            "example": "Programme \"Énergie Croissante - Complet 30min\" généré avec succès pour votre Phase Folliculaire"
           }
         },
         "required": [
-          "email",
-          "password"
+          "success",
+          "data",
+          "message"
         ]
       },
-      "RefreshTokenDto": {
+      "ProgramExerciseDto": {
         "type": "object",
         "properties": {
-          "refreshToken": {
+          "exerciseId": {
             "type": "string",
-            "example": "eyJhbGciOiJIUzI1NiIs...",
-            "description": "Token de rafraîchissement JWT"
+            "description": "Exercise ID",
+            "example": "clh456789123"
+          },
+          "order": {
+            "type": "number",
+            "description": "Order of this exercise in the program",
+            "example": 1
+          },
+          "sets": {
+            "type": "number",
+            "description": "Number of sets",
+            "example": 3
+          },
+          "reps": {
+            "type": "string",
+            "description": "Number of repetitions (can be range like \"8-12\")",
+            "example": "10-15"
+          },
+          "duration": {
+            "type": "number",
+            "description": "Duration in seconds for time-based exercises",
+            "example": 30
+          },
+          "restTime": {
+            "type": "number",
+            "description": "Rest time in seconds between sets",
+            "example": 60
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional notes for this exercise",
+            "example": "Focus on form over speed"
           }
         },
         "required": [
-          "refreshToken"
+          "exerciseId",
+          "order"
         ]
       },
-      "TokenResponseDto": {
+      "CreateProgramDto": {
         "type": "object",
         "properties": {
-          "tokens": {
-            "type": "object",
-            "properties": {
-              "accessToken": {
-                "type": "string",
-                "example": "eyJhbGciOiJIUzI1NiIs..."
-              },
-              "refreshToken": {
-                "type": "string",
-                "example": "eyJhbGciOiJIUzI1NiIs..."
-              },
-              "expiresIn": {
-                "type": "number",
-                "example": 900
-              }
+          "title": {
+            "type": "string",
+            "description": "Program title",
+            "example": "Follicular Phase Strength Training"
+          },
+          "goal": {
+            "type": "string",
+            "description": "Program goal description",
+            "example": "Build strength during follicular phase with progressive overload"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Program start date",
+            "example": "2024-01-15T00:00:00.000Z"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "Program end date",
+            "example": "2024-02-15T00:00:00.000Z"
+          },
+          "isTemplate": {
+            "type": "boolean",
+            "description": "Whether this program is a template that can be reused",
+            "example": false,
+            "default": false
+          },
+          "exercises": {
+            "description": "List of exercises in this program",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProgramExerciseDto"
             }
           }
         },
         "required": [
-          "tokens"
+          "title",
+          "startDate"
         ]
       },
+      "ProgramResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Program ID",
+            "example": "clh123456789"
+          },
+          "title": {
+            "type": "string",
+            "description": "Program title",
+            "example": "Follicular Phase Strength Training"
+          },
+          "goal": {
+            "type": "object",
+            "description": "Program goal",
+            "example": "Build strength during follicular phase"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Program start date",
+            "example": "2024-01-15T00:00:00.000Z"
+          },
+          "endDate": {
+            "type": "object",
+            "description": "Program end date",
+            "example": "2024-02-15T00:00:00.000Z"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Whether the program is currently active",
+            "example": true
+          },
+          "isTemplate": {
+            "type": "boolean",
+            "description": "Whether this program is a template",
+            "example": false
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Creation timestamp",
+            "example": "2024-01-15T10:30:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Last update timestamp",
+            "example": "2024-01-15T10:30:00.000Z"
+          },
+          "exerciseCount": {
+            "type": "number",
+            "description": "Number of exercises in the program",
+            "example": 8
+          },
+          "exercises": {
+            "description": "Exercises in this program (only included in detailed view)",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProgramExerciseDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "goal",
+          "startDate",
+          "endDate",
+          "isActive",
+          "isTemplate",
+          "createdAt",
+          "updatedAt",
+          "exerciseCount"
+        ]
+      },
+      "ProgramListResponseDto": {
+        "type": "object",
+        "properties": {
+          "programs": {
+            "description": "List of programs",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProgramResponseDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "Total count of programs (for pagination)",
+            "example": 15
+          },
+          "offset": {
+            "type": "number",
+            "description": "Current page offset",
+            "example": 0
+          },
+          "limit": {
+            "type": "number",
+            "description": "Number of programs returned",
+            "example": 10
+          }
+        },
+        "required": [
+          "programs",
+          "total",
+          "offset",
+          "limit"
+        ]
+      },
+
+      "UpdateProgramDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Program title",
+            "example": "Updated Follicular Phase Training"
+          },
+          "goal": {
+            "type": "string",
+            "description": "Program goal description",
+            "example": "Updated goal for strength building"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Program start date",
+            "example": "2024-01-15T00:00:00.000Z"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "Program end date",
+            "example": "2024-02-15T00:00:00.000Z"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Whether the program is currently active",
+            "example": true
+          },
+          "isTemplate": {
+            "type": "boolean",
+            "description": "Whether this program is a template",
+            "example": false
+          }
+        }
       "OnboardingDto": {
         "type": "object",
         "properties": {

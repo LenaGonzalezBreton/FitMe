@@ -37,7 +37,7 @@ export class RegisterUseCase {
 
   async execute(request: RegisterRequest): Promise<RegisterResponse> {
     const { email, password, firstName, profileType, contextType } = request;
-    
+
     // Vérifier si l'utilisateur existe déjà
     const existingUser = await this.userRepository.findByEmail(email);
     if (existingUser) {
@@ -48,7 +48,7 @@ export class RegisterUseCase {
     if (!password || password.length < 8) {
       throw new Error('Le mot de passe doit contenir au moins 8 caractères.');
     }
-    
+
     // Hasher le mot de passe
     const saltRounds = 12;
     const passwordHash = await bcrypt.hash(password, saltRounds);

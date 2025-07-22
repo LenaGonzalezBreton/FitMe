@@ -14,11 +14,20 @@ import { CycleModule } from '../cycle/cycle.module';
 import { RegisterUseCase } from './application/use-cases/register.use-case';
 import { LoginUseCase } from './application/use-cases/login.use-case';
 import { RefreshTokenUseCase } from './application/use-cases/refresh-token.use-case';
+
+import { UpdateProfileUseCase } from './application/use-cases/update-profile.use-case';
+import { ChangePasswordUseCase } from './application/use-cases/change-password.use-case';
+import { GetSettingsUseCase } from './application/use-cases/get-settings.use-case';
+import { UpdateSettingsUseCase } from './application/use-cases/update-settings.use-case';
+import { GetPreferencesUseCase } from './application/use-cases/get-preferences.use-case';
+=======
 import { CompleteOnboardingUseCase } from './application/use-cases/complete-onboarding.use-case';
+
 
 // Infrastructure
 import { PrismaUserRepository } from './infrastructure/prisma-user.repository';
 import { PrismaRefreshTokenRepository } from './infrastructure/prisma-refresh-token.repository';
+import { PrismaUserSettingsRepository } from './infrastructure/prisma-user-settings.repository';
 
 // Controller
 import { AuthController } from './controller/auth.controller';
@@ -31,6 +40,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import {
   USER_REPOSITORY_TOKEN,
   REFRESH_TOKEN_REPOSITORY_TOKEN,
+  USER_SETTINGS_REPOSITORY_TOKEN,
 } from './tokens';
 
 @Module({
@@ -56,8 +66,15 @@ import {
     JwtAuthGuard,
     RegisterUseCase,
     LoginUseCase,
-    RefreshTokenUseCase,
+    RefreshTokenUseCase
+    UpdateProfileUseCase,
+    ChangePasswordUseCase,
+    GetSettingsUseCase,
+    UpdateSettingsUseCase,
+    GetPreferencesUseCase,
+
     CompleteOnboardingUseCase,
+
     {
       provide: USER_REPOSITORY_TOKEN,
       useClass: PrismaUserRepository,
@@ -65,6 +82,10 @@ import {
     {
       provide: REFRESH_TOKEN_REPOSITORY_TOKEN,
       useClass: PrismaRefreshTokenRepository,
+    },
+    {
+      provide: USER_SETTINGS_REPOSITORY_TOKEN,
+      useClass: PrismaUserSettingsRepository,
     },
   ],
   exports: [

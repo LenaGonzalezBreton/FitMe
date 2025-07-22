@@ -1,0 +1,69 @@
+---
+id: program-controller-generate-program
+title: "Générer un programme d'entraînement adapté à la phase de cycle"
+description: "Crée un programme personnalisé basé sur la phase actuelle du cycle menstruel et les préférences"
+sidebar_label: "Générer un programme d'entraînement adapté à la phase de cycle"
+hide_title: true
+hide_table_of_contents: true
+api: eJy9Vc1u4zYQfhViLtsCTONt9qSb4yQLF25jZBNsW2+woKmxzS1FajmkG8PQA/QteqwufQm9WDGS/Jfs9lRUB0Eih+Q3833zcQu+xKCi8W6cQwbT4JdBFSPvYvDWYvi4RMcB2M+AhBxJB1PyGshgFJoaRXKi7AIKFCUG8s4pa6ipxVzxm1IQVolypQiF0jGhtSjyJPRGWxQFOoohoRUYhUUSZWjqRVMHdBoJJJQqqAIjBoJs9igh4OeEFC99voFs2/6agDlkvIsE7V1EF3lKlaU1uk3x/BMx5i2QXmGh+CtuSoQM/PwT6sjnBC5INEg8m6euNkeRLhVzDCABn1RRWoTsYvC8JlepLQr5tFIm8ic6URiXIpL4Jm/qhUoxExeDb6GSsPA60a/e4dEpFINxSz7FpQKyGTxMp9d3Hy9vr34BCZPb94ef0e3dNUi4eZhM9kPDu6vxLQ9Orn8eX44n43sevhxOhj+NruHxCPzJutMsGJIoEulklQkomj9FGcza2KZeGgwMnZDIeHffgv46eK1CbjxInkG3jCuQsLD4ZObGmrgBCYV5wvwUWDf0HBQfJXIU1NTK6aMaQ1VJiCa2a9+eivYqeqgqDghIpXfUsfv94HVL8skB072Ml03tmjo0tVBr1IKS1s1frMX/SFy8IRIdBc69t6jcsbhYzpWEXMUv7FhJKJBILb9c/X0pDzl9gOYPh2FpUIyCN0TKRRRnYuQ5NIqLQWHcB/hK7qL0KYi1jwHFtO3kG2+t6QUCXYF3jTjbJ9jDP4B9fMlU3mO86wk6UPZm8OYlS8Okk+u9Iwaf1k0tfBKUzNqIHKmbIpE3NSkdzXonELVkA9lVhBhKgXHl2fxKTy1LKq4gg/Pe0Oh8Z4EsYAzrvQcR6hRM3LxjwjtO56gChr0KWlK7Idl/3PhQqAgZ/PD+HuSOtFWMZQuQRXR38LbrHYfHXsSGc2QaJy180pF9D1USjFv4ViN92W9M/BHFcDp+0WBXXqcCXWzP4k6zr4bTsegWnInhQfA8uTDRIVFn8ti5PD73dJDARev2f/3doG8hpbmFOGkufKHa5nGqLdrbTn8YTm+W/BW6GFTzt0PGKFSuytjUbE37yyXvz3+e2fbQt//XpdWTG/EpnpdWGcdUpGAZTKeyGexUBhL2OnuUsGItZjPYbueK8CHYquLhzwnDplPfWgWj5szm7LGSsEKVs/JmW/gNN5xjl+1ZKwUOt4nBvHCsSu5WDLXGMv5r7HG7TG/fsYLn/RVc+JzXBPU7yPadAUjwbfXb3mjHtmCVW6bWsqDbk59/ANCrCu4=
+sidebar_class_name: "post api-method"
+info_path: docs/api/fitme-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Générer un programme d'entraînement adapté à la phase de cycle"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/programs/generate"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Crée un programme personnalisé basé sur la phase actuelle du cycle menstruel et les préférences
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"duration":{"type":"number","example":30,"description":"Durée souhaitée en minutes (défaut: 30)"},"focusZone":{"type":"string","enum":["UPPER_BODY","LOWER_BODY","CORE","FULL_BODY","CARDIO","FLEXIBILITY","BALANCE"],"example":"FULL_BODY","description":"Zone musculaire à privilégier"},"sessionType":{"type":"string","enum":["cardio","strength","flexibility","mixed"],"example":"mixed","description":"Type de séance souhaité"}},"title":"GenerateProgramDto"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  responses={{"201":{"description":"Programme généré avec succès","content":{"application/json":{"schema":{"type":"object","properties":{"success":{"type":"boolean","example":true},"data":{"type":"object"},"message":{"type":"string","example":"Programme \"Énergie Croissante - Complet 30min\" généré avec succès pour votre Phase Folliculaire"}},"required":["success","data","message"],"title":"GeneratedProgramResponseDto"}}}},"404":{"description":"Aucun cycle trouvé ou suivi des cycles désactivé"}}}
+ id="program-controller-generate-program-responses">
+  
+</StatusCodes>
+
+
+      

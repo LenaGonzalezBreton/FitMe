@@ -9,15 +9,20 @@ model Exercise {
   durationMinutes Int?      @map("duration_minutes")
   intensity       Intensity?
   muscleZone      MuscleZone? @map("muscle_zone")
+  createdBy       String?   @map("created_by") // null = system exercise, value = user ID
   
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
 
   // Relations
-  exerciseTags    ExerciseTag[]
-  phaseExercises  PhaseExercise[]
+  creator          User?             @relation("UserCreatedExercises", fields: [createdBy], references: [id], onDelete: SetNull)
+  exerciseTags     ExerciseTag[]
+  phaseExercises   PhaseExercise[]
   programExercises ProgramExercise[]
+  favoriteExercises FavoriteExercise[]
+  ratings          ExerciseRating[]
 
+  @@index([createdBy])
   @@map("exercise")
 }
 
@@ -71,6 +76,8 @@ model Program {
   goal      String?
   startDate DateTime  @map("start_date")
   endDate   DateTime? @map("end_date")
+  isActive  Boolean   @default(false) @map("is_active")
+  isTemplate Boolean  @default(false) @map("is_template")
   
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
@@ -81,6 +88,8 @@ model Program {
   notifications    Notification[]
 
   @@index([userId])
+  @@index([isActive])
+  @@index([isTemplate])
   @@map("program")
 }
 
@@ -88,15 +97,57 @@ model ProgramExercise {
   id         String   @id @default(cuid())
   programId  String   @map("program_id")
   exerciseId String   @map("exercise_id")
-  day        Int
   order      Int
+  sets       Int?
+  reps       String?  // Can be a range like "8-12" or single number like "10"
+  duration   Int?     // Duration in seconds for time-based exercises
+  restTime   Int?     @map("rest_time") // Rest time in seconds between sets
+  notes      String?  @db.Text
   
   createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
 
   // Relations
   program    Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
   exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
 
   @@index([programId])
+  @@index([order])
   @@map("program_exercise")
+}
+
+model FavoriteExercise {
+  id         String   @id @default(cuid())
+  userId     String   @map("user_id")
+  exerciseId String   @map("exercise_id")
+  
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, exerciseId])
+  @@index([userId])
+  @@map("favorite_exercise")
+}
+
+model ExerciseRating {
+  id         String   @id @default(cuid())
+  userId     String   @map("user_id")
+  exerciseId String   @map("exercise_id")
+  rating     Int      // 1-5 stars
+  comment    String?  @db.Text
+  
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, exerciseId])
+  @@index([userId])
+  @@index([exerciseId])
+  @@map("exercise_rating")
 } 

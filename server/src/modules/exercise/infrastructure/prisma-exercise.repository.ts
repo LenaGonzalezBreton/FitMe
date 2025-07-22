@@ -13,7 +13,7 @@ import {
   MuscleZone as PrismaMuscleZone,
   CyclePhase as PrismaCyclePhase,
   Prisma,
-} from '../../../../generated/prisma';
+} from '@prisma/client';
 
 @Injectable()
 export class PrismaExerciseRepository implements IExerciseRepository {
@@ -118,6 +118,7 @@ export class PrismaExerciseRepository implements IExerciseRepository {
         durationMinutes: exerciseData.durationMinutes,
         intensity: exerciseData.intensity as PrismaIntensity,
         muscleZone: exerciseData.muscleZone as PrismaMuscleZone,
+        createdBy: exerciseData.createdBy,
       },
     });
 
@@ -158,6 +159,7 @@ export class PrismaExerciseRepository implements IExerciseRepository {
       prismaData.durationMinutes ?? undefined,
       prismaData.intensity as Intensity | undefined,
       prismaData.muscleZone as MuscleZone | undefined,
+      prismaData.createdBy ?? undefined,
       prismaData.createdAt,
       prismaData.updatedAt,
     );

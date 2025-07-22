@@ -1,6 +1,15 @@
-import { IsOptional, IsEnum, IsNumber, Min, Max } from 'class-validator';
+import {
+  IsOptional,
+  IsEnum,
+  IsNumber,
+  Min,
+  Max,
+  IsString,
+  IsNotEmpty,
+  IsUrl,
+} from 'class-validator';
 import { Type } from 'class-transformer';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { CyclePhase } from '../../../cycle/domain/cycle.entity';
 import { Intensity, MuscleZone } from '../../domain/exercise.entity';
 
@@ -208,6 +217,319 @@ export class ExerciseListResponseDto {
   @ApiProperty({
     example: '15 exercice(s) trouvé(s) pour la phase Phase Folliculaire',
     description: 'Message descriptif du résultat de la recherche',
+  })
+  message: string;
+}
+
+// ============================================
+// Exercise Enhancement DTOs
+// ============================================
+
+export class RateExerciseDto {
+  @ApiProperty({
+    description: 'Note de 1 à 5 étoiles',
+    example: 4,
+    minimum: 1,
+    maximum: 5,
+  })
+  @IsNumber()
+  @Min(1)
+  @Max(5)
+  rating: number;
+
+  @ApiPropertyOptional({
+    description: "Commentaire optionnel sur l'exercice",
+    example: 'Excellent exercice pour le renforcement des jambes !',
+  })
+  @IsOptional()
+  @IsString()
+  comment?: string;
+}
+
+export class ExerciseDetailsDto {
+  @ApiProperty({
+    description: "Identifiant de l'exercice",
+    example: 'exe_123456789',
+  })
+  id: string;
+
+  @ApiProperty({
+    description: "Nom de l'exercice",
+    example: 'Squats au poids du corps',
+  })
+  title: string;
+
+  @ApiPropertyOptional({
+    description: "Description détaillée de l'exercice",
+    example: 'Exercice de renforcement pour les jambes et les fessiers',
+  })
+  description?: string;
+
+  @ApiPropertyOptional({
+    description: "URL de l'image de l'exercice",
+    example: 'https://fitme-app.com/images/exercises/squats.jpg',
+  })
+  imageUrl?: string;
+
+  @ApiPropertyOptional({
+    description: 'Durée recommandée en minutes',
+    example: 15,
+  })
+  durationMinutes?: number;
+
+  @ApiProperty({
+    description: 'Durée formatée',
+    example: '15min',
+  })
+  formattedDuration: string;
+
+  @ApiPropertyOptional({
+    enum: Intensity,
+    description: "Niveau d'intensité",
+    example: Intensity.MODERATE,
+  })
+  intensity?: Intensity;
+
+  @ApiProperty({
+    description: "Label d'intensité en français",
+    example: 'Modérée',
+  })
+  intensityLabel: string;
+
+  @ApiPropertyOptional({
+    enum: MuscleZone,
+    description: 'Zone musculaire travaillée',
+    example: MuscleZone.LOWER_BODY,
+  })
+  muscleZone?: MuscleZone;
+
+  @ApiProperty({
+    description: 'Label de zone musculaire en français',
+    example: 'Bas du corps',
+  })
+  muscleZoneLabel: string;
+
+  @ApiProperty({
+    description: "Indique si l'exercice est dans les favoris",
+    example: true,
+  })
+  isFavorite: boolean;
+
+  @ApiProperty({
+    description: "Note moyenne de l'exercice",
+    example: 4.3,
+  })
+  averageRating: number;
+
+  @ApiProperty({
+    description: "Nombre total d'évaluations",
+    example: 127,
+  })
+  totalRatings: number;
+
+  @ApiPropertyOptional({
+    description: "Note donnée par l'utilisateur actuel",
+    example: 5,
+  })
+  userRating?: number;
+
+  @ApiProperty({
+    description: 'Date de création',
+    example: '2024-01-15T10:30:00.000Z',
+  })
+  createdAt: string;
+
+  @ApiProperty({
+    description: 'Date de dernière modification',
+    example: '2024-01-15T10:30:00.000Z',
+  })
+  updatedAt: string;
+}
+
+export class FavoriteExerciseDto {
+  @ApiProperty({
+    description: "Informations de l'exercice",
+    type: ExerciseDetailsDto,
+  })
+  exercise: ExerciseDetailsDto;
+
+  @ApiProperty({
+    description: "Date d'ajout aux favoris",
+    example: '2024-01-15T10:30:00.000Z',
+  })
+  addedToFavoritesAt: string;
+
+  @ApiProperty({
+    description: "Note moyenne de l'exercice",
+    example: 4.3,
+  })
+  averageRating: number;
+
+  @ApiProperty({
+    description: "Nombre total d'évaluations",
+    example: 127,
+  })
+  totalRatings: number;
+
+  @ApiPropertyOptional({
+    description: "Note donnée par l'utilisateur",
+    example: 5,
+  })
+  userRating?: number;
+}
+
+export class ExerciseRatingDto {
+  @ApiProperty({
+    description: "Identifiant de l'évaluation",
+    example: 'rat_123456789',
+  })
+  id: string;
+
+  @ApiProperty({
+    description: 'Note de 1 à 5 étoiles',
+    example: 4,
+  })
+  rating: number;
+
+  @ApiPropertyOptional({
+    description: "Commentaire sur l'exercice",
+    example: 'Excellent exercice pour le renforcement des jambes !',
+  })
+  comment?: string;
+
+  @ApiProperty({
+    description: "Date de création de l'évaluation",
+    example: '2024-01-15T10:30:00.000Z',
+  })
+  createdAt: string;
+
+  @ApiProperty({
+    description: 'Date de dernière modification',
+    example: '2024-01-15T10:30:00.000Z',
+  })
+  updatedAt: string;
+}
+
+export class ExerciseDetailsResponseDto {
+  @ApiProperty({
+    description: "Détails complets de l'exercice",
+    type: ExerciseDetailsDto,
+  })
+  exercise: ExerciseDetailsDto;
+}
+
+export class FavoriteExercisesResponseDto {
+  @ApiProperty({
+    description: 'Liste des exercices favoris avec détails',
+    type: [FavoriteExerciseDto],
+  })
+  favorites: FavoriteExerciseDto[];
+
+  @ApiProperty({
+    description: "Nombre total d'exercices favoris",
+    example: 12,
+  })
+  total: number;
+}
+
+export class AddToFavoritesResponseDto {
+  @ApiProperty({
+    description: 'Message de confirmation',
+    example: 'Exercice ajouté aux favoris avec succès',
+  })
+  message: string;
+
+  @ApiProperty({
+    description: "Date d'ajout aux favoris",
+    example: '2024-01-15T10:30:00.000Z',
+  })
+  addedAt: string;
+}
+
+export class RateExerciseResponseDto {
+  @ApiProperty({
+    description: 'Évaluation créée ou mise à jour',
+    type: ExerciseRatingDto,
+  })
+  rating: ExerciseRatingDto;
+
+  @ApiProperty({
+    description: "Indique si c'est une nouvelle évaluation ou une mise à jour",
+    example: true,
+  })
+  isNewRating: boolean;
+
+  @ApiProperty({
+    description: "Nouvelle note moyenne de l'exercice",
+    example: 4.3,
+  })
+  newAverageRating: number;
+}
+
+export class CreateExerciseDto {
+  @ApiProperty({
+    description: "Titre de l'exercice",
+    example: 'Pompes modifiées',
+  })
+  @IsString()
+  @IsNotEmpty()
+  title: string;
+
+  @ApiPropertyOptional({
+    description: "Description détaillée de l'exercice",
+    example: 'Pompes adaptées pour les débutants, genoux au sol',
+  })
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @ApiPropertyOptional({
+    description: "URL de l'image de démonstration",
+    example: 'https://example.com/images/pompes-modifiees.jpg',
+  })
+  @IsOptional()
+  @IsUrl()
+  imageUrl?: string;
+
+  @ApiPropertyOptional({
+    description: "Durée de l'exercice en minutes",
+    example: 15,
+  })
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Type(() => Number)
+  durationMinutes?: number;
+
+  @ApiPropertyOptional({
+    description: "Niveau d'intensité de l'exercice",
+    enum: Intensity,
+    example: Intensity.MODERATE,
+  })
+  @IsOptional()
+  @IsEnum(Intensity)
+  intensity?: Intensity;
+
+  @ApiPropertyOptional({
+    description: 'Zone musculaire ciblée',
+    enum: MuscleZone,
+    example: MuscleZone.UPPER_BODY,
+  })
+  @IsOptional()
+  @IsEnum(MuscleZone)
+  muscleZone?: MuscleZone;
+}
+
+export class CreateExerciseResponseDto {
+  @ApiProperty({
+    description: 'Exercice créé avec succès',
+    type: ExerciseDetailsDto,
+  })
+  exercise: ExerciseDetailsDto;
+
+  @ApiProperty({
+    description: 'Message de confirmation',
+    example: 'Exercice créé avec succès',
   })
   message: string;
 }

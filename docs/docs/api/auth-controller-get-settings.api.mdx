@@ -1,0 +1,69 @@
+---
+id: auth-controller-get-settings
+title: "Récupérer tous les paramètres de l'utilisateur connecté"
+description: "Récupérer tous les paramètres de l'utilisateur connecté"
+sidebar_label: "Récupérer tous les paramètres de l'utilisateur connecté"
+hide_title: true
+hide_table_of_contents: true
+api: eJzFVctu2zAQ/BViL72ojduiQKGbEDutizwM221RGIZBU2ubDUUq5NKoYeh/4u/wjxUryYmTAkmDHnqSuOSudnaGoy24Er0k7Ww/hxSySKtTZ8k7Y9DPlkgjJNJ2GSCBUnpZIKEPkE6mCXgMpbMBA6RbeNfp8CPHoLwuuSCkMOCM/S15DCKSNjpIwuiF3+9ULPc7v98FIdeoRIhK7W/5K8pZQktcTJal0aru7uRn4IpbCGqFheQ32pQIKbj5T1TE7XnGQrrpJxz6fvZktJoGHhfo0So8Oh/Ia7uEBPCXLErDoYveeNg/5ZCNBaST+0D/YtAb9rNzmFYJWEd60Xbes3JuMD+qO3fOoLTHhclHfJQ31sUzzXQ+pp1O2ulAVVXMRqFtXpPzHGKdP11YRZ3PDssqaU8+lcHYr7qz0TgbjjkDXwCaXgi0AaXX+F+Qfu/1P30ez86vRiNoGHtuNOhzj+LD9VKgFe9F4XRogCxQUvR4ZuTfyPSlUNrqTydl3W/Z5WmvO8sus/Mf4/5pDUqHvxdtq72bqD2fn9xfvGNJPmDtEfIpS4Dqdg5mM2ydpUuOR8WfoHpIk9qhOOWh0QwPhoJekItBGAyiPHKfHIV5dWxBylmLivY7SKBAWjm2vyXWc5e0ghROZKTVyRGcgH59Z34BVfSaNiP2o4ahOUqP/s6k6qk1oaR9OXO+kAQpfPk+hoPaYEVUAmPUduHqkbfjONN0gSIb9OEx3q5TsUBLtVM04LJBXzQJr0V2b5y8udBkMQQxl2G/QxGiFwaF2iiDokAbmEgDCTC6pv7bN53WiqViK+buSheokLUJW1mj+7epP0B0pzPCX3RSGqktKzF6w3sNIxNgRmoiWk6mCaxcIN7abucy4FdvqorDNxH9pmFqLb1mNfOqSmCFMmeWJlu4xg3fAaWwZN7X0kRu4Y/fTjU90sin3hiq6jfqnYQl
+sidebar_class_name: "get api-method"
+info_path: docs/api/fitme-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Récupérer tous les paramètres de l'utilisateur connecté"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/auth/settings"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Récupérer tous les paramètres de l'utilisateur connecté
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  responses={{"200":{"description":"Paramètres utilisateur récupérés avec succès","content":{"application/json":{"schema":{"type":"object","properties":{"settings":{"type":"object","properties":{"unitPreference":{"type":"string","example":"METRIC","enum":["METRIC","IMPERIAL"]},"notificationEnabled":{"type":"boolean","example":true},"notificationTime":{"type":"string","example":"08:00:00"}}},"reminders":{"type":"object","properties":{"id":{"type":"string","example":"cuid_example"},"type":{"type":"string","example":"PERIOD_START"},"enabled":{"type":"boolean","example":true},"time":{"type":"string","example":"08:00:00"}}},"objectives":{"type":"object","properties":{"id":{"type":"string","example":"cuid_example"},"type":{"type":"string","example":"WEIGHT_LOSS"},"note":{"type":"string","example":"Perdre 5kg en 3 mois"}}},"featureFlags":{"type":"object","properties":{"id":{"type":"string","example":"cuid_example"},"feature":{"type":"string","example":"ADVANCED_ANALYTICS"},"isEnabled":{"type":"boolean","example":true}}}},"required":["settings","reminders","objectives","featureFlags"],"title":"SettingsResponseDto"}}}}}}
+ id="auth-controller-get-settings-responses">
+  
+</StatusCodes>
+
+
+      
