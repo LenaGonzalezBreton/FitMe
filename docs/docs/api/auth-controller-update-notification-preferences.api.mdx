@@ -1,0 +1,69 @@
+---
+id: auth-controller-update-notification-preferences
+title: "Mettre à jour les préférences de notifications"
+description: "Mettre à jour les préférences de notifications"
+sidebar_label: "Mettre à jour les préférences de notifications"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVt2u2jgQfpXIN92V0kK7e7HKHT0/OqxEi4CjvUCoMskAPuvY6XhMi1DepZflOfJiq3ECBDiH7labK8fx/H3+5ptshS0AJSlr+plIRM/T6sYaQqs14CdfZJLggyW1UGk4NURYAIJJwYlYFBJlDgToRDKdxQLhswdH7222Eck2vCqETCSEHmKRWkNgiD/JotCNy86Ts4b3XLqCXPKKNgWIRNj5E6TEcZDTJAWOvy7BAEp9Z+Rcs/PD+bm1GqQRsYCvMi807ANn4FJUBUfjIlNSa8BOVu2crNeRBheZVp0uWlY7U+1QanCiZBcL6TVNVA6tiI5QmWU7oOj+kXS7SbcrzsM+gEeIColRVu0W0lOUXQT95eEhGQyS8fhXjomQK5MFdLdnzkayKEC7KIMzD9W3KAciBF49WY/t5KaHxId3o/7H20/jSW804RN7LGu8KFR5LKWcxXtDiSg3IhaKIHeXSJRlyeYUoHi8Rp9bsnw6lOkKa1x9ue+63ctqh1jtFtWuNrysOVcO3L7eSK4hjZxP0+o7c/R/Il0OzsnlD+5+yP1QfSeEkNRLKZ0WN6g9c1mpNQuFeciQCeCASJml+3F63ig6gns9y8HdZNS/Yf9tGP91O53Z/YeOCLdda0o2anO7sTU+n8MJYd+dg/XB5nMMWGHTAS2cxdH9xwCTWsN1/29f8v+qxlktXgpwD5I8wr2Wy+shfnu5hEXtI1qwk9M4ZdxSz+mBfS1KPIPkc9U/n/DsvEnHjdtR04vH7vz9uYa8tcZUO3CRMmupFQuZ9REggkeuLGw2NGZBCCBNw3jh2OcN0NarIMXF1YYXsciBVpYnVuFDM0haiUR0pKdVpziKTOfczgGuD+PKQepR0WbMGlAzZQ4SAQ/CENqg3oqbxb3lBhWJ+PMvVs7m3ldERSiVdWV0HIN3expcjq39aGrNlfbwaIn/z8t2GQtlFjYQtLnve0UDiHrD/oUQ3drU52AogMWg61e9YT+qDV5HvaN6BvIqMuBcNJeu2kHkws1F6SbVEOVgHKekRSwY7tr/2zfdRo9lynrMcBXWUS6DEhsZsv8ZNpzUcQCL4Ct1Ci1V0FKPmr/VTJkKZkpQ0fb/zKnfWSxW1hGf3m7n0sEj6rLk7c8ecFNzaC1R8SXwWxmLFciM+TPdir9hIxJxU4+f1xPOiY9rH8bo+Sgq471FL02hoKtnZ60GGD4yE+bNL1duMzZB+YUpJL+IRIhY2KKuiP/JeG8rtDRLH+aZqF3y8w9bLo8S
+sidebar_class_name: "put api-method"
+info_path: docs/api/fitme-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Mettre à jour les préférences de notifications"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"put"}
+  path={"/auth/preferences/notifications"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Mettre à jour les préférences de notifications
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"generalEnabled":{"type":"boolean","example":true,"description":"Activer/désactiver les notifications générales"},"defaultTime":{"type":"string","example":"08:00:00","description":"Heure par défaut des notifications (HH:MM:SS)"},"reminders":{"description":"Rappels de notifications à mettre à jour","example":[{"type":"PERIOD_START","enabled":true,"time":"08:00:00"}],"type":"array","items":{"type":"string"}}},"title":"UpdateNotificationPreferencesDto"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  responses={{"200":{"description":"Préférences de notifications mises à jour avec succès","content":{"application/json":{"schema":{"type":"object","properties":{"message":{"type":"string","example":"Paramètres mis à jour avec succès","description":"Message de confirmation"},"settings":{"type":"object","properties":{"unitPreference":{"type":"string","example":"METRIC"},"notificationEnabled":{"type":"boolean","example":true},"notificationTime":{"type":"string","example":"08:00:00"}}},"updatedReminders":{"type":"number","example":2,"description":"Nombre de rappels mis à jour"},"updatedObjectives":{"type":"number","example":1,"description":"Nombre d'objectifs mis à jour"},"updatedFeatureFlags":{"type":"number","example":3,"description":"Nombre de feature flags mis à jour"}},"required":["message","settings","updatedReminders","updatedObjectives","updatedFeatureFlags"],"title":"UpdateSettingsResponseDto"}}}},"400":{"description":"Données invalides ou erreur de validation"}}}
+ id="auth-controller-update-notification-preferences-responses">
+  
+</StatusCodes>
+
+
+      

@@ -5,7 +5,7 @@ description: "Récupérer le profil de l'utilisateur connecté"
 sidebar_label: "Récupérer le profil de l'utilisateur connecté"
 hide_title: true
 hide_table_of_contents: true
-api: eJydkcGKGzEMhl/F6NKL26Q9zi203ZJCIbRbegihOI6SMXhsV5KXhmEeaJ5jXqxoZjfs7rEnG/3Wb336e8gFyUnIaXuCBjZV2o85CeUYkX5fUHaUzyEiWCiOXIeCxNDsDxYIueTEyND08GG91uOE7CkU9YMGll5TJcTATrCSIZRcKU0jDIMFcRc1m7+Fg33V/n0afS3TSEgmoimL2wlNfPPc0ueU0Ms0goUOpc0KckGZR5YWGli5Ku2q3EgY6eGGwegrBbn+8C12C8wRHSHpjeciNE8l+3i5y9Q5gQa+/roHC3It+qgVKTNXSOes7RIkqnAX5BuazW4Lrxk/ZV87TDJHsLBtdluzNLw1m1Ji8DfxHCQhszk6nkY0XOfF+KuPaDpMLFQxggWlW/zfv1uDBZ+TOC/Q9DpdySydSzpgcjPdf2z6BUb/tAHBv7Iq0YUEg4VKUbUlhT1oChrKYw4HC21mUaXvj47xJ8Vh0PKfinRd0nlwFNxRl7g/DM/y/fL5HobhH27A+Ko=
+api: eJydlMFuGjEQhl9lNZdeNglplUM4FSWQ0oY2KlRRhRAyZmCdem3HHkdBaB+I5+DFqrFJSloJpJ521+t/PfPP9+8arEMvSFnTn0MbOpGqK2vIW63RT5dId94ulEYowQkvaiT0AdrjSQkeg7MmYID2Gt63WnyZY5BeOf4etCFri0hKqyAIoy88ko3ebDdQgrSG0BDrhHNayVTH2UNg8RqCrLAWfEcrh9AGO3tASVyJ56pJ5aNjQH98l5rv7QnklVlCCfgsaqd5SUY1n748NiVgLZQ+LOGDP+4eT6WtWbZQPtBXUeNh6Wdh0ikz5am6FnRk+/nlZeukdXFyfsEil0cyStsPyXrdQee2y5Jk9TMdl1z9vMqKbKN6OrL/vtu/+TSa3n4bDlkVnPXU8/gY0cjVYemH6ag/6A6n993uF9aqMEBjnYhB7Bs/s1ajMPvShdABm6ZpGMLHqDzOoT3OIExKIEXpgB2633ecXpOFJqtILBnihDsr3mL7fbuR0W03Hn2hsch2F3Ms9Lt9lKU1BiUllGukynKAlpjQE1RBG85EpOrMvSYooH96jU9AGb2i1ZAxz4zOUPjMcmI/dZ+Xyt1Nz/paEAN0P4LyxaKKyAH3pczCJut2DvQUDbDo3PXh7x6vrYw1GkqRy7117vpFFpwUnT955JcLRQZDKGYibDdYhJiMkSupsajRBPIRNZTA3eXvn5+2dgkXkhPO1TkbqBYp2yYl5H+cftPGKyQM95nTQhkmKfoEUJ7CGHgK8BobnndlA/Gb9XomAv7wuml4+TGiX+XpPAmvxIxNHE+aEioUc57MeA2/cMU/SinR8aifhI5cwT9/sGayh8VNdwRN8xuCd+Hz
 sidebar_class_name: "get api-method"
 info_path: docs/api/fitme-api
 custom_edit_url: null
@@ -60,7 +60,7 @@ Récupérer le profil de l'utilisateur connecté
 </RequestSchema>
 
 <StatusCodes
-  responses={{"200":{"description":"Profil utilisateur retourné"}}}
+  responses={{"200":{"description":"Profil utilisateur retourné","content":{"application/json":{"schema":{"type":"object","properties":{"user":{"type":"object","properties":{"id":{"type":"string","example":"cuid_example"},"email":{"type":"string","example":"user@example.com"},"firstName":{"type":"string","example":"Jane"},"birthDate":{"type":"string","example":"1990-05-15"},"profileType":{"type":"string","example":"FEMALE"},"contextType":{"type":"string","example":"CYCLE"},"objective":{"type":"string","example":"WEIGHT_LOSS"},"sportFrequency":{"type":"string","example":"3_TIMES_WEEK"},"isMenopausal":{"type":"boolean","example":false}}}},"required":["user"],"title":"ProfileResponseDto"}}}}}}
  id="auth-controller-get-profile-responses">
   
 </StatusCodes>

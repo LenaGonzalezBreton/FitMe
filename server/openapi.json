@@ -142,7 +142,225 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Profil utilisateur retourné"
+            "description": "Profil utilisateur retourné",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      },
+      "put": {
+        "operationId": "AuthController_updateProfile",
+        "summary": "Mettre à jour le profil de l'utilisateur connecté",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profil mis à jour avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides ou erreur de validation"
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/change-password": {
+      "post": {
+        "operationId": "AuthController_changePassword",
+        "summary": "Changer le mot de passe de l'utilisateur connecté",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mot de passe mis à jour avec succès"
+          },
+          "400": {
+            "description": "Données invalides ou erreur de validation"
+          },
+          "401": {
+            "description": "Mot de passe actuel incorrect"
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/settings": {
+      "get": {
+        "operationId": "AuthController_getSettings",
+        "summary": "Récupérer tous les paramètres de l'utilisateur connecté",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Paramètres utilisateur récupérés avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingsResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      },
+      "put": {
+        "operationId": "AuthController_updateSettings",
+        "summary": "Mettre à jour les paramètres de l'utilisateur connecté",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSettingsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paramètres mis à jour avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateSettingsResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides ou erreur de validation"
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/preferences": {
+      "get": {
+        "operationId": "AuthController_getPreferences",
+        "summary": "Récupérer toutes les préférences de l'utilisateur connecté",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Préférences utilisateur récupérées avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreferencesResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/preferences/workouts": {
+      "put": {
+        "operationId": "AuthController_updateWorkoutPreferences",
+        "summary": "Mettre à jour les préférences d'entraînement",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateWorkoutPreferencesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Préférences d'entraînement mises à jour avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateSettingsResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides ou erreur de validation"
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/preferences/notifications": {
+      "put": {
+        "operationId": "AuthController_updateNotificationPreferences",
+        "summary": "Mettre à jour les préférences de notifications",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateNotificationPreferencesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Préférences de notifications mises à jour avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateSettingsResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides ou erreur de validation"
           }
         },
         "tags": [
@@ -1667,6 +1885,461 @@
         "required": [
           "tokens"
         ]
+      },
+      "ProfileResponseDto": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "cuid_example"
+              },
+              "email": {
+                "type": "string",
+                "example": "user@example.com"
+              },
+              "firstName": {
+                "type": "string",
+                "example": "Jane"
+              },
+              "birthDate": {
+                "type": "string",
+                "example": "1990-05-15"
+              },
+              "profileType": {
+                "type": "string",
+                "example": "FEMALE"
+              },
+              "contextType": {
+                "type": "string",
+                "example": "CYCLE"
+              },
+              "objective": {
+                "type": "string",
+                "example": "WEIGHT_LOSS"
+              },
+              "sportFrequency": {
+                "type": "string",
+                "example": "3_TIMES_WEEK"
+              },
+              "isMenopausal": {
+                "type": "boolean",
+                "example": false
+              }
+            }
+          }
+        },
+        "required": [
+          "user"
+        ]
+      },
+      "UpdateProfileDto": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "example": "Jane",
+            "description": "Prénom"
+          },
+          "birthDate": {
+            "type": "string",
+            "example": "1990-05-15",
+            "description": "Date de naissance (format YYYY-MM-DD)"
+          },
+          "profileType": {
+            "type": "string",
+            "example": "FEMALE",
+            "description": "Type de profil (FEMALE, MALE, NON_BINARY, OTHER)",
+            "enum": [
+              "FEMALE",
+              "MALE",
+              "NON_BINARY",
+              "OTHER"
+            ]
+          },
+          "contextType": {
+            "type": "string",
+            "example": "CYCLE",
+            "description": "Type de contexte (CYCLE, GENERAL, MENOPAUSE, NONE)",
+            "enum": [
+              "CYCLE",
+              "GENERAL",
+              "MENOPAUSE",
+              "NONE"
+            ]
+          },
+          "objective": {
+            "type": "string",
+            "example": "WEIGHT_LOSS",
+            "description": "Objectif principal"
+          },
+          "sportFrequency": {
+            "type": "string",
+            "example": "3_TIMES_WEEK",
+            "description": "Fréquence de sport"
+          },
+          "isMenopausal": {
+            "type": "boolean",
+            "example": false,
+            "description": "Statut ménopause"
+          }
+        }
+      },
+      "ChangePasswordDto": {
+        "type": "object",
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "example": "ancienMotDePasse123",
+            "description": "Mot de passe actuel"
+          },
+          "newPassword": {
+            "type": "string",
+            "example": "nouveauMotDePasse123",
+            "minLength": 8,
+            "description": "Nouveau mot de passe (min 8 caractères)"
+          }
+        },
+        "required": [
+          "currentPassword",
+          "newPassword"
+        ]
+      },
+      "SettingsResponseDto": {
+        "type": "object",
+        "properties": {
+          "settings": {
+            "type": "object",
+            "properties": {
+              "unitPreference": {
+                "type": "string",
+                "example": "METRIC",
+                "enum": [
+                  "METRIC",
+                  "IMPERIAL"
+                ]
+              },
+              "notificationEnabled": {
+                "type": "boolean",
+                "example": true
+              },
+              "notificationTime": {
+                "type": "string",
+                "example": "08:00:00"
+              }
+            }
+          },
+          "reminders": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "cuid_example"
+              },
+              "type": {
+                "type": "string",
+                "example": "PERIOD_START"
+              },
+              "enabled": {
+                "type": "boolean",
+                "example": true
+              },
+              "time": {
+                "type": "string",
+                "example": "08:00:00"
+              }
+            }
+          },
+          "objectives": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "cuid_example"
+              },
+              "type": {
+                "type": "string",
+                "example": "WEIGHT_LOSS"
+              },
+              "note": {
+                "type": "string",
+                "example": "Perdre 5kg en 3 mois"
+              }
+            }
+          },
+          "featureFlags": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "cuid_example"
+              },
+              "feature": {
+                "type": "string",
+                "example": "ADVANCED_ANALYTICS"
+              },
+              "isEnabled": {
+                "type": "boolean",
+                "example": true
+              }
+            }
+          }
+        },
+        "required": [
+          "settings",
+          "reminders",
+          "objectives",
+          "featureFlags"
+        ]
+      },
+      "UpdateSettingsDto": {
+        "type": "object",
+        "properties": {
+          "settings": {
+            "type": "object",
+            "properties": {
+              "unitPreference": {
+                "type": "string",
+                "example": "METRIC",
+                "enum": [
+                  "METRIC",
+                  "IMPERIAL"
+                ]
+              },
+              "notificationEnabled": {
+                "type": "boolean",
+                "example": true
+              },
+              "notificationTime": {
+                "type": "string",
+                "example": "08:00:00"
+              }
+            }
+          },
+          "reminders": {
+            "description": "Rappels à mettre à jour",
+            "example": [
+              {
+                "type": "PERIOD_START",
+                "enabled": true,
+                "time": "08:00:00"
+              }
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "objectives": {
+            "description": "Objectifs à mettre à jour",
+            "example": [
+              {
+                "type": "WEIGHT_LOSS",
+                "note": "Perdre 5kg en 3 mois"
+              }
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "featureFlags": {
+            "description": "Flags de fonctionnalités à mettre à jour",
+            "example": [
+              {
+                "feature": "ADVANCED_ANALYTICS",
+                "isEnabled": true
+              }
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "settings"
+        ]
+      },
+      "UpdateSettingsResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Paramètres mis à jour avec succès",
+            "description": "Message de confirmation"
+          },
+          "settings": {
+            "type": "object",
+            "properties": {
+              "unitPreference": {
+                "type": "string",
+                "example": "METRIC"
+              },
+              "notificationEnabled": {
+                "type": "boolean",
+                "example": true
+              },
+              "notificationTime": {
+                "type": "string",
+                "example": "08:00:00"
+              }
+            }
+          },
+          "updatedReminders": {
+            "type": "number",
+            "example": 2,
+            "description": "Nombre de rappels mis à jour"
+          },
+          "updatedObjectives": {
+            "type": "number",
+            "example": 1,
+            "description": "Nombre d'objectifs mis à jour"
+          },
+          "updatedFeatureFlags": {
+            "type": "number",
+            "example": 3,
+            "description": "Nombre de feature flags mis à jour"
+          }
+        },
+        "required": [
+          "message",
+          "settings",
+          "updatedReminders",
+          "updatedObjectives",
+          "updatedFeatureFlags"
+        ]
+      },
+      "PreferencesResponseDto": {
+        "type": "object",
+        "properties": {
+          "general": {
+            "type": "object",
+            "properties": {
+              "unitPreference": {
+                "type": "string",
+                "example": "METRIC",
+                "enum": [
+                  "METRIC",
+                  "IMPERIAL"
+                ]
+              },
+              "notificationEnabled": {
+                "type": "boolean",
+                "example": true
+              },
+              "notificationTime": {
+                "type": "string",
+                "example": "08:00:00"
+              }
+            }
+          },
+          "workouts": {
+            "type": "object",
+            "description": "Préférences d'entraînement",
+            "example": {
+              "objectives": [
+                {
+                  "id": "cuid_example",
+                  "type": "WEIGHT_LOSS",
+                  "note": "Perdre 5kg en 3 mois"
+                }
+              ],
+              "reminders": [
+                {
+                  "id": "cuid_example",
+                  "type": "EXERCISE",
+                  "enabled": true,
+                  "time": "08:00:00"
+                }
+              ]
+            }
+          },
+          "notifications": {
+            "type": "object",
+            "description": "Préférences de notifications",
+            "example": {
+              "reminders": [
+                {
+                  "id": "cuid_example",
+                  "type": "PERIOD_START",
+                  "enabled": true,
+                  "time": "08:00:00"
+                }
+              ],
+              "generalEnabled": true,
+              "defaultTime": "08:00:00"
+            }
+          }
+        },
+        "required": [
+          "general",
+          "workouts",
+          "notifications"
+        ]
+      },
+      "UpdateWorkoutPreferencesDto": {
+        "type": "object",
+        "properties": {
+          "objectives": {
+            "description": "Objectifs d'entraînement à mettre à jour",
+            "example": [
+              {
+                "type": "WEIGHT_LOSS",
+                "note": "Perdre 5kg en 3 mois"
+              }
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "reminders": {
+            "description": "Rappels d'entraînement à mettre à jour",
+            "example": [
+              {
+                "type": "EXERCISE",
+                "enabled": true,
+                "time": "08:00:00"
+              }
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "UpdateNotificationPreferencesDto": {
+        "type": "object",
+        "properties": {
+          "generalEnabled": {
+            "type": "boolean",
+            "example": true,
+            "description": "Activer/désactiver les notifications générales"
+          },
+          "defaultTime": {
+            "type": "string",
+            "example": "08:00:00",
+            "description": "Heure par défaut des notifications (HH:MM:SS)"
+          },
+          "reminders": {
+            "description": "Rappels de notifications à mettre à jour",
+            "example": [
+              {
+                "type": "PERIOD_START",
+                "enabled": true,
+                "time": "08:00:00"
+              }
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
       },
       "CurrentPhaseDataDto": {
         "type": "object",

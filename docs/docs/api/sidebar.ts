@@ -40,6 +40,48 @@ const sidebar: SidebarsConfig = {
         },
         {
           type: "doc",
+          id: "api/auth-controller-update-profile",
+          label: "Mettre à jour le profil de l'utilisateur connecté",
+          className: "api-method put",
+        },
+        {
+          type: "doc",
+          id: "api/auth-controller-change-password",
+          label: "Changer le mot de passe de l'utilisateur connecté",
+          className: "api-method post",
+        },
+        {
+          type: "doc",
+          id: "api/auth-controller-get-settings",
+          label: "Récupérer tous les paramètres de l'utilisateur connecté",
+          className: "api-method get",
+        },
+        {
+          type: "doc",
+          id: "api/auth-controller-update-settings",
+          label: "Mettre à jour les paramètres de l'utilisateur connecté",
+          className: "api-method put",
+        },
+        {
+          type: "doc",
+          id: "api/auth-controller-get-preferences",
+          label: "Récupérer toutes les préférences de l'utilisateur connecté",
+          className: "api-method get",
+        },
+        {
+          type: "doc",
+          id: "api/auth-controller-update-workout-preferences",
+          label: "Mettre à jour les préférences d'entraînement",
+          className: "api-method put",
+        },
+        {
+          type: "doc",
+          id: "api/auth-controller-update-notification-preferences",
+          label: "Mettre à jour les préférences de notifications",
+          className: "api-method put",
+        },
+        {
+          type: "doc",
           id: "api/auth-controller-test-public",
           label: "Route de test publique (aucune authentification requise)",
           className: "api-method get",
