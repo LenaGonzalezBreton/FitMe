@@ -20,9 +20,7 @@ import { ChangePasswordUseCase } from './application/use-cases/change-password.u
 import { GetSettingsUseCase } from './application/use-cases/get-settings.use-case';
 import { UpdateSettingsUseCase } from './application/use-cases/update-settings.use-case';
 import { GetPreferencesUseCase } from './application/use-cases/get-preferences.use-case';
-=======
 import { CompleteOnboardingUseCase } from './application/use-cases/complete-onboarding.use-case';
-
 
 // Infrastructure
 import { PrismaUserRepository } from './infrastructure/prisma-user.repository';
@@ -66,14 +64,17 @@ import {
     JwtAuthGuard,
     RegisterUseCase,
     LoginUseCase,
-    RefreshTokenUseCase
+    RefreshTokenUseCase,
     UpdateProfileUseCase,
     ChangePasswordUseCase,
     GetSettingsUseCase,
     UpdateSettingsUseCase,
     GetPreferencesUseCase,
-
     CompleteOnboardingUseCase,
+    {
+      provide: USER_SETTINGS_REPOSITORY_TOKEN,
+      useClass: PrismaUserSettingsRepository,
+    },
 
     {
       provide: USER_REPOSITORY_TOKEN,

@@ -58,7 +58,6 @@ export class PrismaUserRepository implements IUserRepository {
       where: { id: userId },
       data: {
         objective: data.objective,
-        experienceLevel: data.experienceLevel,
         isMenopausal: data.isMenopausal,
         onboardingCompleted: data.onboardingCompleted,
       },

@@ -1,4 +1,3 @@
-
 import {
   IsEmail,
   IsString,
@@ -6,6 +5,10 @@ import {
   IsOptional,
   IsDateString,
   IsBoolean,
+  IsEnum,
+  IsInt,
+  Min,
+  Max,
 } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
@@ -593,7 +596,8 @@ export class UpdateNotificationPreferencesDto {
     enabled: boolean;
     time?: string;
   }>;
-=======
+}
+
 export class OnboardingDto {
   @ApiProperty({
     enum: ObjectiveType,

@@ -35,7 +35,6 @@ import {
   PreferencesResponseDto,
   UpdateWorkoutPreferencesDto,
   UpdateNotificationPreferencesDto,
-
   OnboardingDto,
 } from './dto/auth.dto';
 import { Public } from '../guards/public.decorator';
@@ -57,7 +56,6 @@ export class AuthController {
     private readonly getPreferencesUseCase: GetPreferencesUseCase,
 
     private readonly completeOnboardingUseCase: CompleteOnboardingUseCase,
-
   ) {}
 
   @Public()
@@ -216,7 +214,7 @@ export class AuthController {
       const message =
         error instanceof Error
           ? error.message
-          : "Erreur lors de la mise à jour du profil.";
+          : 'Erreur lors de la mise à jour du profil.';
       const statusCode =
         error instanceof NotFoundException
           ? HttpStatus.NOT_FOUND
