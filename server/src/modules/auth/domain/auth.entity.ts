@@ -3,6 +3,8 @@ interface PrismaUser {
   email: string;
   passwordHash: string;
   firstName?: string | null;
+  experienceLevel?: string | null;
+  onboardingCompleted?: boolean;
   profileType?: string | null;
   contextType?: string | null;
   createdAt: Date;
@@ -14,7 +16,9 @@ export class AuthUser {
     public readonly id: string,
     public readonly email: string,
     public readonly passwordHash: string,
+    public readonly onboardingCompleted: boolean,
     public readonly firstName?: string,
+    public readonly experienceLevel?: string,
     public readonly profileType?: string,
     public readonly contextType?: string,
     public readonly createdAt?: Date,
@@ -26,7 +30,9 @@ export class AuthUser {
       user.id,
       user.email,
       user.passwordHash,
+      user.onboardingCompleted ?? false,
       user.firstName ?? undefined,
+      user.experienceLevel ?? undefined,
       user.profileType ?? undefined,
       user.contextType ?? undefined,
       user.createdAt,

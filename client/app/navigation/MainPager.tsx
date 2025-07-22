@@ -1,9 +1,9 @@
 import React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import HomeScreen from '../screens/HomeScreen';
-import ExercicesScreen from '../screens/ExercicesScreen';
-import ProgramScreen from '../screens/ProgramScreen';
-import ChronometerScreen from '../screens/ChronometerScreen';
+import HomeScreen from '../screens/Home/HomeScreen';
+import ExercicesScreen from '../screens/Exercises/ExercicesScreen';
+import ChronometerScreen from '../screens/Chronometer/ChronometerScreen';
+import ProgramScreen from '../screens/Programs/ProgramScreen';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -23,7 +23,7 @@ const MainPager = () => {
         tabBarIndicatorStyle: {
           backgroundColor: '#0891b2', // primary-500
         },
-        tabBarIcon: () => null, // Hiding icons as well
+        tabBarIcon: () => <></>, // Hiding icons as well
       }}
     >
       <Tab.Screen name="Accueil" component={HomeScreen} />

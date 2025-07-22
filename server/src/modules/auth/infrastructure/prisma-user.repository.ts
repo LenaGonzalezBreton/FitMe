@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../core/prisma.service';
-import { IUserRepository, CreateUserData } from '../domain/auth.repository';
+import {
+  IUserRepository,
+  CreateUserData,
+  OnboardingProfileData,
+} from '../domain/auth.repository';
 import { AuthUser } from '../domain/auth.entity';
 
 @Injectable()
@@ -38,6 +42,25 @@ export class PrismaUserRepository implements IUserRepository {
       },
     });
 
+    return AuthUser.fromPrismaUser({
+      ...user,
+      passwordHash: user.passwordHash,
+    });
+  }
+
+  async updateOnboardingProfile(
+    userId: string,
+    data: OnboardingProfileData,
+  ): Promise<AuthUser> {
+    const user = await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        objective: data.objective,
+        experienceLevel: data.experienceLevel,
+        isMenopausal: data.isMenopausal,
+        onboardingCompleted: data.onboardingCompleted,
+      },
+    });
     return AuthUser.fromPrismaUser({
       ...user,
       passwordHash: user.passwordHash,
