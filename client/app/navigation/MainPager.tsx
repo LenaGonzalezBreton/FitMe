@@ -4,6 +4,7 @@ import HomeScreen from '../screens/Home/HomeScreen';
 import ExercicesScreen from '../screens/Exercises/ExercicesScreen';
 import ChronometerScreen from '../screens/Chronometer/ChronometerScreen';
 import ProgramScreen from '../screens/Programs/ProgramScreen';
+import ProfileScreen from '../screens/Profile/ProfileScreen';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -30,6 +31,7 @@ const MainPager = () => {
       <Tab.Screen name="Programmes" component={ProgramScreen} />
       <Tab.Screen name="Exercices" component={ExercicesScreen} />
       <Tab.Screen name="Chrono" component={ChronometerScreen} />
+      <Tab.Screen name="Profil" component={ProfileScreen} />
     </Tab.Navigator>
   );
 };

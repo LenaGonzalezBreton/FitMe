@@ -222,4 +222,80 @@ export const cycleApi = {
   },
 };
 
+// Profile API calls
+export const profileApi = {
+  // Get user profile
+  getProfile: async () => {
+    const response = await api.get('/auth/profile');
+    return response.data;
+  },
+
+  // Update user profile
+  updateProfile: async (profileData: {
+    firstName?: string;
+    email?: string;
+    birthDate?: string;
+    profileType?: string;
+    contextType?: string;
+    objective?: string;
+    sportFrequency?: string;
+    isMenopausal?: boolean;
+  }) => {
+    const response = await api.put('/auth/profile', profileData);
+    return response.data;
+  },
+
+  // Change password
+  changePassword: async (passwordData: {
+    currentPassword: string;
+    newPassword: string;
+  }) => {
+    const response = await api.post('/auth/change-password', passwordData);
+    return response.data;
+  },
+
+  // Upload profile image
+  uploadProfileImage: async (imageUri: string) => {
+    try {
+      const formData = new FormData();
+      formData.append('image', {
+        uri: imageUri,
+        type: 'image/jpeg',
+        name: 'profile.jpg',
+      } as any);
+
+      const response = await api.post('/auth/profile/image', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        timeout: 30000, // 30 seconds timeout for image upload
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error uploading profile image:', error);
+      throw error;
+    }
+  },
+};
+
+// Workout History API calls (placeholder for future implementation)
+export const workoutHistoryApi = {
+  // Get user workout sessions
+  getWorkoutSessions: async (params?: {
+    limit?: number;
+    offset?: number;
+    fromDate?: string;
+    toDate?: string;
+  }) => {
+    const response = await api.get('/workouts/sessions', { params });
+    return response.data;
+  },
+
+  // Get workout session details
+  getSessionDetails: async (sessionId: string) => {
+    const response = await api.get(`/workouts/sessions/${sessionId}`);
+    return response.data;
+  },
+};
+
 export default api;
