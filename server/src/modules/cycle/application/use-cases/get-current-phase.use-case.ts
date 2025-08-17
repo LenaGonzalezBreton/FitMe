@@ -49,10 +49,31 @@ export class GetCurrentPhaseUseCase {
     // Récupérer le cycle actuel
     const currentCycle =
       await this.cycleRepository.findCurrentCycleByUserId(userId);
+    
     if (!currentCycle) {
-      throw new NotFoundException(
-        'Aucun cycle actuel trouvé pour cet utilisateur',
+      // Si aucun cycle n'existe, fournir une phase par défaut basée sur la configuration
+      const cycleLength = config.averageCycleLength;
+      const periodLength = config.averagePeriodLength;
+      
+      // Phase par défaut : folliculaire (phase d'énergie croissante)
+      const defaultPhase = CyclePhase.FOLLICULAR;
+      const defaultCycleDay = 8; // Milieu de la phase folliculaire
+      const daysUntilNextPhase = this.calculateDaysUntilNextPhase(
+        defaultPhase,
+        defaultCycleDay,
+        cycleLength,
+        periodLength,
       );
+
+      return {
+        phase: defaultPhase,
+        cycleDay: defaultCycleDay,
+        cycleLength,
+        periodLength,
+        daysUntilNextPhase,
+        phaseDescription: this.getPhaseDescription(defaultPhase) + ' (Phase par défaut - commencez par enregistrer vos règles pour un suivi personnalisé)',
+        recommendations: this.getPhaseRecommendations(defaultPhase),
+      };
     }
 
     // Calculer la phase actuelle

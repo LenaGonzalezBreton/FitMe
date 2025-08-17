@@ -68,13 +68,158 @@ const api = axios.create({
 
 api.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
-    const token = await SecureStore.getItemAsync('userToken');
+    const token = await SecureStore.getItemAsync('accessToken');
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      console.warn('No access token found for API request');
     }
+    
+    if (__DEV__) {
+      console.log(`[API] ${config.method?.toUpperCase()} ${config.url}`, {
+        hasToken: !!token,
+        params: config.params,
+        data: config.data
+      });
+    }
+    
     return config;
   },
   error => Promise.reject(error)
 );
+
+// Add response interceptor for better error handling
+api.interceptors.response.use(
+  response => {
+    if (__DEV__) {
+      console.log(`[API] Response ${response.status}:`, response.config.url);
+    }
+    return response;
+  },
+  error => {
+    if (__DEV__) {
+      console.error(`[API] Error ${error.response?.status}:`, {
+        url: error.config?.url,
+        status: error.response?.status,
+        message: error.response?.data?.message || error.message,
+        data: error.response?.data
+      });
+    }
+    return Promise.reject(error);
+  }
+);
+
+// Program API calls
+export const programApi = {
+  // Get user programs
+  getUserPrograms: async (params?: {
+    isActive?: boolean;
+    isTemplate?: boolean;
+    startDateFrom?: string;
+    startDateTo?: string;
+    limit?: number;
+    offset?: number;
+  }) => {
+    // Ensure limit and offset are properly typed as numbers
+    const cleanParams = {
+      ...params,
+      limit: params?.limit ? Number(params.limit) : 50,
+      offset: params?.offset ? Number(params.offset) : 0,
+    };
+    
+    const response = await api.get('/programs', { params: cleanParams });
+    return response.data;
+  },
+
+  // Get program by ID
+  getProgramById: async (programId: string) => {
+    const response = await api.get(`/programs/${programId}`);
+    return response.data;
+  },
+
+  // Generate program
+  generateProgram: async (params?: {
+    duration?: number;
+    focusZone?: string;
+    sessionType?: 'cardio' | 'strength' | 'flexibility' | 'mixed';
+  }) => {
+    const response = await api.post('/programs/generate', params);
+    return response.data;
+  },
+
+  // Create program
+  createProgram: async (programData: {
+    title: string;
+    goal?: string;
+    startDate: string;
+    endDate?: string;
+    isTemplate?: boolean;
+    exercises?: Array<{
+      exerciseId: string;
+      order: number;
+      sets?: number;
+      reps?: string;
+      duration?: number;
+      restTime?: number;
+      notes?: string;
+    }>;
+  }) => {
+    const response = await api.post('/programs', programData);
+    return response.data;
+  },
+
+  // Start program
+  startProgram: async (programId: string) => {
+    const response = await api.post(`/programs/${programId}/start`);
+    return response.data;
+  },
+
+  // Update program
+  updateProgram: async (programId: string, updates: {
+    title?: string;
+    goal?: string;
+    startDate?: string;
+    endDate?: string;
+    isActive?: boolean;
+    isTemplate?: boolean;
+  }) => {
+    const response = await api.put(`/programs/${programId}`, updates);
+    return response.data;
+  },
+
+  // Delete program
+  deleteProgram: async (programId: string) => {
+    const response = await api.delete(`/programs/${programId}`);
+    return response.data;
+  },
+};
+
+// Cycle API calls
+export const cycleApi = {
+  // Get current phase
+  getCurrentPhase: async () => {
+    const response = await api.get('/cycle/current-phase');
+    return response.data;
+  },
+
+  // Get cycle config
+  getCycleConfig: async () => {
+    const response = await api.get('/cycle/config');
+    return response.data;
+  },
+
+  // Update cycle config
+  updateCycleConfig: async (config: {
+    isCycleTrackingEnabled?: boolean;
+    usesExternalProvider?: boolean;
+    useMenopauseMode?: boolean;
+    averageCycleLength?: number;
+    averagePeriodLength?: number;
+    prefersManualInput?: boolean;
+  }) => {
+    const response = await api.put('/cycle/config', config);
+    return response.data;
+  },
+};
 
 export default api;

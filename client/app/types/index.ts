@@ -1,2 +1,105 @@
 // barrel for global types
 export * from './navigation';
+
+// Program types
+export interface ProgramExercise {
+  id?: string;
+  programId?: string;
+  exerciseId: string;
+  order: number;
+  sets?: number;
+  reps?: string;
+  duration?: number;
+  restTime?: number;
+  notes?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface Program {
+  id: string;
+  title: string;
+  goal?: string;
+  startDate: string;
+  endDate?: string;
+  isActive: boolean;
+  isTemplate: boolean;
+  createdAt: string;
+  updatedAt: string;
+  exerciseCount: number;
+  exercises?: ProgramExercise[];
+}
+
+export interface ProgramListResponse {
+  programs: Program[];
+  total: number;
+  offset: number;
+  limit: number;
+}
+
+export interface GeneratedProgramExercise {
+  id: string;
+  title: string;
+  description?: string;
+  imageUrl?: string;
+  durationMinutes?: number;
+  formattedDuration: string;
+  intensity?: string;
+  intensityLabel: string;
+  muscleZone?: string;
+  muscleZoneLabel: string;
+  order: number;
+  restTimeSeconds?: number;
+}
+
+export interface GeneratedProgram {
+  id: string;
+  title: string;
+  description: string;
+  totalDuration: number;
+  formattedTotalDuration: string;
+  exercises: GeneratedProgramExercise[];
+  phaseRecommendations: string[];
+  tips: string[];
+}
+
+export interface UserPhase {
+  phase: string;
+  phaseLabel: string;
+  cycleDay: number;
+  recommendations: string[];
+}
+
+export interface GeneratedProgramResponse {
+  success: boolean;
+  data: {
+    program: GeneratedProgram;
+    userPhase: UserPhase;
+    adaptations: string[];
+  };
+  message: string;
+}
+
+// Cycle types
+export enum CyclePhase {
+  MENSTRUAL = 'MENSTRUAL',
+  FOLLICULAR = 'FOLLICULAR',
+  OVULATION = 'OVULATION',
+  LUTEAL = 'LUTEAL',
+}
+
+export interface CurrentPhaseData {
+  phase: CyclePhase;
+  cycleDay: number;
+  cycleLength: number;
+  periodLength: number;
+  daysUntilNextPhase: number;
+  phaseDescription: string;
+  recommendations: string[];
+}
+
+export interface CurrentPhaseResponse {
+  success: boolean;
+  data: CurrentPhaseData;
+  message: string;
+}

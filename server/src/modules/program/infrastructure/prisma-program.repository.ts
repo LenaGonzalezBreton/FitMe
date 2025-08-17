@@ -113,8 +113,8 @@ export class PrismaProgramRepository implements IProgramRepository {
       orderBy: {
         createdAt: 'desc',
       },
-      take: filters?.limit,
-      skip: filters?.offset,
+      take: filters?.limit ? Number(filters.limit) : undefined,
+      skip: filters?.offset ? Number(filters.offset) : undefined,
     });
 
     return programs.map(this.mapToDomain);
