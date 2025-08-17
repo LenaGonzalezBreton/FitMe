@@ -45,6 +45,5 @@ coverage/
 /server/prisma/generated/
 /server/prisma/migrations/ 
 
-
 # --- Docker ---
 .docker/

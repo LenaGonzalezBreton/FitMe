@@ -21,8 +21,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
+      // IMPORTANT: Must match the JwtModule signing secret default
+      // so that issued tokens can be verified by the strategy when no env is set
       secretOrKey:
-        configService.get<string>('JWT_SECRET') || 'defaultSecretForDev',
+        configService.get<string>('JWT_SECRET') || 'your-secret-key',
     });
   }
 

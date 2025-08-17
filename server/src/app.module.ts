@@ -17,7 +17,10 @@ import { CoreModule } from './core/core.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: 'server/.env',
+      // Support env files from multiple locations to allow root-level .env usage
+      // Load order: root .env (when launched from repo root), server/.env (when launched from root),
+      // and local .env in server (when launched from server dir)
+      envFilePath: ['.env', 'server/.env', '../.env'],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
