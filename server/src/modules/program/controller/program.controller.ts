@@ -11,6 +11,7 @@ import {
   HttpException,
   HttpStatus,
   ParseUUIDPipe,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -21,6 +22,7 @@ import {
   ApiQuery,
   ApiBearerAuth,
 } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { GenerateProgramByPhaseUseCase } from '../application/use-cases/generate-program-by-phase.use-case';
 import { CreateProgramUseCase } from '../application/use-cases/create-program.use-case';
 import { GetUserProgramsUseCase } from '../application/use-cases/get-user-programs.use-case';
@@ -51,6 +53,7 @@ interface AuthenticatedRequest {
 
 @ApiTags('Programs')
 @ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('programs')
 export class ProgramController {
   constructor(
