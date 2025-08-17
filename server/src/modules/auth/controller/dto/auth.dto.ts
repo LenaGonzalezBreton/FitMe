@@ -258,6 +258,8 @@ export class ProfileResponseDto {
     contextType?: string;
     objective?: string;
     sportFrequency?: string;
+    onboardingCompleted?: boolean;
+    experienceLevel?: string;
     isMenopausal?: boolean;
   };
 }

@@ -19,12 +19,13 @@ export default function AppNavigator() {
 
   return (
     <NavigationContainer>
-      {user
-        ? user.onboardingCompleted
-          ? <AppStack />
-          : <OnboardingStack />
-        : <AuthStack />
-      }
+      {!user ? (
+        <AuthStack />
+      ) : user.onboardingCompleted ? (
+        <AppStack />
+      ) : (
+        <OnboardingStack />
+      )}
     </NavigationContainer>
   );
 }

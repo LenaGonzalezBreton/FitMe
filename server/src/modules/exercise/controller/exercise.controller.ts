@@ -42,6 +42,7 @@ import { Intensity, MuscleZone } from '../domain/exercise.entity';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 
 @ApiTags('Exercises')
+@ApiBearerAuth()
 @Controller('exercises')
 export class ExerciseController {
   constructor(

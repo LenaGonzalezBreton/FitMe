@@ -39,7 +39,7 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
       });
 
       const { user, tokens } = response.data;
-      await login(user, tokens.accessToken);
+      await login(user, tokens.accessToken, tokens.refreshToken);
     } catch (error: any) {
       const message = error.response?.data?.message || 'Une erreur est survenue.';
       Alert.alert("Erreur de connexion", message);
