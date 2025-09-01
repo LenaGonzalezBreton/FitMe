@@ -71,8 +71,9 @@ api.interceptors.request.use(
     const token = await SecureStore.getItemAsync('accessToken');
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
-    } else {
-      console.warn('No access token found for API request');
+    } else if (config.url !== '/auth/register' && config.url !== '/auth/login') {
+      // Only warn for non-auth endpoints when no token is found
+      console.warn('No access token found for API request:', config.url);
     }
     
     if (__DEV__) {
@@ -96,15 +97,35 @@ api.interceptors.response.use(
     }
     return response;
   },
-  error => {
-    if (__DEV__) {
+  async error => {
+    // Don't log 400 errors for cycle tracking as they're expected when not enabled
+    const isCycleTrackingError = error.config?.url?.includes('/cycle/') && error.response?.status === 400;
+    
+    if (__DEV__ && !isCycleTrackingError) {
       console.error(`[API] Error ${error.response?.status}:`, {
         url: error.config?.url,
         status: error.response?.status,
         message: error.response?.data?.message || error.message,
         data: error.response?.data
       });
+    } else if (__DEV__ && isCycleTrackingError) {
+      console.log(`[API] Cycle tracking not enabled (${error.response?.status}):`, error.config?.url);
     }
+    
+    // Handle 401 errors by clearing stored tokens and redirecting to login
+    if (error.response?.status === 401) {
+      console.log('401 Unauthorized - clearing stored tokens and redirecting to login');
+      await SecureStore.deleteItemAsync('accessToken');
+      await SecureStore.deleteItemAsync('refreshToken');
+      await SecureStore.deleteItemAsync('user');
+      
+      // Don't show error to user for 401 - they'll be redirected to login
+      // Return a custom error that can be handled gracefully
+      const customError = new Error('Session expired');
+      customError.name = 'SessionExpired';
+      return Promise.reject(customError);
+    }
+    
     return Promise.reject(error);
   }
 );

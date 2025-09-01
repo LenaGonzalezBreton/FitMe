@@ -65,6 +65,13 @@ export const useProfile = (): UseProfileReturn => {
         isMenopausal: response.user.isMenopausal,
       });
     } catch (err: any) {
+      // Don't show error alert for session expiration - user will be redirected to login
+      if (err?.name === 'SessionExpired') {
+        console.log('Session expired during profile fetch - user will be redirected to login');
+        setError(null); // Clear any previous errors
+        return;
+      }
+      
       const errorMessage = err.response?.data?.message || err.message || 'Erreur lors du chargement du profil';
       setError(errorMessage);
       console.error('Error fetching profile:', err);
@@ -138,6 +145,12 @@ export const useProfile = (): UseProfileReturn => {
       
       return true;
     } catch (err: any) {
+      // Don't show error alert for session expiration - user will be redirected to login
+      if (err?.name === 'SessionExpired') {
+        console.log('Session expired during profile update - user will be redirected to login');
+        return false;
+      }
+      
       const errorMessage = err.response?.data?.message || err.message || 'Erreur lors de la mise à jour du profil';
       setError(errorMessage);
       Alert.alert('Erreur', errorMessage);
@@ -159,6 +172,12 @@ export const useProfile = (): UseProfileReturn => {
 
       return true;
     } catch (err: any) {
+      // Don't show error alert for session expiration - user will be redirected to login
+      if (err?.name === 'SessionExpired') {
+        console.log('Session expired during password change - user will be redirected to login');
+        return false;
+      }
+      
       const errorMessage = err.response?.data?.message || err.message || 'Erreur lors du changement de mot de passe';
       setError(errorMessage);
       Alert.alert('Erreur', errorMessage);
@@ -185,6 +204,12 @@ export const useProfile = (): UseProfileReturn => {
 
       return true;
     } catch (err: any) {
+      // Don't show error alert for session expiration - user will be redirected to login
+      if (err?.name === 'SessionExpired') {
+        console.log('Session expired during image upload - user will be redirected to login');
+        return false;
+      }
+      
       const errorMessage = err.response?.data?.message || err.message || 'Erreur lors du téléchargement de l\'image';
       setError(errorMessage);
       Alert.alert('Erreur', errorMessage);

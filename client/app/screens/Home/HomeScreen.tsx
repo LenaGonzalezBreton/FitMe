@@ -1,13 +1,16 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
+import { useAuth } from '../../context/AuthContext';
+import { useCycle } from '../../hooks/useCycle';
 
 interface HomeScreenProps {
   navigation: NavigationProp<any, any>;
 }
 
 const HomeScreen = ({ navigation }: HomeScreenProps) => {
-  const currentPhase = 'Folliculaire'; 
+  const { user } = useAuth();
+  const { currentPhase, getPhaseLabel, getPhaseEmoji } = useCycle();
   const streakDays = 7;
   const nextWorkout = 'Squats + Cardio';
 
@@ -42,23 +45,48 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
         <View className="mb-6">
           <Text className="text-lg font-semibold text-brand-text mb-3">Phase actuelle</Text>
           <View className="bg-surface rounded-xl p-4 shadow-sm border border-border-light">
-            <View className="flex-row items-center justify-between mb-4">
-              <View className="flex-1">
-                <Text className="text-xl font-bold text-brand-text mb-1">{currentPhase}</Text>
-                <Text className="text-sm text-secondary-600">Parfait pour les entraînements intensifs</Text>
-              </View>
-              <View className="bg-primary-500 rounded-full w-12 h-12 items-center justify-center">
-                <Text className="text-surface text-xl">💪</Text>
-              </View>
-            </View>
-            {/* Phase Timeline */}
-            <View className="flex-row space-x-2">
-              {cyclePhases.map((phase: { name: string; current: boolean; color: string }) => (
-                <View key={phase.name} className="flex-1 h-2 rounded-full">
-                  <View className={`h-full rounded-full ${phase.color}`} />
+            {user?.isMenopausal ? (
+              <View className="flex-row items-center justify-between mb-4">
+                <View className="flex-1">
+                  <Text className="text-xl font-bold text-brand-text mb-1">Post-ménopause</Text>
+                  <Text className="text-sm text-secondary-600">Entraînements adaptés à votre situation</Text>
                 </View>
-              ))}
-            </View>
+                <View className="bg-secondary-500 rounded-full w-12 h-12 items-center justify-center">
+                  <Text className="text-surface text-xl">🌙</Text>
+                </View>
+              </View>
+            ) : currentPhase ? (
+              <View className="flex-row items-center justify-between mb-4">
+                <View className="flex-1">
+                  <Text className="text-xl font-bold text-brand-text mb-1">{getPhaseLabel(currentPhase.phase)}</Text>
+                  <Text className="text-sm text-secondary-600">Jour {currentPhase.cycleDay} de votre cycle</Text>
+                </View>
+                <View className="bg-primary-500 rounded-full w-12 h-12 items-center justify-center">
+                  <Text className="text-surface text-xl">{getPhaseEmoji(currentPhase.phase)}</Text>
+                </View>
+              </View>
+            ) : (
+              <View className="flex-row items-center justify-between mb-4">
+                <View className="flex-1">
+                  <Text className="text-xl font-bold text-brand-text mb-1">Cycle non suivi</Text>
+                  <Text className="text-sm text-secondary-600">Activez le suivi pour des recommandations personnalisées</Text>
+                </View>
+                <View className="bg-secondary-300 rounded-full w-12 h-12 items-center justify-center">
+                  <Text className="text-surface text-xl">📅</Text>
+                </View>
+              </View>
+            )}
+            
+            {/* Phase Timeline - only show for non-menopausal users with cycle tracking */}
+            {!user?.isMenopausal && currentPhase && (
+              <View className="flex-row space-x-2">
+                {cyclePhases.map((phase: { name: string; current: boolean; color: string }) => (
+                  <View key={phase.name} className="flex-1 h-2 rounded-full">
+                    <View className={`h-full rounded-full ${phase.color}`} />
+                  </View>
+                ))}
+              </View>
+            )}
           </View>
         </View>
 
@@ -72,7 +100,14 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
             <View className="flex-row items-center justify-between">
               <View className="flex-1">
                 <Text className="text-surface text-xl font-bold mb-2">{nextWorkout}</Text>
-                <Text className="text-primary-100 text-sm">Adapté à votre phase {currentPhase.toLowerCase()}</Text>
+                <Text className="text-primary-100 text-sm">
+                  {user?.isMenopausal 
+                    ? 'Adapté à votre situation post-ménopause'
+                    : currentPhase 
+                      ? `Adapté à votre phase ${getPhaseLabel(currentPhase.phase).toLowerCase()}`
+                      : 'Entraînement général recommandé'
+                  }
+                </Text>
               </View>
               <View className="bg-surface/20 rounded-full w-12 h-12 items-center justify-center">
                 <Text className="text-surface text-xl">▶️</Text>

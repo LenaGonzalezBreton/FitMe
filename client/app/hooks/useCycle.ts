@@ -30,32 +30,30 @@ export const useCycle = (): UseCycleReturn => {
         throw new Error('Réponse invalide du serveur');
       }
     } catch (err: any) {
-      const errorMessage = err.response?.data?.message || err.message || 'Erreur lors du chargement de la phase du cycle';
-      setError(errorMessage);
-      console.error('Error fetching current phase:', err);
-      
-      // If it's a 404, the user probably doesn't have cycle tracking enabled
-      if (err.response?.status === 404) {
-        console.log('Cycle tracking not enabled or no cycle data found');
-        setError(null); // Ne pas afficher d'erreur pour ce cas normal
-        // Définir une phase par défaut pour les nouveaux utilisateurs
-        setCurrentPhase({
-          phase: 'FOLLICULAR' as any,
-          cycleDay: 8,
-          cycleLength: 28,
-          periodLength: 5,
-          daysUntilNextPhase: 6,
-          phaseDescription: 'Phase folliculaire - Période idéale pour commencer votre parcours fitness',
-          recommendations: [
-            'Commencez par des exercices modérés',
-            'Établissez une routine d\'entraînement',
-            'Enregistrez vos règles pour un suivi personnalisé'
-          ]
-        });
-        return; // Ne pas traiter comme une erreur
+      // Don't show error alert for session expiration - user will be redirected to login
+      if (err?.name === 'SessionExpired') {
+        console.log('Session expired during cycle phase fetch - user will be redirected to login');
+        setError(null); // Clear any previous errors
+        setCurrentPhase(null);
+        return;
       }
       
-      // Set a fallback phase if API fails
+      const errorMessage = err.response?.data?.message || err.message || 'Erreur lors du chargement de la phase du cycle';
+      console.error('Error fetching current phase:', err);
+      
+      // If it's a 400 or 404, the user probably doesn't have cycle tracking enabled
+      if (err.response?.status === 400 || err.response?.status === 404) {
+        console.log('Cycle tracking not enabled or no cycle data found');
+        setError(null); // Don't show error for this normal case
+        
+        // Check if user is menopausal - if so, don't set any phase data
+        // This will be handled by the components that use this hook
+        setCurrentPhase(null);
+        return; // Don't treat as an error
+      }
+      
+      // For other errors, set the error message
+      setError(errorMessage);
       setCurrentPhase(null);
     } finally {
       setLoading(false);
