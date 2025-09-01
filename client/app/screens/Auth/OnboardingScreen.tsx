@@ -45,6 +45,9 @@ const OnboardingScreen = () => {
   const tempCycleDay = useRef<string>('');
   const tempLastPeriodDate = useRef<string>('');
   
+  // Local state for date input display to maintain formatting
+  const [dateInputDisplay, setDateInputDisplay] = useState('');
+  
   const [formData, setFormData] = useState({
     objectives: ['GENERAL_FITNESS'] as string[], // Changed to array for multiple selection
     experienceLevel: 'BEGINNER',
@@ -232,9 +235,11 @@ const OnboardingScreen = () => {
           className="flex-1"
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 20 }}
-          keyboardShouldPersistTaps="always"
+          keyboardShouldPersistTaps="handled"
           keyboardDismissMode="none"
-          automaticallyAdjustKeyboardInsets={true}
+          automaticallyAdjustKeyboardInsets={false}
+          scrollEventThrottle={16}
+          removeClippedSubviews={false}
         >
           {Object.entries(ObjectiveType).map(([key, value]) => (
             <Option
@@ -265,9 +270,13 @@ const OnboardingScreen = () => {
           className="flex-1"
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 20 }}
-          keyboardShouldPersistTaps="always"
+          keyboardShouldPersistTaps="handled"
           keyboardDismissMode="none"
-          automaticallyAdjustKeyboardInsets={true}
+          automaticallyAdjustKeyboardInsets={false}
+          maintainVisibleContentPosition={{
+            minIndexForVisible: 0,
+            autoscrollToTopThreshold: 10
+          }}
         >
           {Object.entries(ExperienceLevel).map(([key, value]) => (
             <Option
@@ -297,9 +306,13 @@ const OnboardingScreen = () => {
           className="flex-1"
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 20 }}
-          keyboardShouldPersistTaps="always"
+          keyboardShouldPersistTaps="handled"
           keyboardDismissMode="none"
-          automaticallyAdjustKeyboardInsets={true}
+          automaticallyAdjustKeyboardInsets={false}
+          maintainVisibleContentPosition={{
+            minIndexForVisible: 0,
+            autoscrollToTopThreshold: 10
+          }}
         >
           <Option
             label="Oui"
@@ -327,9 +340,13 @@ const OnboardingScreen = () => {
         className="flex-1"
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 20 }}
-        keyboardShouldPersistTaps="always"
+        keyboardShouldPersistTaps="handled"
         keyboardDismissMode="none"
-        automaticallyAdjustKeyboardInsets={true}
+        automaticallyAdjustKeyboardInsets={false}
+        maintainVisibleContentPosition={{
+          minIndexForVisible: 0,
+          autoscrollToTopThreshold: 10
+        }}
       >
         <Text className="text-lg font-semibold text-brand-text mb-2">Durée moyenne de votre cycle (en jours)</Text>
         <TextInput
@@ -394,9 +411,13 @@ const OnboardingScreen = () => {
           className="flex-1"
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 20 }}
-          keyboardShouldPersistTaps="always"
+          keyboardShouldPersistTaps="handled"
           keyboardDismissMode="none"
-          automaticallyAdjustKeyboardInsets={true}
+          automaticallyAdjustKeyboardInsets={false}
+          maintainVisibleContentPosition={{
+            minIndexForVisible: 0,
+            autoscrollToTopThreshold: 10
+          }}
         >
           <Option
             label="Oui, activer le suivi"
@@ -441,7 +462,7 @@ const OnboardingScreen = () => {
               className="bg-surface border border-border p-4 rounded-xl text-lg text-brand-text"
               placeholder="JJ/MM/AAAA"
               placeholderTextColor="#A99985"
-              defaultValue={formData.lastPeriodDate}
+              value={dateInputDisplay || formData.lastPeriodDate}
               onChangeText={(val) => {
                 // Auto-format the date as user types
                 let formatted = val.replace(/\D/g, ''); // Remove non-digits
@@ -452,6 +473,7 @@ const OnboardingScreen = () => {
                   formatted = formatted.substring(0, 5) + '/' + formatted.substring(5, 9);
                 }
                 tempLastPeriodDate.current = formatted;
+                setDateInputDisplay(formatted);
               }}
               onEndEditing={() => {
                 // Validate date when user finishes typing
@@ -467,6 +489,7 @@ const OnboardingScreen = () => {
                   if (!isValid) {
                     Alert.alert('Date invalide', 'Veuillez entrer une date valide (ex: 15/01/2024)');
                     tempLastPeriodDate.current = '';
+                    setDateInputDisplay('');
                     setFormData(prev => ({ ...prev, lastPeriodDate: '' }));
                     return;
                   }
