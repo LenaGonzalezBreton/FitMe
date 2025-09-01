@@ -87,11 +87,11 @@ const ExercicesScreen = () => {
 
   const getIntensityColor = (intensity: string): string => {
     switch (intensity) {
-      case 'Très léger': return 'bg-primary-200 text-primary-800';
-      case 'Léger': return 'bg-success text-black';
-      case 'Modéré': return 'bg-primary-500 text-black';
-      case 'Intense': return 'bg-accent-500 text-black';
-      default: return 'bg-text-tertiary text-black';
+      case 'Très léger': return 'bg-primary-100 text-primary-700';
+      case 'Léger': return 'bg-success-100 text-success-700';
+      case 'Modéré': return 'bg-warning-100 text-warning-700';
+      case 'Intense': return 'bg-error-100 text-error-700';
+      default: return 'bg-secondary-100 text-secondary-700';
     }
   };
 
@@ -104,24 +104,24 @@ const ExercicesScreen = () => {
         <ScrollView className="flex-1 px-6">
           {/* Header */}
           <View className="pt-16 pb-6">
-            <Text className="text-3xl font-bold text-black mb-2">Exercices</Text>
-            <Text className="text-base text-brand-dark-secondary">
+            <Text className="text-3xl font-bold text-brand-text mb-2">Exercices</Text>
+            <Text className="text-base text-secondary-600">
               Phase actuelle : <Text className="font-semibold text-brand-text">{currentPhase}</Text>
             </Text>
           </View>
 
           {/* Categories Filter */}
           <View className="mb-6">
-            <Text className="text-lg font-semibold text-black mb-3">Catégories</Text>
+            <Text className="text-lg font-semibold text-brand-text mb-3">Catégories</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
               <TouchableOpacity
                   onPress={() => setSelectedCategory('all')}
-                  className={`mr-3 px-4 py-2 rounded-xl ${
-                      selectedCategory === 'all' ? 'bg-brand-dark-brown-btn' : 'bg-white'
+                  className={`mr-3 px-4 py-2 rounded-xl shadow-sm ${
+                      selectedCategory === 'all' ? 'bg-primary-500' : 'bg-surface border border-border'
                   }`}
               >
                 <Text className={`font-medium ${
-                    selectedCategory === 'all' ? 'text-brand-dark-text' : 'text-brand-text'
+                    selectedCategory === 'all' ? 'text-surface' : 'text-brand-text'
                 }`}>
                   Tous
                 </Text>
@@ -131,13 +131,13 @@ const ExercicesScreen = () => {
                   <TouchableOpacity
                       key={category.id}
                       onPress={() => setSelectedCategory(category.id)}
-                      className={`mr-3 px-4 py-2 rounded-xl flex-row items-center ${
-                          selectedCategory === category.id ? 'bg-brand-dark-brown-btn' : 'bg-white'
+                      className={`mr-3 px-4 py-2 rounded-xl flex-row items-center shadow-sm ${
+                          selectedCategory === category.id ? 'bg-primary-500' : 'bg-surface border border-border'
                       }`}
                   >
                     <Text className="mr-2">{category.icon}</Text>
                     <Text className={`font-medium ${
-                        selectedCategory === category.id ? 'text-brand-dark-text' : 'text-brand-text'
+                        selectedCategory === category.id ? 'text-surface' : 'text-brand-text'
                     }`}>
                       {category.name}
                     </Text>
@@ -148,21 +148,21 @@ const ExercicesScreen = () => {
 
           {/* Exercises List */}
           <View className="mb-6">
-            <Text className="text-lg font-semibold text-black mb-4">
+            <Text className="text-lg font-semibold text-brand-text mb-4">
               Recommandés pour vous ({filteredExercises.length})
             </Text>
             <View className="flex-row flex-wrap justify-between">
               {filteredExercises.map((exercise: Exercise) => (
                   <TouchableOpacity
                       key={exercise.id}
-                      className="bg-white rounded-xl p-4 mb-4 w-[48%]"
+                      className="bg-surface rounded-xl p-4 mb-4 w-[48%] shadow-sm border border-border-light active:bg-surface-secondary"
                       onPress={() => navigation.navigate('ExerciseDetail', { exercise })}
                   >
                     <View className="items-center mb-3">
                       <Image source={require('../../../assets/logo.png')} className="w-24 h-24" resizeMode="contain" />
                     </View>
-                    <Text className="text-black font-bold text-center text-base mb-1">{exercise.title}</Text>
-                    <Text className="text-brand-dark-secondary text-center text-sm">{exercise.duration}</Text>
+                    <Text className="text-brand-text font-bold text-center text-base mb-1">{exercise.title}</Text>
+                    <Text className="text-secondary-600 text-center text-sm">{exercise.duration}</Text>
                   </TouchableOpacity>
               ))}
             </View>

@@ -130,35 +130,35 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
 
   const getDifficultyColor = (difficulty: string): string => {
     switch (difficulty) {
-      case 'Très léger': return 'bg-primary-200 text-primary-800';
-      case 'Léger': return 'bg-success text-white';
-      case 'Modéré': return 'bg-warning text-white';
-      case 'Intense': return 'bg-error text-white';
-      default: return 'bg-text-tertiary text-white';
+      case 'Très léger': return 'bg-primary-100 text-primary-700';
+      case 'Léger': return 'bg-success-100 text-success-700';
+      case 'Modéré': return 'bg-warning-100 text-warning-700';
+      case 'Intense': return 'bg-error-100 text-error-700';
+      default: return 'bg-secondary-100 text-secondary-700';
     }
   };
 
   const getProgressColor = (progress: number): string => {
     if (progress === 0) return 'bg-border';
-    if (progress < 50) return 'bg-accent-400';
+    if (progress < 50) return 'bg-warning-500';
     if (progress < 80) return 'bg-primary-500';
-    return 'bg-success';
+    return 'bg-success-500';
   };
 
   // Loading state
   if (programsLoading || phaseLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-brand-cream">
+      <SafeAreaView className="flex-1 bg-brand-background">
         <View className="flex-1 justify-center items-center">
           <ActivityIndicator size="large" color="#A99985" />
-          <Text className="text-brand-dark-surface mt-4">Chargement...</Text>
+          <Text className="text-secondary-600 mt-4">Chargement...</Text>
         </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-brand-cream">
+    <SafeAreaView className="flex-1 bg-brand-background">
       <ScrollView 
         className="flex-1 px-6"
         refreshControl={
@@ -167,59 +167,59 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
       >
         {/* Header */}
         <View className="pt-16 pb-6">
-          <Text className="text-3xl font-bold text-brand-dark-bg mb-2">Programmes</Text>
-          <Text className="text-base text-brand-dark-surface">
+          <Text className="text-3xl font-bold text-brand-text mb-2">Programmes</Text>
+          <Text className="text-base text-secondary-600">
             Gérez vos entraînements personnalisés
           </Text>
         </View>
 
         {/* Current Phase Card */}
         <View className="mb-6">
-          <Text className="text-lg font-semibold text-brand-dark-bg mb-3">Phase actuelle</Text>
+          <Text className="text-lg font-semibold text-brand-text mb-3">Phase actuelle</Text>
           {currentPhase ? (
-            <View className="bg-white rounded-xl p-4">
+            <View className="bg-surface rounded-xl p-4 shadow-sm border border-border-light">
               <View className="flex-row items-center justify-between mb-4">
                 <View className="flex-1">
-                  <Text className="text-xl font-bold text-brand-dark-bg mb-1">
+                  <Text className="text-xl font-bold text-brand-text mb-1">
                     {getPhaseLabel(currentPhase.phase)}
                   </Text>
-                  <Text className="text-sm text-brand-dark-surface mb-2">
+                  <Text className="text-sm text-secondary-600 mb-2">
                     Jour {currentPhase.cycleDay} de votre cycle
                   </Text>
-                  <Text className="text-sm text-brand-dark-surface">
+                  <Text className="text-sm text-secondary-600">
                     {currentPhase.phaseDescription}
                   </Text>
                 </View>
                 <View className={`${getPhaseColor(currentPhase.phase)} rounded-full w-12 h-12 items-center justify-center`}>
-                  <Text className="text-brand-dark-bg text-xl">{getPhaseEmoji(currentPhase.phase)}</Text>
+                  <Text className="text-brand-text text-xl">{getPhaseEmoji(currentPhase.phase)}</Text>
                 </View>
               </View>
               {currentPhase.recommendations.length > 0 && (
                 <View>
-                  <Text className="text-sm font-semibold text-brand-dark-bg mb-2">Recommandations :</Text>
+                  <Text className="text-sm font-semibold text-brand-text mb-2">Recommandations :</Text>
                   {currentPhase.recommendations.slice(0, 2).map((rec, index) => (
-                    <Text key={index} className="text-xs text-brand-dark-surface mb-1">• {rec}</Text>
+                    <Text key={index} className="text-xs text-secondary-600 mb-1">• {rec}</Text>
                   ))}
                 </View>
               )}
             </View>
           ) : (
-            <View className="bg-white rounded-xl p-4">
+            <View className="bg-surface rounded-xl p-4 shadow-sm border border-border-light">
               <View className="flex-row items-center justify-between mb-4">
                 <View className="flex-1">
-                  <Text className="text-lg font-bold text-brand-dark-bg mb-1">
+                  <Text className="text-lg font-bold text-brand-text mb-1">
                     Suivi du cycle non configuré
                   </Text>
-                  <Text className="text-sm text-brand-dark-surface mb-2">
+                  <Text className="text-sm text-secondary-600 mb-2">
                     {phaseError || 'Configurez votre suivi de cycle pour des programmes personnalisés'}
                   </Text>
                 </View>
-                <View className="bg-gray-100 rounded-full w-12 h-12 items-center justify-center">
-                  <Text className="text-gray-400 text-xl">🌙</Text>
+                <View className="bg-secondary-100 rounded-full w-12 h-12 items-center justify-center">
+                  <Text className="text-secondary-600 text-xl">🌙</Text>
                 </View>
               </View>
               <TouchableOpacity 
-                className="bg-primary-50 p-3 rounded-lg"
+                className="bg-primary-50 p-3 rounded-lg active:bg-primary-100"
                 onPress={() => {
                   Alert.alert(
                     'Configuration du cycle',
@@ -241,15 +241,15 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
 
         {/* Tabs */}
         <View className="mb-6">
-          <View className="flex-row bg-white rounded-xl p-1">
+          <View className="flex-row bg-surface rounded-xl p-1 shadow-sm border border-border-light">
             <TouchableOpacity
               onPress={() => setActiveTab('mes-programmes')}
               className={`flex-1 py-3 px-4 rounded-lg ${
-                activeTab === 'mes-programmes' ? 'bg-brand-brown' : 'bg-transparent'
+                activeTab === 'mes-programmes' ? 'bg-primary-500' : 'bg-transparent'
               }`}
             >
               <Text className={`text-center font-medium ${
-                activeTab === 'mes-programmes' ? 'text-white' : 'text-brand-dark-surface'
+                activeTab === 'mes-programmes' ? 'text-surface' : 'text-secondary-600'
               }`}>
                 Mes Programmes
               </Text>
@@ -258,11 +258,11 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
             <TouchableOpacity
               onPress={() => setActiveTab('recommandes')}
               className={`flex-1 py-3 px-4 rounded-lg ${
-                activeTab === 'recommandes' ? 'bg-brand-brown' : 'bg-transparent'
+                activeTab === 'recommandes' ? 'bg-primary-500' : 'bg-transparent'
               }`}
             >
               <Text className={`text-center font-medium ${
-                activeTab === 'recommandes' ? 'text-white' : 'text-brand-dark-surface'
+                activeTab === 'recommandes' ? 'text-surface' : 'text-secondary-600'
               }`}>
                 Recommandés
               </Text>
@@ -274,49 +274,49 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
         <View className="mb-6 space-y-3">
           <TouchableOpacity
             onPress={handleGenerateProgram}
-            className="bg-primary-500 rounded-xl p-4 flex-row items-center justify-center"
+            className="bg-primary-500 rounded-xl p-4 flex-row items-center justify-center shadow-sm active:bg-primary-600"
             disabled={programsLoading}
           >
-            <Text className="text-white text-xl mr-2">✨</Text>
-            <Text className="text-white font-bold text-lg">Générer un programme adapté</Text>
+            <Text className="text-surface text-xl mr-2">✨</Text>
+            <Text className="text-surface font-bold text-lg">Générer un programme adapté</Text>
           </TouchableOpacity>
           
           <TouchableOpacity
             onPress={() => navigation.navigate('CreateProgram')}
-            className="bg-brand-brown rounded-xl p-4 flex-row items-center justify-center"
+            className="bg-secondary-500 rounded-xl p-4 flex-row items-center justify-center shadow-sm active:bg-secondary-600"
           >
-            <Text className="text-white text-xl mr-2">+</Text>
-            <Text className="text-white font-bold text-lg">Créer un programme personnalisé</Text>
+            <Text className="text-surface text-xl mr-2">+</Text>
+            <Text className="text-surface font-bold text-lg">Créer un programme personnalisé</Text>
           </TouchableOpacity>
         </View>
 
         {/* Programs List */}
         <View className="mb-6">
-          <Text className="text-lg font-semibold text-brand-dark-bg mb-4">
+          <Text className="text-lg font-semibold text-brand-text mb-4">
             Vos programmes ({total})
           </Text>
           
           {/* Error state */}
           {programsError && (
-            <View className="bg-red-50 border border-red-200 rounded-xl p-4 mb-4">
-              <Text className="text-red-800 text-center">{programsError}</Text>
+            <View className="bg-error-50 border border-error-200 rounded-xl p-4 mb-4 shadow-sm">
+              <Text className="text-error-700 text-center">{programsError}</Text>
               <TouchableOpacity 
                 onPress={refreshPrograms}
-                className="mt-2 bg-red-100 py-2 px-4 rounded-lg"
+                className="mt-2 bg-error-100 py-2 px-4 rounded-lg active:bg-error-200"
               >
-                <Text className="text-red-800 text-center font-medium">Réessayer</Text>
+                <Text className="text-error-700 text-center font-medium">Réessayer</Text>
               </TouchableOpacity>
             </View>
           )}
 
           {/* No programs fallback */}
           {!programsError && currentPrograms.length === 0 && (
-            <View className="bg-white rounded-xl p-6 items-center">
+            <View className="bg-surface rounded-xl p-6 items-center shadow-sm border border-border-light">
               <Text className="text-6xl mb-4">💪</Text>
-              <Text className="text-xl font-bold text-brand-dark-bg mb-2 text-center">
+              <Text className="text-xl font-bold text-brand-text mb-2 text-center">
                 Aucun programme pour le moment
               </Text>
-              <Text className="text-brand-dark-surface text-center mb-4">
+              <Text className="text-secondary-600 text-center mb-4">
                 Commencez votre parcours fitness en générant un programme adapté à votre cycle hormonal !
               </Text>
               {currentPhase ? (
@@ -331,21 +331,21 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
                   </Text>
                 </View>
               ) : (
-                <View className="bg-gray-50 rounded-lg p-3 mb-4 w-full">
-                  <Text className="text-gray-700 text-center font-medium">
+                <View className="bg-secondary-50 rounded-lg p-3 mb-4 w-full">
+                  <Text className="text-secondary-700 text-center font-medium">
                     Programme générique disponible
                   </Text>
-                  <Text className="text-gray-600 text-center text-sm">
+                  <Text className="text-secondary-600 text-center text-sm">
                     Un programme adapté sera généré selon vos préférences
                   </Text>
                 </View>
               )}
               <TouchableOpacity
                 onPress={handleGenerateProgram}
-                className="bg-primary-500 py-3 px-6 rounded-xl w-full"
+                className="bg-primary-500 py-3 px-6 rounded-xl w-full active:bg-primary-600"
                 disabled={programsLoading}
               >
-                <Text className="text-white font-bold text-center">
+                <Text className="text-surface font-bold text-center">
                   {programsLoading ? 'Génération...' : 'Générer mon premier programme'}
                 </Text>
               </TouchableOpacity>
@@ -358,7 +358,7 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
             return (
               <TouchableOpacity
                 key={program.id}
-                className="bg-white rounded-xl p-4 mb-4"
+                className="bg-surface rounded-xl p-4 mb-4 shadow-sm border border-border-light active:bg-surface-secondary"
               >
                 {/* Program Header */}
                 <View className="flex-row items-start justify-between mb-3">
@@ -368,32 +368,32 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
                         {program.goal || 'Programme'}
                       </Text>
                     </View>
-                    <Text className="text-xl font-bold text-brand-dark-bg mb-1">
+                    <Text className="text-xl font-bold text-brand-text mb-1">
                       {program.title}
                     </Text>
-                    <Text className="text-sm text-brand-dark-surface mb-2">
+                    <Text className="text-sm text-secondary-600 mb-2">
                       {program.goal || 'Programme d\'entraînement personnalisé'}
                     </Text>
                   </View>
-                  <View className={`w-4 h-4 rounded-full ${program.isActive ? 'bg-green-500' : 'bg-gray-300'}`} />
+                  <View className={`w-4 h-4 rounded-full ${program.isActive ? 'bg-success-500' : 'bg-secondary-300'}`} />
                 </View>
 
                 {/* Program Stats */}
                 <View className="mb-4">
                   <View className="flex-row justify-between mb-2">
                     <View className="flex-1 mr-4">
-                      <Text className="text-xs text-brand-dark-surface">Durée</Text>
-                      <Text className="text-sm font-medium text-brand-dark-bg">
+                      <Text className="text-xs text-secondary-600">Durée</Text>
+                      <Text className="text-sm font-medium text-brand-text">
                         {formatDuration(program.startDate, program.endDate)}
                       </Text>
                     </View>
                     <View className="flex-1 mr-4">
-                      <Text className="text-xs text-brand-dark-surface">Exercices</Text>
-                      <Text className="text-sm font-medium text-brand-dark-bg">{program.exerciseCount}</Text>
+                      <Text className="text-xs text-secondary-600">Exercices</Text>
+                      <Text className="text-sm font-medium text-brand-text">{program.exerciseCount}</Text>
                     </View>
                     <View className="flex-1">
-                      <Text className="text-xs text-brand-dark-surface">Dernière fois</Text>
-                      <Text className="text-sm font-medium text-brand-dark-bg" numberOfLines={1} ellipsizeMode="tail">
+                      <Text className="text-xs text-secondary-600">Dernière fois</Text>
+                      <Text className="text-sm font-medium text-brand-text" numberOfLines={1} ellipsizeMode="tail">
                         {getLastWorkout(program)}
                       </Text>
                     </View>
@@ -403,8 +403,8 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
                 {/* Progress Bar */}
                 <View className="mb-4">
                   <View className="flex-row justify-between items-center mb-2">
-                    <Text className="text-sm font-medium text-brand-dark-bg">Progression</Text>
-                    <Text className="text-sm text-brand-dark-surface">{progress}%</Text>
+                    <Text className="text-sm font-medium text-brand-text">Progression</Text>
+                    <Text className="text-sm text-secondary-600">{progress}%</Text>
                   </View>
                   <View className="bg-border h-2 rounded-full">
                     <View 
@@ -417,16 +417,16 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
                 {/* Tags and Actions */}
                 <View className="flex-row items-center justify-between mb-3">
                   <View className="flex-row space-x-2">
-                    {program.isActive && <Tag text="Actif" color="bg-green-500" textColor="text-white" />}
-                    {program.isTemplate && <Tag text="Modèle" color="bg-blue-500" textColor="text-white" />}
-                    <Tag text={`${program.exerciseCount} exercices`} color="bg-primary-400" textColor="text-white" />
+                    {program.isActive && <Tag text="Actif" color="bg-success-500" textColor="text-surface" />}
+                    {program.isTemplate && <Tag text="Modèle" color="bg-info-500" textColor="text-surface" />}
+                    <Tag text={`${program.exerciseCount} exercices`} color="bg-primary-500" textColor="text-surface" />
                   </View>
                 </View>
 
                 {/* Action Buttons */}
                 <View className="flex-row space-x-2">
                   <TouchableOpacity 
-                    className="flex-1 bg-brand-brown py-3 rounded-lg"
+                    className="flex-1 bg-primary-500 py-3 rounded-lg active:bg-primary-600"
                     onPress={() => {
                       if (!program.isActive) {
                         startProgram(program.id);
@@ -435,19 +435,19 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
                       }
                     }}
                   >
-                    <Text className="text-white font-bold text-center">
+                    <Text className="text-surface font-bold text-center">
                       {program.isActive ? 'Continuer' : 'Démarrer'}
                     </Text>
                   </TouchableOpacity>
                   
                   <TouchableOpacity 
-                    className="bg-gray-200 py-3 px-4 rounded-lg"
+                    className="bg-secondary-200 py-3 px-4 rounded-lg active:bg-secondary-300"
                     onPress={() => {
                       setSelectedProgram(program);
                       setShowExercises(true);
                     }}
                   >
-                    <Text className="text-brand-dark-bg font-medium">👀</Text>
+                    <Text className="text-secondary-700 font-medium">👀</Text>
                   </TouchableOpacity>
                 </View>
               </TouchableOpacity>
@@ -457,24 +457,24 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
 
         {/* Quick Stats */}
         {programs.length > 0 && (
-          <View className="bg-white rounded-xl p-4 mb-8">
-            <Text className="text-lg font-semibold text-brand-dark-bg mb-4">Vos statistiques</Text>
+          <View className="bg-surface rounded-xl p-4 mb-8 shadow-sm border border-border-light">
+            <Text className="text-lg font-semibold text-brand-text mb-4">Vos statistiques</Text>
             <View className="flex-row justify-between">
               <View className="items-center">
-                <Text className="text-2xl font-bold text-primary-400">{total}</Text>
-                <Text className="text-sm text-brand-dark-surface">Programme{total > 1 ? 's' : ''}</Text>
+                <Text className="text-2xl font-bold text-primary-500">{total}</Text>
+                <Text className="text-sm text-secondary-600">Programme{total > 1 ? 's' : ''}</Text>
               </View>
               <View className="items-center">
-                <Text className="text-2xl font-bold text-accent-400">
+                <Text className="text-2xl font-bold text-accent-500">
                   {programs.reduce((acc, program) => acc + program.exerciseCount, 0)}
                 </Text>
-                <Text className="text-sm text-brand-dark-surface">Exercices total</Text>
+                <Text className="text-sm text-secondary-600">Exercices total</Text>
               </View>
               <View className="items-center">
-                <Text className="text-2xl font-bold text-success">
+                <Text className="text-2xl font-bold text-success-500">
                   {programs.filter(p => p.isActive).length}
                 </Text>
-                <Text className="text-sm text-brand-dark-surface">Actif{programs.filter(p => p.isActive).length > 1 ? 's' : ''}</Text>
+                <Text className="text-sm text-secondary-600">Actif{programs.filter(p => p.isActive).length > 1 ? 's' : ''}</Text>
               </View>
             </View>
           </View>
