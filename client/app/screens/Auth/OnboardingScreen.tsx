@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import * as SecureStore from 'expo-secure-store';
-import api from '../../services/api';
+import api, { cycleApi } from '../../services/api';
 
 // Enums to match backend, with keys matching the values for reverse mapping
 const ObjectiveType: { [key: string]: string } = {
@@ -103,21 +103,16 @@ const OnboardingScreen = () => {
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      const payload = {
+      // First, complete the basic onboarding
+      const onboardingPayload = {
         objectives: formData.objectives, // Send array of objectives
         experienceLevel: formData.experienceLevel,
         isMenopausal: formData.isMenopausal,
-        averageCycleLength: !formData.isMenopausal ? parseInt(formData.averageCycleLength, 10) : undefined,
-        averagePeriodLength: !formData.isMenopausal ? parseInt(formData.averagePeriodLength, 10) : undefined,
-        // Cycle tracking data
-        cycleTrackingEnabled: !formData.isMenopausal ? formData.cycleTrackingEnabled : false,
-        currentCycleDay: !formData.isMenopausal && formData.cycleTrackingEnabled ? parseInt(formData.currentCycleDay, 10) : undefined,
-        lastPeriodDate: !formData.isMenopausal && formData.cycleTrackingEnabled ? formData.lastPeriodDate : undefined,
         // Explicitly mark onboarding as completed
         onboardingCompleted: true,
       };
 
-      const response = await api.post('/auth/onboarding', payload);
+      const response = await api.post('/auth/onboarding', onboardingPayload);
       
       if (response.data.success) {
         // The backend returns the updated user object with onboardingCompleted: true
@@ -139,6 +134,49 @@ const OnboardingScreen = () => {
         
         // Update the user in context with the completed onboarding data
         await login(userWithCompletedOnboarding, token!, token!); // Using token for both access and refresh
+        
+        // Now handle cycle configuration if user is not menopausal
+        if (!formData.isMenopausal) {
+          try {
+            const cycleConfigPayload = {
+              isCycleTrackingEnabled: formData.cycleTrackingEnabled,
+              useMenopauseMode: false,
+              averageCycleLength: parseInt(formData.averageCycleLength, 10),
+              averagePeriodLength: parseInt(formData.averagePeriodLength, 10),
+              prefersManualInput: true, // User is manually entering data
+            };
+
+            await cycleApi.updateCycleConfig(cycleConfigPayload);
+            
+            // If cycle tracking is enabled and user provided current cycle data, log the period
+            if (formData.cycleTrackingEnabled && formData.lastPeriodDate) {
+              try {
+                // Convert DD/MM/YYYY to YYYY-MM-DD format
+                const [day, month, year] = formData.lastPeriodDate.split('/');
+                const startDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+                
+                // Calculate end date based on period length
+                const startDateObj = new Date(startDate);
+                const endDateObj = new Date(startDateObj);
+                endDateObj.setDate(startDateObj.getDate() + parseInt(formData.averagePeriodLength, 10) - 1);
+                const endDate = endDateObj.toISOString().split('T')[0];
+                
+                await cycleApi.logPeriod({
+                  startDate,
+                  endDate,
+                  flowIntensity: 3, // Default medium intensity
+                  notes: 'Période initiale configurée lors de l\'onboarding'
+                });
+              } catch (periodError) {
+                console.warn('Failed to log initial period:', periodError);
+                // Don't fail the entire onboarding for this
+              }
+            }
+          } catch (cycleError) {
+            console.warn('Failed to configure cycle settings:', cycleError);
+            // Don't fail the entire onboarding for this
+          }
+        }
         
         // Clear any temporary storage
         await SecureStore.deleteItemAsync('tempAccessToken');

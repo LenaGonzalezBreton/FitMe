@@ -2,6 +2,7 @@ import axios, { InternalAxiosRequestConfig } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
+import { UpdateCycleConfigRequest, LogPeriodRequest } from '../types';
 
 // Resolve base URL robustly across Expo Go, dev clients, emulators, and real devices
 function resolveApiBaseURL(): string {
@@ -230,15 +231,25 @@ export const cycleApi = {
   },
 
   // Update cycle config
-  updateCycleConfig: async (config: {
-    isCycleTrackingEnabled?: boolean;
-    usesExternalProvider?: boolean;
-    useMenopauseMode?: boolean;
-    averageCycleLength?: number;
-    averagePeriodLength?: number;
-    prefersManualInput?: boolean;
-  }) => {
+  updateCycleConfig: async (config: UpdateCycleConfigRequest) => {
     const response = await api.put('/cycle/config', config);
+    return response.data;
+  },
+
+  // Log period
+  logPeriod: async (periodData: LogPeriodRequest) => {
+    const response = await api.post('/cycle/periods', periodData);
+    return response.data;
+  },
+
+  // Get periods history
+  getPeriodsHistory: async (params?: {
+    limit?: number;
+    offset?: number;
+    fromDate?: string;
+    toDate?: string;
+  }) => {
+    const response = await api.get('/cycle/periods', { params });
     return response.data;
   },
 };

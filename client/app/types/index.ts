@@ -103,3 +103,62 @@ export interface CurrentPhaseResponse {
   data: CurrentPhaseData;
   message: string;
 }
+
+// Cycle Configuration types
+export interface CycleConfig {
+  userId: string;
+  isCycleTrackingEnabled: boolean;
+  usesExternalProvider: boolean;
+  useMenopauseMode: boolean;
+  averageCycleLength: number;
+  averagePeriodLength: number;
+  prefersManualInput: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CycleConfigResponse {
+  config: CycleConfig;
+  message: string;
+}
+
+export interface UpdateCycleConfigRequest {
+  isCycleTrackingEnabled?: boolean;
+  usesExternalProvider?: boolean;
+  useMenopauseMode?: boolean;
+  averageCycleLength?: number;
+  averagePeriodLength?: number;
+  prefersManualInput?: boolean;
+}
+
+// Period tracking types
+export interface LogPeriodRequest {
+  startDate: string;
+  endDate?: string;
+  flowIntensity?: number;
+  notes?: string;
+}
+
+export interface Period {
+  id: string;
+  startDate: string;
+  endDate?: string;
+  flowIntensity?: number;
+  notes?: string;
+  cycleId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LogPeriodResponse {
+  success: boolean;
+  data: {
+    period: Period;
+    cycle: {
+      id: string;
+      cycleLength: number;
+      periodLength: number;
+    };
+  };
+  message: string;
+}

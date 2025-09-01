@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import { cycleApi } from '../services/api';
-import { CurrentPhaseData, CurrentPhaseResponse, CyclePhase } from '../types';
+import { CurrentPhaseData, CurrentPhaseResponse, CyclePhase, CycleConfig, CycleConfigResponse, UpdateCycleConfigRequest } from '../types';
 
 export interface UseCycleReturn {
   currentPhase: CurrentPhaseData | null;
+  cycleConfig: CycleConfig | null;
   loading: boolean;
   error: string | null;
   refreshPhase: () => Promise<void>;
+  refreshConfig: () => Promise<void>;
+  updateCycleConfig: (config: UpdateCycleConfigRequest) => Promise<boolean>;
   getPhaseLabel: (phase: CyclePhase) => string;
   getPhaseEmoji: (phase: CyclePhase) => string;
   getPhaseColor: (phase: CyclePhase) => string;
@@ -14,6 +17,7 @@ export interface UseCycleReturn {
 
 export const useCycle = (): UseCycleReturn => {
   const [currentPhase, setCurrentPhase] = useState<CurrentPhaseData | null>(null);
+  const [cycleConfig, setCycleConfig] = useState<CycleConfig | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -105,15 +109,77 @@ export const useCycle = (): UseCycleReturn => {
     }
   };
 
+  const fetchCycleConfig = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response: CycleConfigResponse = await cycleApi.getCycleConfig();
+      setCycleConfig(response.config);
+    } catch (err: any) {
+      // Don't show error alert for session expiration - user will be redirected to login
+      if (err?.name === 'SessionExpired') {
+        console.log('Session expired during cycle config fetch - user will be redirected to login');
+        setError(null);
+        setCycleConfig(null);
+        return;
+      }
+      
+      const errorMessage = err.response?.data?.message || err.message || 'Erreur lors du chargement de la configuration du cycle';
+      console.error('Error fetching cycle config:', err);
+      
+      // If it's a 404, the user probably doesn't have cycle config yet
+      if (err.response?.status === 404) {
+        console.log('Cycle config not found - user may need to set it up');
+        setError(null);
+        setCycleConfig(null);
+        return;
+      }
+      
+      setError(errorMessage);
+      setCycleConfig(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateCycleConfig = async (config: UpdateCycleConfigRequest): Promise<boolean> => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response: CycleConfigResponse = await cycleApi.updateCycleConfig(config);
+      setCycleConfig(response.config);
+      return true;
+    } catch (err: any) {
+      // Don't show error alert for session expiration - user will be redirected to login
+      if (err?.name === 'SessionExpired') {
+        console.log('Session expired during cycle config update - user will be redirected to login');
+        return false;
+      }
+      
+      const errorMessage = err.response?.data?.message || err.message || 'Erreur lors de la mise à jour de la configuration du cycle';
+      setError(errorMessage);
+      console.error('Error updating cycle config:', err);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchCurrentPhase();
+    fetchCycleConfig();
   }, []);
 
   return {
     currentPhase,
+    cycleConfig,
     loading,
     error,
     refreshPhase: fetchCurrentPhase,
+    refreshConfig: fetchCycleConfig,
+    updateCycleConfig,
     getPhaseLabel,
     getPhaseEmoji,
     getPhaseColor,
