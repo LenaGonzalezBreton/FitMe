@@ -4,7 +4,7 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { CycleProfileConfig } from '../../domain/cycle.entity';
+import { CycleProfileConfig, Cycle } from '../../domain/cycle.entity';
 import {
   ICycleProfileConfigRepository,
   UpdateCycleProfileConfigData,
@@ -37,21 +37,31 @@ export class UpdateCycleConfigUseCase {
   async execute(
     request: UpdateCycleConfigRequest,
   ): Promise<UpdateCycleConfigResponse> {
-    // Validation des durées
+    // Validation des durées avec les limites médicales correctes
     if (request.averageCycleLength !== undefined) {
-      if (request.averageCycleLength < 21 || request.averageCycleLength > 40) {
+      if (request.averageCycleLength < 21 || request.averageCycleLength > 35) {
         throw new BadRequestException(
-          'La durée du cycle doit être comprise entre 21 et 40 jours',
+          'La durée du cycle doit être comprise entre 21 et 35 jours',
         );
       }
     }
 
     if (request.averagePeriodLength !== undefined) {
-      if (request.averagePeriodLength < 3 || request.averagePeriodLength > 10) {
+      if (request.averagePeriodLength < 2 || request.averagePeriodLength > 8) {
         throw new BadRequestException(
-          'La durée des règles doit être comprise entre 3 et 10 jours',
+          'La durée des règles doit être comprise entre 2 et 8 jours',
         );
       }
+    }
+
+    // Validation supplémentaire : vérifier que la durée des règles est inférieure à la durée du cycle
+    const cycleLength = request.averageCycleLength ?? 28;
+    const periodLength = request.averagePeriodLength ?? 5;
+    
+    if (!Cycle.validateCycleParameters(cycleLength, periodLength)) {
+      throw new BadRequestException(
+        'Les paramètres du cycle sont invalides. Vérifiez les durées.',
+      );
     }
 
     // Vérifier si la configuration existe
