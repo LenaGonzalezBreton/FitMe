@@ -105,9 +105,6 @@ const ExercicesScreen = () => {
           {/* Header */}
           <View className="pt-16 pb-6">
             <Text className="text-3xl font-bold text-brand-text mb-2">Exercices</Text>
-            <Text className="text-base text-secondary-600">
-              Phase actuelle : <Text className="font-semibold text-brand-text">{currentPhase}</Text>
-            </Text>
           </View>
 
           {/* Categories Filter */}

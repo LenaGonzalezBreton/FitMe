@@ -151,14 +151,31 @@ export interface Period {
 }
 
 export interface LogPeriodResponse {
-  success: boolean;
-  data: {
-    period: Period;
-    cycle: {
-      id: string;
-      cycleLength: number;
-      periodLength: number;
-    };
+  period: {
+    id: string;
+    startDate: string;
+    periodLength?: number;
+    cycleLength?: number;
+    isRegular: boolean;
+    flowIntensity?: number;
+    notes?: string;
   };
   message: string;
+  isNewCycle: boolean;
+}
+
+export interface PeriodsHistoryResponse {
+  periods: {
+    id: string;
+    startDate: string;
+    periodLength?: number;
+    cycleLength?: number;
+    isRegular: boolean;
+    flowIntensity?: number;
+    notes?: string;
+  }[];
+  total: number;
+  averageCycleLength: number;
+  averagePeriodLength: number;
+  regularityPercentage: number;
 }

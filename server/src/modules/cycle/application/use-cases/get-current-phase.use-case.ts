@@ -85,7 +85,7 @@ export class GetCurrentPhaseUseCase {
         (1000 * 60 * 60 * 24),
     );
     const cycleLength = currentCycle.cycleLength || config.averageCycleLength;
-    const cycleDay = (daysSinceStart % cycleLength) + 1;
+    const cycleDay = daysSinceStart + 1;
 
     // Calculer les jours jusqu'à la prochaine phase
     const daysUntilNextPhase = this.calculateDaysUntilNextPhase(

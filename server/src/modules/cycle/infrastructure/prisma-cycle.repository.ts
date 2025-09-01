@@ -15,7 +15,7 @@ export class PrismaCycleRepository implements ICycleRepository {
   async findCurrentCycleByUserId(userId: string): Promise<Cycle | null> {
     const currentDate = new Date();
 
-    // Trouver le cycle le plus récent qui inclut la date actuelle
+    // Trouver le cycle le plus récent qui pourrait être actuel
     const prismaData = await this.prisma.cycle.findFirst({
       where: {
         userId,
@@ -36,6 +36,16 @@ export class PrismaCycleRepository implements ICycleRepository {
 
     // Vérifier si c'est vraiment le cycle actuel
     if (cycle.isCurrentCycle(currentDate)) {
+      return cycle;
+    }
+
+    // If the most recent cycle is not current, check if we should still use it
+    // This handles cases where the user is in a longer cycle than expected
+    const daysSinceStart = Math.floor((currentDate.getTime() - cycle.startDate.getTime()) / (1000 * 60 * 60 * 24));
+    const cycleLength = cycle.cycleLength || 28;
+    
+    // If we're within 1.5x the cycle length, consider it current even if past expected end
+    if (daysSinceStart >= 0 && daysSinceStart <= (cycleLength * 1.5)) {
       return cycle;
     }
 

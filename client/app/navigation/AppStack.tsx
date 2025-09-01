@@ -5,6 +5,9 @@ import WorkoutSessionScreen from '../screens/Workout/WorkoutSessionScreen';
 import CreateProgramScreen from '../screens/Programs/CreateProgramScreen';
 import ExerciseDetailScreen from '../screens/Exercises/ExerciseDetailsScreen';
 import ExercicesScreen from '../screens/Exercises/ExercicesScreen';
+import CycleTrackingScreen from '../screens/Cycle/CycleTrackingScreen';
+import PeriodLoggingScreen from '../screens/Cycle/PeriodLoggingScreen';
+import PeriodHistoryScreen from '../screens/Cycle/PeriodHistoryScreen';
 import { AppStackParamList } from '../types';   
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
@@ -27,6 +30,36 @@ export function AppStack() {
       />
       <Stack.Screen name="ExerciseDetail" component={ExerciseDetailScreen} />
       <Stack.Screen name="Exercices" component={ExercicesScreen} />
+      <Stack.Screen
+        name="CycleTracking"
+        component={CycleTrackingScreen}
+        options={{
+          headerShown: true,
+          title: 'Suivi du cycle',
+          headerStyle: { backgroundColor: '#F5EFE6' },
+          headerTintColor: '#8B5A3C',
+        }}
+      />
+      <Stack.Screen
+        name="PeriodLogging"
+        component={PeriodLoggingScreen}
+        options={{
+          headerShown: true,
+          title: 'Enregistrer mes règles',
+          headerStyle: { backgroundColor: '#F5EFE6' },
+          headerTintColor: '#8B5A3C',
+        }}
+      />
+      <Stack.Screen
+        name="PeriodHistory"
+        component={PeriodHistoryScreen}
+        options={{
+          headerShown: true,
+          title: 'Historique des règles',
+          headerStyle: { backgroundColor: '#F5EFE6' },
+          headerTintColor: '#8B5A3C',
+        }}
+      />
     </Stack.Navigator>
   );
 }

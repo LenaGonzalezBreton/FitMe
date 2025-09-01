@@ -4,13 +4,14 @@ import {
   Text,
   TouchableOpacity,
   SafeAreaView,
-  ScrollView,
   TextInput,
   Alert,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  FlatList,
 } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAuth } from '../../context/AuthContext';
 import * as SecureStore from 'expo-secure-store';
 import api, { cycleApi } from '../../services/api';
@@ -37,16 +38,18 @@ const OnboardingScreen = () => {
   const [step, setStep] = useState(1);
   const { login, token } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const dateInputRef = useRef<TextInput>(null);
   
   // Refs for temporary input values to avoid re-renders
   const tempCycleLength = useRef<string>('');
   const tempPeriodLength = useRef<string>('');
-  const tempCycleDay = useRef<string>('');
-  const tempLastPeriodDate = useRef<string>('');
   
-  // Local state for date input display to maintain formatting
-  const [dateInputDisplay, setDateInputDisplay] = useState('');
+  // State for date picker
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  
+  // Refs for input focus management
+  const cycleLengthRef = useRef<TextInput>(null);
+  const periodLengthRef = useRef<TextInput>(null);
   
   const [formData, setFormData] = useState({
     objectives: ['GENERAL_FITNESS'] as string[], // Changed to array for multiple selection
@@ -56,7 +59,6 @@ const OnboardingScreen = () => {
     averagePeriodLength: '5',
     // New cycle tracking fields
     cycleTrackingEnabled: false,
-    currentCycleDay: '1',
     lastPeriodDate: '',
   });
 
@@ -89,8 +91,8 @@ const OnboardingScreen = () => {
       setStep(step + 1);
     } else if (step === 5 && formData.isMenopausal === false) {
       // Validate cycle tracking step and submit
-      if (formData.cycleTrackingEnabled && (!formData.currentCycleDay || !formData.lastPeriodDate)) {
-        Alert.alert('Oups !', 'Veuillez remplir les informations de cycle ou désactiver le suivi.');
+      if (formData.cycleTrackingEnabled && !formData.lastPeriodDate) {
+        Alert.alert('Oups !', 'Veuillez sélectionner la date de vos dernières règles ou désactiver le suivi.');
         return;
       }
       handleSubmit();
@@ -148,24 +150,17 @@ const OnboardingScreen = () => {
 
             await cycleApi.updateCycleConfig(cycleConfigPayload);
             
-            // If cycle tracking is enabled and user provided current cycle data, log the period
+            // If cycle tracking is enabled and user provided last period date, log the period
             if (formData.cycleTrackingEnabled && formData.lastPeriodDate) {
               try {
-                // Convert DD/MM/YYYY to YYYY-MM-DD format
+                // Convert DD/MM/YYYY to YYYY-MM-DD format and let backend handle all cycle logic
                 const [day, month, year] = formData.lastPeriodDate.split('/');
                 const startDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
                 
-                // Calculate end date based on period length
-                const startDateObj = new Date(startDate);
-                const endDateObj = new Date(startDateObj);
-                endDateObj.setDate(startDateObj.getDate() + parseInt(formData.averagePeriodLength, 10) - 1);
-                const endDate = endDateObj.toISOString().split('T')[0];
-                
                 await cycleApi.logPeriod({
                   startDate,
-                  endDate,
                   flowIntensity: 3, // Default medium intensity
-                  notes: 'Période initiale configurée lors de l\'onboarding'
+                  notes: `Période initiale configurée lors de l'onboarding`
                 });
               } catch (periodError) {
                 console.warn('Failed to log initial period:', periodError);
@@ -261,6 +256,22 @@ const OnboardingScreen = () => {
       setFormData(prev => ({ ...prev, objectives: val }));
     }, []);
 
+    const objectiveEntries = Object.entries(ObjectiveType);
+
+    const renderObjective = ({ item }: { item: [string, string] }) => {
+      const [key, value] = item;
+      return (
+        <Option
+          key={key}
+          label={value}
+          value={key}
+          selectedValue={formData.objectives}
+          onSelect={handleObjectiveSelect}
+          isMultiple={true}
+        />
+      );
+    };
+
     return (
       <View className="flex-1">
         <Text className="text-2xl font-bold text-center mb-4">
@@ -269,27 +280,14 @@ const OnboardingScreen = () => {
         <Text className="text-base text-secondary-600 text-center mb-6">
           Sélectionnez tous ceux qui vous correspondent
         </Text>
-        <ScrollView 
+        <FlatList
+          data={objectiveEntries}
+          renderItem={renderObjective}
+          keyExtractor={(item) => item[0]}
           className="flex-1"
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 20 }}
-          keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="none"
-          automaticallyAdjustKeyboardInsets={false}
-          scrollEventThrottle={16}
-          removeClippedSubviews={false}
-        >
-          {Object.entries(ObjectiveType).map(([key, value]) => (
-            <Option
-              key={key}
-              label={value}
-              value={key}
-              selectedValue={formData.objectives}
-              onSelect={handleObjectiveSelect}
-              isMultiple={true}
-            />
-          ))}
-        </ScrollView>
+        />
       </View>
     );
   });
@@ -304,18 +302,7 @@ const OnboardingScreen = () => {
         <Text className="text-2xl font-bold text-center mb-8">
           Quel est votre niveau d'expérience ?
         </Text>
-        <ScrollView 
-          className="flex-1"
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 20 }}
-          keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="none"
-          automaticallyAdjustKeyboardInsets={false}
-          maintainVisibleContentPosition={{
-            minIndexForVisible: 0,
-            autoscrollToTopThreshold: 10
-          }}
-        >
+        <View className="flex-1">
           {Object.entries(ExperienceLevel).map(([key, value]) => (
             <Option
               key={key}
@@ -325,7 +312,7 @@ const OnboardingScreen = () => {
               onSelect={handleExperienceSelect}
             />
           ))}
-        </ScrollView>
+        </View>
       </View>
     );
   });
@@ -340,18 +327,7 @@ const OnboardingScreen = () => {
         <Text className="text-2xl font-bold text-center mb-8">
           Êtes-vous en période de ménopause ?
         </Text>
-        <ScrollView 
-          className="flex-1"
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 20 }}
-          keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="none"
-          automaticallyAdjustKeyboardInsets={false}
-          maintainVisibleContentPosition={{
-            minIndexForVisible: 0,
-            autoscrollToTopThreshold: 10
-          }}
-        >
+        <View className="flex-1">
           <Option
             label="Oui"
             value={true}
@@ -364,7 +340,7 @@ const OnboardingScreen = () => {
             selectedValue={formData.isMenopausal}
             onSelect={handleMenopauseSelect}
           />
-        </ScrollView>
+        </View>
       </View>
     );
   });
@@ -374,20 +350,10 @@ const OnboardingScreen = () => {
       <Text className="text-2xl font-bold text-center mb-8">
         Quelques détails sur votre cycle
       </Text>
-      <ScrollView 
-        className="flex-1"
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 20 }}
-        keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="none"
-        automaticallyAdjustKeyboardInsets={false}
-        maintainVisibleContentPosition={{
-          minIndexForVisible: 0,
-          autoscrollToTopThreshold: 10
-        }}
-      >
+      <View className="flex-1">
         <Text className="text-lg font-semibold text-brand-text mb-2">Durée moyenne de votre cycle (en jours)</Text>
         <TextInput
+          ref={cycleLengthRef}
           className="bg-surface border border-border p-4 rounded-xl text-lg text-brand-text mb-6"
           placeholder="Ex: 28"
           placeholderTextColor="#A99985"
@@ -399,6 +365,9 @@ const OnboardingScreen = () => {
           onEndEditing={() => {
             setFormData(prev => ({ ...prev, averageCycleLength: tempCycleLength.current || prev.averageCycleLength }));
           }}
+          onSubmitEditing={() => {
+            periodLengthRef.current?.focus();
+          }}
           maxLength={2}
           autoCorrect={false}
           autoCapitalize="none"
@@ -409,6 +378,7 @@ const OnboardingScreen = () => {
         />
         <Text className="text-lg font-semibold text-brand-text mb-2">Durée moyenne de vos règles (en jours)</Text>
         <TextInput
+          ref={periodLengthRef}
           className="bg-surface border border-border p-4 rounded-xl text-lg text-brand-text"
           placeholder="Ex: 5"
           placeholderTextColor="#A99985"
@@ -428,7 +398,7 @@ const OnboardingScreen = () => {
           caretHidden={false}
           returnKeyType="done"
         />
-      </ScrollView>
+      </View>
     </View>
   );
 
@@ -445,17 +415,14 @@ const OnboardingScreen = () => {
         <Text className="text-base text-secondary-600 text-center mb-6">
           Voulez-vous activer le suivi de votre cycle pour des recommandations personnalisées ?
         </Text>
-        <ScrollView 
+        <View 
           className="flex-1"
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 20 }}
-          keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="none"
-          automaticallyAdjustKeyboardInsets={false}
-          maintainVisibleContentPosition={{
-            minIndexForVisible: 0,
-            autoscrollToTopThreshold: 10
-          }}
+
+
+
+
+
+
         >
           <Option
             label="Oui, activer le suivi"
@@ -471,84 +438,67 @@ const OnboardingScreen = () => {
           />
 
         {formData.cycleTrackingEnabled && (
-          <View className="mt-6 space-y-4">
-            <Text className="text-lg font-semibold text-brand-text mb-2">Jour actuel de votre cycle</Text>
-            <TextInput
-              className="bg-surface border border-border p-4 rounded-xl text-lg text-brand-text mb-4"
-              placeholder="Ex: 8"
-              placeholderTextColor="#A99985"
-              keyboardType="number-pad"
-              defaultValue={formData.currentCycleDay}
-              onChangeText={(val) => {
-                tempCycleDay.current = val;
-              }}
-              onEndEditing={() => {
-                setFormData(prev => ({ ...prev, currentCycleDay: tempCycleDay.current || prev.currentCycleDay }));
-              }}
-              maxLength={2}
-              autoCorrect={false}
-              autoCapitalize="none"
-              blurOnSubmit={false}
-              selectTextOnFocus={false}
-              caretHidden={false}
-              returnKeyType="next"
-            />
-            
+          <View className="mt-6">
             <Text className="text-lg font-semibold text-brand-text mb-2">Date de vos dernières règles</Text>
-            <TextInput
-              ref={dateInputRef}
-              className="bg-surface border border-border p-4 rounded-xl text-lg text-brand-text"
-              placeholder="JJ/MM/AAAA"
-              placeholderTextColor="#A99985"
-              value={dateInputDisplay || formData.lastPeriodDate}
-              onChangeText={(val) => {
-                // Auto-format the date as user types
-                let formatted = val.replace(/\D/g, ''); // Remove non-digits
-                if (formatted.length >= 2) {
-                  formatted = formatted.substring(0, 2) + '/' + formatted.substring(2);
-                }
-                if (formatted.length >= 5) {
-                  formatted = formatted.substring(0, 5) + '/' + formatted.substring(5, 9);
-                }
-                tempLastPeriodDate.current = formatted;
-                setDateInputDisplay(formatted);
-              }}
-              onEndEditing={() => {
-                // Validate date when user finishes typing
-                const dateStr = tempLastPeriodDate.current;
-                if (dateStr.length === 10) {
-                  const [day, month, year] = dateStr.split('/').map(Number);
-                  const date = new Date(year, month - 1, day);
-                  const isValid = date.getFullYear() === year && 
-                                 date.getMonth() === month - 1 && 
-                                 date.getDate() === day &&
-                                 year >= 1900 && year <= new Date().getFullYear();
-                  
-                  if (!isValid) {
-                    Alert.alert('Date invalide', 'Veuillez entrer une date valide (ex: 15/01/2024)');
-                    tempLastPeriodDate.current = '';
-                    setDateInputDisplay('');
-                    setFormData(prev => ({ ...prev, lastPeriodDate: '' }));
-                    return;
-                  }
-                }
-                setFormData(prev => ({ ...prev, lastPeriodDate: tempLastPeriodDate.current || prev.lastPeriodDate }));
-              }}
-              keyboardType="numeric"
-              maxLength={10}
-              autoCorrect={false}
-              autoCapitalize="none"
-              blurOnSubmit={false}
-              returnKeyType="done"
-              selectTextOnFocus={false}
-              caretHidden={false}
-            />
-            <Text className="text-sm text-secondary-600 mt-2">
-              Format: JJ/MM/AAAA (ex: 15/01/2024)
-            </Text>
+            <TouchableOpacity
+              className="bg-primary-50 border border-primary-200 p-4 rounded-xl"
+              onPress={() => setShowDatePicker(true)}
+            >
+              <View className="flex-row items-center justify-between">
+                <View>
+                  <Text className="text-primary-700 font-medium">
+                    {formData.lastPeriodDate 
+                      ? new Date(formData.lastPeriodDate.split('/').reverse().join('-')).toLocaleDateString('fr-FR', {
+                          weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+                        })
+                      : 'Sélectionner une date'
+                    }
+                  </Text>
+                  {formData.lastPeriodDate && (
+                    <Text className="text-primary-600 text-sm mt-1">
+                      {(() => {
+                        const selectedDate = new Date(formData.lastPeriodDate.split('/').reverse().join('-'));
+                        const today = new Date();
+                        const diffTime = Math.abs(today.getTime() - selectedDate.getTime());
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        
+                        if (diffDays === 0) return "Aujourd'hui";
+                        if (diffDays === 1) return "Hier";
+                        return `Il y a ${diffDays} jours`;
+                      })()}
+                    </Text>
+                  )}
+                </View>
+                <Text className="text-primary-600">📅</Text>
+              </View>
+            </TouchableOpacity>
+            
+            {showDatePicker && (
+              <View className="bg-primary-50 rounded-xl p-4">
+                <DateTimePicker
+                  value={selectedDate}
+                  mode="date"
+                  display="default"
+                  onChange={(event: any, date: any) => {
+                    setShowDatePicker(false);
+                    if (date) {
+                      setSelectedDate(date);
+                      // Format date as DD/MM/YYYY for backend
+                      const day = date.getDate().toString().padStart(2, '0');
+                      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                      const year = date.getFullYear().toString();
+                      const formattedDate = `${day}/${month}/${year}`;
+                      setFormData(prev => ({ ...prev, lastPeriodDate: formattedDate }));
+                    }
+                  }}
+                  maximumDate={new Date()}
+                  minimumDate={new Date(1900, 0, 1)}
+                />
+              </View>
+            )}
           </View>
         )}
-      </ScrollView>
+      </View>
     </View>
     );
   });

@@ -32,7 +32,7 @@ export class Cycle {
     const periodLength = this.periodLength || 5;
 
     // Calculer le jour actuel dans le cycle (1-based)
-    const dayInCycle = (daysSinceStart % cycleLength) + 1;
+    const dayInCycle = daysSinceStart + 1;
 
     // Phase menstruelle : jours 1 à periodLength
     if (dayInCycle <= periodLength) {
@@ -71,8 +71,15 @@ export class Cycle {
    * Vérifie si le cycle est en cours
    */
   isCurrentCycle(currentDate: Date = new Date()): boolean {
-    const nextCycleStart = this.getNextCycleStart();
-    return currentDate >= this.startDate && currentDate < nextCycleStart;
+    // A cycle is considered current if:
+    // 1. The current date is after the start date, AND
+    // 2. Either we're within the expected cycle length OR no new cycle has started
+    const daysSinceStart = Math.floor((currentDate.getTime() - this.startDate.getTime()) / (1000 * 60 * 60 * 24));
+    const cycleLength = this.cycleLength || 28;
+    
+    // If we're within a reasonable range (up to 1.5x the cycle length), consider it current
+    // This handles cases where cycles are longer than expected
+    return daysSinceStart >= 0 && daysSinceStart <= (cycleLength * 1.5);
   }
 
   /**
@@ -116,7 +123,7 @@ export class Cycle {
     );
     
     const cycleLength = this.cycleLength || 28;
-    const dayInCycle = (daysSinceStart % cycleLength) + 1;
+    const dayInCycle = daysSinceStart + 1;
     const ovulationDay = this.getOvulationDay();
     
     // Période fertile : 5 jours avant l'ovulation jusqu'à 2 jours après
