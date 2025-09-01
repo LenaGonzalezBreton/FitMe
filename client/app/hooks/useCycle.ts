@@ -95,13 +95,13 @@ export const useCycle = (): UseCycleReturn => {
   const getPhaseColor = (phase: CyclePhase): string => {
     switch (phase) {
       case CyclePhase.MENSTRUAL:
-        return 'bg-red-100';
+        return 'bg-phase-menstrual-100';
       case CyclePhase.FOLLICULAR:
-        return 'bg-green-100';
+        return 'bg-phase-follicular-100';
       case CyclePhase.OVULATION:
-        return 'bg-yellow-100';
+        return 'bg-phase-ovulation-100';
       case CyclePhase.LUTEAL:
-        return 'bg-orange-100';
+        return 'bg-phase-luteal-100';
       default:
         return 'bg-primary-100';
     }
