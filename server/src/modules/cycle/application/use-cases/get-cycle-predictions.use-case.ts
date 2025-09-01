@@ -1,7 +1,7 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { Cycle, CyclePhase } from '../../domain/cycle.entity';
-import { ICycleRepository } from '../../domain/cycle.repository';
-import { CYCLE_REPOSITORY_TOKEN } from '../../tokens';
+import { ICycleRepository, ICycleProfileConfigRepository } from '../../domain/cycle.repository';
+import { CYCLE_REPOSITORY_TOKEN, CYCLE_PROFILE_CONFIG_REPOSITORY_TOKEN } from '../../tokens';
 
 export interface GetCyclePredictionsRequest {
   userId: string;
@@ -22,9 +22,20 @@ export class GetCyclePredictionsUseCase {
   constructor(
     @Inject(CYCLE_REPOSITORY_TOKEN)
     private readonly cycleRepository: ICycleRepository,
+    @Inject(CYCLE_PROFILE_CONFIG_REPOSITORY_TOKEN)
+    private readonly cycleProfileConfigRepository: ICycleProfileConfigRepository,
   ) {}
 
   async execute(request: GetCyclePredictionsRequest): Promise<CyclePrediction> {
+    // Vérifier la configuration du profil pour la ménopause
+    const profileConfig = await this.cycleProfileConfigRepository.findByUserId(request.userId);
+    
+    if (profileConfig?.useMenopauseMode) {
+      throw new NotFoundException(
+        'Le suivi des cycles est désactivé en mode ménopause. Les prédictions ne sont pas disponibles.',
+      );
+    }
+
     // Récupérer l'historique des cycles
     const cycles = await this.cycleRepository.findByUserId(request.userId);
 
@@ -168,6 +179,7 @@ export class GetCyclePredictionsUseCase {
     const currentPhase = this.getPhaseForCycleDay(
       currentCycleDay,
       averageCycleLength,
+      currentCycle?.periodLength || 5,
     );
 
     return { currentPhase, currentCycleDay };
@@ -176,24 +188,28 @@ export class GetCyclePredictionsUseCase {
   private getPhaseForCycleDay(
     cycleDay: number,
     cycleLength: number,
+    periodLength: number = 5,
   ): CyclePhase {
-    // Phase menstruelle : jours 1-5 (approximatif)
-    if (cycleDay <= 5) {
+    // Phase menstruelle : jours 1 à periodLength
+    if (cycleDay <= periodLength) {
       return CyclePhase.MENSTRUAL;
     }
 
-    // Phase folliculaire : après les règles jusqu'à l'ovulation
-    const ovulationDay = cycleLength - 14; // Approximatif
-    if (cycleDay < ovulationDay) {
+    // Calculer le jour d'ovulation (14 jours avant la fin du cycle)
+    const ovulationDay = cycleLength - 14;
+
+    // Phase folliculaire : de la fin des règles jusqu'à 3 jours avant l'ovulation
+    if (cycleDay > periodLength && cycleDay < ovulationDay - 2) {
       return CyclePhase.FOLLICULAR;
     }
 
-    // Phase d'ovulation : autour du jour d'ovulation (±2 jours)
+    // Phase d'ovulation : période fertile (ovulation ± 2 jours)
     if (cycleDay >= ovulationDay - 2 && cycleDay <= ovulationDay + 2) {
       return CyclePhase.OVULATION;
     }
 
-    // Phase lutéale : après l'ovulation
+    // Phase lutéale : après l'ovulation jusqu'à la fin du cycle
+    // Cette phase dure toujours environ 14 jours
     return CyclePhase.LUTEAL;
   }
 
@@ -217,6 +233,15 @@ export class GetCyclePredictionsUseCase {
     // L'ovulation se produit généralement 14 jours avant le début des prochaines règles
     const ovulationDate = new Date(nextPeriodStart);
     ovulationDate.setDate(ovulationDate.getDate() - 14);
+
+    // Si l'ovulation est dans le passé, calculer pour le cycle actuel
+    const currentDate = new Date();
+    if (ovulationDate < currentDate) {
+      // Calculer l'ovulation pour le cycle suivant
+      const nextCycleOvulation = new Date(nextPeriodStart);
+      nextCycleOvulation.setDate(nextCycleOvulation.getDate() + cycleLength - 14);
+      return nextCycleOvulation;
+    }
 
     return ovulationDate;
   }

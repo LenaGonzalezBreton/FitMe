@@ -190,6 +190,7 @@ export class GetCycleCalendarUseCase {
         const phase = this.getPhaseForCycleDay(
           cycleDay,
           cycle.cycleLength || 28,
+          cycle.periodLength || 5,
         );
 
         return {
@@ -206,31 +207,35 @@ export class GetCycleCalendarUseCase {
   private getPhaseForCycleDay(
     cycleDay: number,
     cycleLength: number,
+    periodLength: number = 5,
   ): CyclePhase {
-    // Phase menstruelle : jours 1-5
-    if (cycleDay <= 5) {
+    // Phase menstruelle : jours 1 à periodLength
+    if (cycleDay <= periodLength) {
       return CyclePhase.MENSTRUAL;
     }
 
-    // Phase folliculaire : après les règles jusqu'à l'ovulation
+    // Calculer le jour d'ovulation (14 jours avant la fin du cycle)
     const ovulationDay = cycleLength - 14;
-    if (cycleDay < ovulationDay) {
+
+    // Phase folliculaire : de la fin des règles jusqu'à 3 jours avant l'ovulation
+    if (cycleDay > periodLength && cycleDay < ovulationDay - 2) {
       return CyclePhase.FOLLICULAR;
     }
 
-    // Phase d'ovulation : autour du jour d'ovulation (±2 jours)
+    // Phase d'ovulation : période fertile (ovulation ± 2 jours)
     if (cycleDay >= ovulationDay - 2 && cycleDay <= ovulationDay + 2) {
       return CyclePhase.OVULATION;
     }
 
-    // Phase lutéale : après l'ovulation
+    // Phase lutéale : après l'ovulation jusqu'à la fin du cycle
     return CyclePhase.LUTEAL;
   }
 
   private isFertileDay(cycleDay: number, cycleLength: number): boolean {
-    // Période fertile : ovulation ± 5 jours
+    // Période fertile : 5 jours avant l'ovulation jusqu'à 2 jours après
+    // Les spermatozoïdes peuvent survivre 5 jours, l'ovule 24-48h
     const ovulationDay = cycleLength - 14;
-    return cycleDay >= ovulationDay - 5 && cycleDay <= ovulationDay + 1;
+    return cycleDay >= ovulationDay - 5 && cycleDay <= ovulationDay + 2;
   }
 
   private isSameDay(date1: Date, date2: Date): boolean {
