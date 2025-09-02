@@ -13,15 +13,20 @@ export class SymptomLog {
    * Valide les données du symptôme
    */
   static validateSymptomData(symptomData: CreateSymptomLogData): boolean {
-    if (!symptomData.userId || !symptomData.date || !symptomData.symptomType || !symptomData.value) {
+    if (
+      !symptomData.userId ||
+      !symptomData.date ||
+      !symptomData.symptomType ||
+      !symptomData.value
+    ) {
       return false;
     }
-    
+
     // Vérifier que la date n'est pas dans le futur
     if (symptomData.date > new Date()) {
       return false;
     }
-    
+
     return true;
   }
 
