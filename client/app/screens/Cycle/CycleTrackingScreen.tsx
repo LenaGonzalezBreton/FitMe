@@ -42,7 +42,7 @@ interface CycleTrackingScreenProps {
 }
 
 const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
-  const { currentCycle, cycleConfig, getCycleCharacteristics, getCycleEmoji, getCycleColor } = useCycle();
+  const { currentCycle, cycleConfig, getCycleCharacteristics, getCycleEmoji, getCycleColor, refreshCycle, refreshConfig } = useCycle();
   const { user } = useAuth();
   const [refreshing, setRefreshing] = useState(false);
   const [selectedTab, setSelectedTab] = useState<'overview' | 'hormones' | 'recommendations'>('overview');
@@ -92,7 +92,7 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
     return data;
   };
 
-  const hormoneData = generateHormoneData(cycleConfig?.averageCycleLength);
+  const hormoneData = generateHormoneData(currentCycle?.cycleLength);
 
   // Cycle-based recommendations
   const getCycleRecommendations = (cycleDay: number, isPeriodDay: boolean, isOvulationPhase: boolean, isFertileDay: boolean): CycleRecommendation => {
@@ -122,7 +122,7 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
         energy: 'low',
         intensity: 'low'
       };
-    } else if (cycleDay <= Math.ceil((cycleConfig?.averageCycleLength || 28) / 2)) {
+    } else if (cycleDay <= Math.ceil((currentCycle?.cycleLength || 28) / 2)) {
       return {
         cycleDay,
         title: 'Phase Folliculaire',
@@ -212,9 +212,15 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    // Refresh cycle data
+    await Promise.all([refreshCycle(), refreshConfig()]);
     setRefreshing(false);
   };
+
+  useEffect(() => {
+    // Ensure we have fresh data when screen mounts
+    refreshCycle();
+    refreshConfig();
+  }, []);
 
   const getEnergyColor = (energy: 'low' | 'medium' | 'high'): string => {
     switch (energy) {
@@ -310,7 +316,7 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
                   )}
                 </Text>
                 <Text className="text-sm text-secondary-600 mb-2">
-                  Jour {currentCycle.cycleDay} de votre cycle ({cycleConfig.averageCycleLength} jours)
+                  Jour {currentCycle.cycleDay} de votre cycle ({currentCycle.cycleLength} jours)
                 </Text>
                 {currentCycle.daysUntilNextCycle > 0 && (
                   <Text className="text-xs text-secondary-500">
@@ -448,7 +454,7 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
                   <Text className="text-sm text-secondary-600">Jours de cycle</Text>
                 </View>
                 <View className="items-center">
-                  <Text className="text-2xl font-bold text-accent-500">{cycleConfig.averagePeriodLength}</Text>
+                  <Text className="text-2xl font-bold text-accent-500">{currentCycle.periodLength || cycleConfig.averagePeriodLength}</Text>
                   <Text className="text-sm text-secondary-600">Jours de règles</Text>
                 </View>
                 <View className="items-center">

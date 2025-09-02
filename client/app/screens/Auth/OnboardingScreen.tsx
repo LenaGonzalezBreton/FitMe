@@ -110,14 +110,19 @@ const OnboardingScreen = () => {
 
     setIsLoading(true);
     try {
-      // First, complete the basic onboarding
-      const onboardingPayload = {
-        objectives: formData.objectives, // Send array of objectives
+      // First, complete the basic onboarding (send averages if applicable)
+      const onboardingPayload: any = {
+        objective: (formData.objectives && formData.objectives.length > 0)
+          ? formData.objectives[0]
+          : 'GENERAL_FITNESS',
         experienceLevel: formData.experienceLevel,
         isMenopausal: formData.isMenopausal,
-        // Explicitly mark onboarding as completed
-        onboardingCompleted: true,
       };
+
+      if (formData.isMenopausal === false) {
+        onboardingPayload.averageCycleLength = parseInt(formData.averageCycleLength, 10);
+        onboardingPayload.averagePeriodLength = parseInt(formData.averagePeriodLength, 10);
+      }
 
       const response = await api.post('/auth/onboarding', onboardingPayload);
       
@@ -142,39 +147,18 @@ const OnboardingScreen = () => {
         // Update the user in context with the completed onboarding data
         await login(userWithCompletedOnboarding, token, token); // Using token for both access and refresh
         
-        // Now handle cycle configuration if user is not menopausal
-        if (!formData.isMenopausal) {
+        // If not menopausal and user provided last period date, log the period
+        if (!formData.isMenopausal && formData.cycleTrackingEnabled && formData.lastPeriodDate) {
           try {
-            const cycleConfigPayload = {
-              isCycleTrackingEnabled: formData.cycleTrackingEnabled,
-              useMenopauseMode: false,
-              averageCycleLength: parseInt(formData.averageCycleLength, 10),
-              averagePeriodLength: parseInt(formData.averagePeriodLength, 10),
-              prefersManualInput: true, // User is manually entering data
-            };
-
-            await cycleApi.updateCycleConfig(cycleConfigPayload);
-            
-            // If cycle tracking is enabled and user provided last period date, log the period
-            if (formData.cycleTrackingEnabled && formData.lastPeriodDate) {
-              try {
-                // Convert DD/MM/YYYY to YYYY-MM-DD format and let backend handle all cycle logic
-                const [day, month, year] = formData.lastPeriodDate.split('/');
-                const startDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-                
-                await cycleApi.logPeriod({
-                  startDate,
-                  flowIntensity: 3, // Default medium intensity
-                  notes: `Période initiale configurée lors de l'onboarding`
-                });
-              } catch (periodError) {
-                console.warn('Failed to log initial period:', periodError);
-                // Don't fail the entire onboarding for this
-              }
-            }
-          } catch (cycleError) {
-            console.warn('Failed to configure cycle settings:', cycleError);
-            // Don't fail the entire onboarding for this
+            const [day, month, year] = formData.lastPeriodDate.split('/');
+            const startDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+            await cycleApi.logPeriod({
+              startDate,
+              flowIntensity: 3,
+              notes: `Période initiale configurée lors de l'onboarding`
+            });
+          } catch (periodError) {
+            console.warn('Failed to log initial period:', periodError);
           }
         }
         

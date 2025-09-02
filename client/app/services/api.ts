@@ -532,7 +532,7 @@ export const exerciseApi = {
 export const streakApi = {
   // Get streak data
   getStreakData: async () => {
-    const response = await api.get('/streaks');
+    const response = await api.get('/streak');
     return response.data;
   },
 
@@ -542,7 +542,7 @@ export const streakApi = {
     intensity?: 'LOW' | 'MEDIUM' | 'HIGH';
     notes?: string;
   }) => {
-    const response = await api.post('/streaks/log-workout', data);
+    const response = await api.post('/streak/log-workout', data);
     return response.data;
   },
 
@@ -552,19 +552,19 @@ export const streakApi = {
     fromDate?: string;
     toDate?: string;
   }) => {
-    const response = await api.get('/streaks/stats', { params });
+    const response = await api.get('/streak/stats', { params });
     return response.data;
   },
 
   // Get streak milestones
   getStreakMilestones: async () => {
-    const response = await api.get('/streaks/milestones');
+    const response = await api.get('/streak/milestones');
     return response.data;
   },
 
   // Reset streak (for testing or corrections)
   resetStreak: async (reason?: string) => {
-    const response = await api.post('/streaks/reset', { reason });
+    const response = await api.post('/streak/reset', { reason });
     return response.data;
   },
 };
