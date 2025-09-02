@@ -72,6 +72,19 @@ export class ExerciseQueryDto {
   @Min(1)
   @Max(50)
   limit?: number;
+
+  @ApiProperty({
+    type: Number,
+    required: false,
+    example: 0,
+    description: 'Décalage de pagination (offset)',
+    minimum: 0,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  offset?: number;
 }
 
 export class ExerciseDto {

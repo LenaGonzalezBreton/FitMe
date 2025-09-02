@@ -2,6 +2,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MainPager from './MainPager';
 import WorkoutSessionScreen from '../screens/Workout/WorkoutSessionScreen';
+import WorkoutSessionDetailsScreen from '../screens/Workout/WorkoutSessionDetailsScreen';
 import CreateProgramScreen from '../screens/Programs/CreateProgramScreen';
 import ExerciseDetailScreen from '../screens/Exercises/ExerciseDetailsScreen';
 import ExercicesScreen from '../screens/Exercises/ExercicesScreen';
@@ -17,6 +18,7 @@ export function AppStack() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Main" component={MainPager} />
       <Stack.Screen name="WorkoutSession" component={WorkoutSessionScreen} />
+      <Stack.Screen name="WorkoutSessionDetails" component={WorkoutSessionDetailsScreen} />
       <Stack.Screen
         name="CreateProgram"
         component={CreateProgramScreen}

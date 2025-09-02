@@ -181,9 +181,9 @@ async function seedPrograms() {
   console.log('🌱 Début du peuplement des programmes d\'entraînement...');
 
   try {
-    // Nettoyer les données existantes
-    await prisma.programExercise.deleteMany({});
-    await prisma.program.deleteMany({});
+    // Nettoyer les données existantes (templates uniquement)
+    await prisma.programExercise.deleteMany({ where: { program: { isTemplate: true } } });
+    await prisma.program.deleteMany({ where: { isTemplate: true } });
     
     console.log('✅ Données existantes supprimées');
 
@@ -218,9 +218,7 @@ async function seedPrograms() {
       // Créer les exercices du programme
       for (const exerciseData of exercises) {
         // Trouver l'exercice par titre
-        const exercise = await prisma.exercise.findFirst({
-          where: { title: exerciseData.title }
-        });
+        const exercise = await prisma.exercise.findFirst({ where: { title: exerciseData.title } });
         
         if (exercise) {
           await prisma.programExercise.create({

@@ -166,11 +166,26 @@ const CreateProgramScreen = () => {
       setLoading(true);
       setError(null);
 
+      const phase = currentCycle
+        ? (currentCycle.isPeriodDay
+            ? 'menstrual'
+            : currentCycle.isOvulationPhase
+              ? 'ovulation'
+              : currentCycle.cycleDay <= Math.ceil(currentCycle.cycleLength / 2)
+                ? 'follicular'
+                : 'luteal')
+        : undefined;
+
+      const randomSeed = Math.floor(Math.random() * 1_000_000);
+
       const response = await generateProgram({
         duration: parseInt(duration),
         focusZone: focusZone || undefined,
         sessionType: selectedType as 'cardio' | 'strength' | 'flexibility' | 'mixed',
-      });
+        // Extra params passed through; backend can ignore if unsupported
+        ...(phase ? { phase } : {}),
+        randomSeed,
+      } as any);
 
       if (response) {
         Alert.alert(

@@ -6,6 +6,7 @@ import { AppStackParamList } from '../../types';
 import { useCycle } from '../../hooks/useCycle';
 import { exerciseApi } from '../../services/api';
 import { Ionicons } from '@expo/vector-icons';
+import ExerciseFormModal from '../../components/ExerciseFormModal';
 
 interface Exercise {
   id: string;
@@ -33,6 +34,12 @@ const ExercicesScreen = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [intensityFilter, setIntensityFilter] = useState<'ALL' | 'LOW' | 'MEDIUM' | 'HIGH'>('ALL');
+  const [phaseFilter, setPhaseFilter] = useState<'ALL' | 'menstrual' | 'follicular' | 'ovulation' | 'luteal'>('ALL');
+  const [limit, setLimit] = useState(20);
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [showExerciseForm, setShowExerciseForm] = useState(false);
   
   const { currentCycle } = useCycle();
   const navigation = useNavigation<NativeStackNavigationProp<AppStackParamList, 'Exercices'>>();
@@ -47,15 +54,25 @@ const ExercicesScreen = () => {
   };
 
   // Fetch exercises from API (filtered by current phase when available)
-  const fetchExercises = async () => {
+  const fetchExercises = async (opts?: { append?: boolean; reset?: boolean }) => {
     try {
       setLoading(true);
       setError(null);
-      
+      const phaseParam = phaseFilter === 'ALL' ? getPhaseKey() : phaseFilter;
+      const intensityParam = intensityFilter === 'ALL' ? undefined : (intensityFilter === 'MEDIUM' ? 'MODERATE' : intensityFilter);
       const response = await exerciseApi.getExercises({
-        phase: getPhaseKey(),
+        phase: phaseParam as 'menstrual' | 'follicular' | 'ovulation' | 'luteal' | undefined,
+        intensity: intensityParam as any,
+        limit,
+        offset,
       });
-      setExercises(response.exercises || []);
+      const list = response.exercises || [];
+      setHasMore(list.length === limit);
+      if (opts?.append) {
+        setExercises(prev => [...prev, ...list]);
+      } else {
+        setExercises(list);
+      }
     } catch (err: any) {
       setError(err.message || 'Erreur lors du chargement des exercices');
       console.error('Error fetching exercises:', err);
@@ -84,7 +101,8 @@ const ExercicesScreen = () => {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await Promise.all([fetchExercises(), fetchCategories()]);
+    setOffset(0);
+    await Promise.all([fetchExercises({ reset: true }), fetchCategories()]);
     setRefreshing(false);
   };
 
@@ -93,6 +111,11 @@ const ExercicesScreen = () => {
     fetchCategories();
     // Re-fetch when cycle day/phase changes
   }, [currentCycle?.cycleDay, currentCycle?.isPeriodDay, currentCycle?.isOvulationPhase]);
+
+  useEffect(() => {
+    // Refetch when filters or pagination change
+    fetchExercises();
+  }, [intensityFilter, phaseFilter, limit, offset]);
 
   // Filter exercises based on selected category
   const filteredExercises = selectedCategory === 'all'
@@ -171,15 +194,25 @@ const ExercicesScreen = () => {
       >
         {/* Header */}
         <View className="pt-16 pb-6">
-          <Text className="text-3xl font-bold text-brand-text mb-2">Exercices</Text>
-          {currentCycle && (
-            <Text className="text-sm text-secondary-600">
-              Recommandations adaptées à votre cycle (jour {currentCycle.cycleDay})
-            </Text>
-          )}
+          <View className="flex-row items-center justify-between">
+            <View className="flex-1">
+              <Text className="text-3xl font-bold text-brand-text mb-2">Exercices</Text>
+              {currentCycle && (
+                <Text className="text-sm text-secondary-600">
+                  Recommandations adaptées à votre cycle (jour {currentCycle.cycleDay})
+                </Text>
+              )}
+            </View>
+            <TouchableOpacity
+              onPress={() => setShowExerciseForm(true)}
+              className="bg-secondary-500 rounded-xl px-4 py-2 ml-4"
+            >
+              <Text className="text-surface font-bold">Créer</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
-        {/* Categories Filter */}
+        {/* Filters */}
         <View className="mb-6">
           <Text className="text-lg font-semibold text-brand-text mb-3">Catégories</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
@@ -213,6 +246,34 @@ const ExercicesScreen = () => {
               </TouchableOpacity>
             ))}
           </ScrollView>
+          {/* Phase filter */}
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row mt-3">
+            {['ALL','menstrual','follicular','ovulation','luteal'].map((p) => (
+              <TouchableOpacity
+                key={p}
+                onPress={() => { setOffset(0); setPhaseFilter(p as any); }}
+                className={`mr-3 px-3 py-2 rounded-lg ${phaseFilter === p ? 'bg-primary-500' : 'bg-surface border border-border'}`}
+              >
+                <Text className={`${phaseFilter === p ? 'text-surface' : 'text-brand-text'}`}>
+                  {p === 'ALL' ? 'Toutes phases' : p === 'menstrual' ? 'Menstruelle' : p === 'follicular' ? 'Folliculaire' : p === 'ovulation' ? 'Ovulation' : 'Lutéale'}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+          {/* Intensity filter */}
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row mt-3">
+            {['ALL','LOW','MEDIUM','HIGH'].map((i) => (
+              <TouchableOpacity
+                key={i}
+                onPress={() => { setOffset(0); setIntensityFilter(i as any); }}
+                className={`mr-3 px-3 py-2 rounded-lg ${intensityFilter === i ? 'bg-accent-500' : 'bg-surface border border-border'}`}
+              >
+                <Text className={`${intensityFilter === i ? 'text-surface' : 'text-brand-text'}`}>
+                  {i === 'ALL' ? 'Toutes intensités' : i === 'LOW' ? 'Faible' : i === 'MEDIUM' ? 'Modérée' : 'Élevée'}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
 
         {/* Exercises List */}
@@ -241,7 +302,7 @@ const ExercicesScreen = () => {
                 <TouchableOpacity
                   key={exercise.id}
                   className="bg-surface rounded-xl p-4 mb-4 w-[48%] shadow-sm border border-border-light active:bg-surface-secondary"
-                  onPress={() => navigation.navigate('ExerciseDetail', { exercise })}
+                  onPress={() => navigation.navigate('ExerciseDetail', { exerciseId: exercise.id })}
                 >
                   <View className="items-center mb-3">
                     {exercise.imageUrl ? (
@@ -285,6 +346,18 @@ const ExercicesScreen = () => {
           )}
         </View>
 
+        {/* Pagination */}
+        {hasMore && (
+          <View className="mb-8">
+            <TouchableOpacity
+              onPress={() => setOffset(prev => prev + limit)}
+              className="bg-secondary-200 py-3 rounded-xl"
+            >
+              <Text className="text-secondary-700 font-bold text-center">Charger plus</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
         {/* Coming Soon Section */}
         <View className="bg-primary-50 border border-primary-200 rounded-xl p-4 mb-6">
           <View className="flex-row items-start">
@@ -301,6 +374,15 @@ const ExercicesScreen = () => {
           </View>
         </View>
       </ScrollView>
+
+      {/* Exercise Create/Edit Modal */}
+      <ExerciseFormModal
+        visible={showExerciseForm}
+        onClose={async () => {
+          setShowExerciseForm(false);
+          await fetchExercises();
+        }}
+      />
     </SafeAreaView>
   );
 };

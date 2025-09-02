@@ -1,12 +1,10 @@
-import type { Exercise } from '../screens/Exercises/types';
-import type { Program } from '../screens/Programs/types';
-
 export type AppStackParamList = {
   Main:           undefined;
   WorkoutSession: undefined;
+  WorkoutSessionDetails: { sessionId: string };
   CreateProgram:  undefined;
   Exercices:      undefined;
-  ExerciseDetail: { exercise: Exercise };
+  ExerciseDetail: { exerciseId: string };
   CycleTracking:  undefined;
   PeriodLogging:  undefined;
   PeriodHistory:  undefined;

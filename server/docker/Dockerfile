@@ -10,8 +10,12 @@ COPY package*.json ./
 # Install dependencies (including devDependencies for development)
 RUN npm install
 
+# Copy entrypoint
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 # Expose the port the app runs on
 EXPOSE 3000
 
-# Start the app with complete Prisma setup sequence
-CMD ["sh", "-c", "npm run prisma:build && npm run prisma:generate && npm run prisma:push && npm run prisma:seed && npm run start:dev"]
+# Default entrypoint runs prisma generate, migrations, seed, then starts the app
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

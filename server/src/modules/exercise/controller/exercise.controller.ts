@@ -133,6 +133,7 @@ export class ExerciseController {
         muscleZone: query.muscleZone,
         maxDuration: query.maxDuration,
         limit: query.limit,
+        offset: query.offset || 0,
       });
 
       return {

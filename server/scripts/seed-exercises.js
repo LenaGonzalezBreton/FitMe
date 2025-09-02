@@ -123,6 +123,47 @@ const exercises = [
     intensity: 'VERY_LOW',
     muscleZone: 'CORE',
     tags: ['ALL_PHASES', 'MEDITATION', 'MINDFULNESS']
+  },
+  // Additions (public, evidence-aligned)
+  {
+    title: 'Étirements lombaires en douceur',
+    description: 'Mobilisation douce du bas du dos pour réduire les tensions pendant les règles.',
+    duration: 12,
+    intensity: 'LOW',
+    muscleZone: 'FLEXIBILITY',
+    tags: ['MENSTRUAL_PHASE', 'RELAXATION', 'STRETCHING']
+  },
+  {
+    title: 'Marche rapide - relance cardio',
+    description: 'Marche active pour relancer progressivement l’endurance en phase folliculaire.',
+    duration: 20,
+    intensity: 'MODERATE',
+    muscleZone: 'CARDIO',
+    tags: ['FOLLICULAR_PHASE', 'CARDIO', 'WALKING']
+  },
+  {
+    title: 'Plyométrie légère (sauts contrôlés)',
+    description: 'Rebonds et sauts contrôlés, profitant du pic de forme autour de l’ovulation.',
+    duration: 15,
+    intensity: 'HIGH',
+    muscleZone: 'FULL_BODY',
+    tags: ['OVULATION_PHASE', 'HIIT', 'HIGH_INTENSITY']
+  },
+  {
+    title: 'Marche inclinée (tapis)',
+    description: 'Cardio modéré et stable, bon compromis en phase lutéale.',
+    duration: 25,
+    intensity: 'MODERATE',
+    muscleZone: 'CARDIO',
+    tags: ['LUTEAL_PHASE', 'CARDIO', 'WALKING']
+  },
+  {
+    title: 'Respiration diaphragmatique',
+    description: 'Contrôle respiratoire pour la récupération et la gestion du stress.',
+    duration: 8,
+    intensity: 'VERY_LOW',
+    muscleZone: 'CORE',
+    tags: ['ALL_PHASES', 'BREATHING', 'RELAXATION']
   }
 ];
 
@@ -142,42 +183,45 @@ async function seedExercises() {
     const tagMap = {};
     
     for (const tagName of allTags) {
-      const tag = await prisma.tag.create({
-        data: {
-          name: tagName,
-          type: getTagType(tagName)
-        }
+      const tag = await prisma.tag.upsert({
+        where: { name: tagName },
+        update: { type: getTagType(tagName) },
+        create: { name: tagName, type: getTagType(tagName) }
       });
       tagMap[tagName] = tag.id;
-      console.log(`✅ Tag créé: ${tagName}`);
+      console.log(`✅ Tag prêt: ${tagName}`);
     }
 
-    // Créer les exercices
+    // Créer/mettre à jour les exercices
     for (const exerciseData of exercises) {
       const { tags, ...exerciseProps } = exerciseData;
-      
-      // Créer l'exercice
-      const exercise = await prisma.exercise.create({
-        data: {
-          title: exerciseProps.title,
-          description: exerciseProps.description,
-          duration: exerciseProps.duration,
-          intensity: exerciseProps.intensity,
-          muscleZone: exerciseProps.muscleZone,
-        }
-      });
-      
-      console.log(`✅ Exercice créé: ${exercise.title}`);
-      
-      // Associer l'exercice aux tags
+      const existing = await prisma.exercise.findFirst({ where: { title: exerciseProps.title } });
+      const exercise = existing
+        ? await prisma.exercise.update({
+            where: { id: existing.id },
+            data: {
+              description: exerciseProps.description,
+              duration: exerciseProps.duration,
+              intensity: exerciseProps.intensity,
+              muscleZone: exerciseProps.muscleZone,
+            }
+          })
+        : await prisma.exercise.create({
+            data: {
+              title: exerciseProps.title,
+              description: exerciseProps.description,
+              duration: exerciseProps.duration,
+              intensity: exerciseProps.intensity,
+              muscleZone: exerciseProps.muscleZone,
+            }
+          });
+      console.log(`✅ Exercice prêt: ${exercise.title}`);
+      // Réassigner les tags
+      await prisma.exerciseTag.deleteMany({ where: { exerciseId: exercise.id } });
       for (const tagName of tags) {
         await prisma.exerciseTag.create({
-          data: {
-            exerciseId: exercise.id,
-            tagId: tagMap[tagName]
-          }
+          data: { exerciseId: exercise.id, tagId: tagMap[tagName] }
         });
-        console.log(`   → Associé au tag ${tagName}`);
       }
     }
 

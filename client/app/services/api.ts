@@ -152,6 +152,29 @@ export const programApi = {
     const response = await api.get('/programs', { params: cleanParams });
     return response.data;
   },
+  
+  // Add an exercise to a program
+  addExerciseToProgram: async (
+    programId: string,
+    exercise: {
+      exerciseId: string;
+      order: number;
+      sets?: number;
+      reps?: string;
+      duration?: number;
+      restTime?: number;
+      notes?: string;
+    }
+  ) => {
+    const response = await api.post(`/programs/${programId}/exercises`, exercise);
+    return response.data;
+  },
+
+  // Remove an exercise from a program by programExerciseId
+  removeProgramExercise: async (programId: string, programExerciseId: string) => {
+    const response = await api.delete(`/programs/${programId}/exercises/${programExerciseId}`);
+    return response.data;
+  },
 
   // Get program by ID
   getProgramById: async (programId: string) => {
@@ -372,6 +395,23 @@ export const workoutApi = {
   // Start a workout session
   startWorkoutSession: async (programId: string) => {
     const response = await api.post('/workouts/sessions', { programId });
+    return response.data;
+  },
+
+  // Update a workout session (e.g., notes, rating)
+  updateWorkoutSession: async (sessionId: string, updates: {
+    notes?: string;
+    rating?: number;
+    completedExercises?: string[];
+    totalDuration?: number;
+  }) => {
+    const response = await api.put(`/workouts/sessions/${sessionId}`, updates);
+    return response.data;
+  },
+
+  // Delete a workout session
+  deleteWorkoutSession: async (sessionId: string) => {
+    const response = await api.delete(`/workouts/sessions/${sessionId}`);
     return response.data;
   },
 

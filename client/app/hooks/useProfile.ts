@@ -35,6 +35,8 @@ export interface UseProfileReturn {
   updateProfile: (data: Partial<ProfileData>) => Promise<boolean>;
   changePassword: (currentPassword: string, newPassword: string) => Promise<boolean>;
   uploadProfileImage: (imageUri: string) => Promise<boolean>;
+  loadMoreWorkoutHistory: () => Promise<void>;
+  hasMoreWorkouts: boolean;
 }
 
 export const useProfile = (): UseProfileReturn => {
@@ -45,6 +47,9 @@ export const useProfile = (): UseProfileReturn => {
   const [workoutHistory, setWorkoutHistory] = useState<WorkoutSession[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [workoutOffset, setWorkoutOffset] = useState(0);
+  const [workoutLimit] = useState(10);
+  const [hasMoreWorkouts, setHasMoreWorkouts] = useState(true);
 
   const fetchProfileData = async () => {
     try {
@@ -80,13 +85,19 @@ export const useProfile = (): UseProfileReturn => {
     }
   };
 
-  const fetchWorkoutHistory = async () => {
+  const fetchWorkoutHistory = async (opts?: { append?: boolean; reset?: boolean }) => {
     try {
       const response = await workoutHistoryApi.getWorkoutSessions({
-        limit: 10,
-        offset: 0,
+        limit: workoutLimit,
+        offset: workoutOffset,
       });
-      setWorkoutHistory(response.sessions || []);
+      const sessions = response.sessions || [];
+      setHasMoreWorkouts(sessions.length === workoutLimit);
+      if (opts?.append) {
+        setWorkoutHistory(prev => [...prev, ...sessions]);
+      } else {
+        setWorkoutHistory(sessions);
+      }
     } catch (err: any) {
       console.error('Error fetching workout history:', err);
       // Don't set error for workout history as it's not critical
@@ -95,7 +106,15 @@ export const useProfile = (): UseProfileReturn => {
   };
 
   const refreshProfile = async () => {
-    await Promise.all([fetchProfileData(), fetchWorkoutHistory()]);
+    setWorkoutOffset(0);
+    await Promise.all([fetchProfileData(), fetchWorkoutHistory({ reset: true })]);
+  };
+
+  const loadMoreWorkoutHistory = async () => {
+    if (!hasMoreWorkouts) return;
+    const nextOffset = workoutOffset + workoutLimit;
+    setWorkoutOffset(nextOffset);
+    await fetchWorkoutHistory({ append: true });
   };
 
   const updateProfile = async (data: Partial<ProfileData>): Promise<boolean> => {
@@ -200,5 +219,7 @@ export const useProfile = (): UseProfileReturn => {
     updateProfile,
     changePassword,
     uploadProfileImage,
+    loadMoreWorkoutHistory,
+    hasMoreWorkouts,
   };
 };

@@ -1,21 +1,25 @@
-import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Modal } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Modal, Alert } from 'react-native';
 import { ProgramExercise } from '../types';
+import { programApi } from '../services/api';
 
 interface ProgramExercisesListProps {
   exercises: ProgramExercise[];
   visible: boolean;
   onClose: () => void;
   programTitle: string;
+  programId: string;
 }
 
 const ProgramExercisesList: React.FC<ProgramExercisesListProps> = ({
   exercises,
   visible,
   onClose,
-  programTitle
+  programTitle,
+  programId
 }) => {
-  const sortedExercises = [...exercises].sort((a, b) => a.order - b.order);
+  const [localExercises, setLocalExercises] = useState<ProgramExercise[]>(exercises);
+  const sortedExercises = useMemo(() => [...localExercises].sort((a, b) => a.order - b.order), [localExercises]);
 
   const formatDuration = (duration?: number): string => {
     if (!duration) return '';
@@ -31,6 +35,16 @@ const ProgramExercisesList: React.FC<ProgramExercisesListProps> = ({
     const minutes = Math.floor(restTime / 60);
     const seconds = restTime % 60;
     return seconds > 0 ? `${minutes}min ${seconds}s` : `${minutes}min`;
+  };
+
+  const handleRemove = async (programExercise: ProgramExercise) => {
+    try {
+      if (!programExercise.id) return;
+      await programApi.removeProgramExercise(programId, programExercise.id);
+      setLocalExercises(prev => prev.filter(e => e.id !== programExercise.id));
+    } catch (err: any) {
+      Alert.alert('Erreur', err?.response?.data?.message || 'Suppression impossible.');
+    }
   };
 
   return (
@@ -78,6 +92,14 @@ const ProgramExercisesList: React.FC<ProgramExercisesListProps> = ({
                     ID: {exercise.exerciseId}
                   </Text>
                 </View>
+                {exercise.id && (
+                  <TouchableOpacity
+                    onPress={() => handleRemove(exercise)}
+                    className="bg-red-50 border border-red-200 px-3 py-1 rounded-lg self-start"
+                  >
+                    <Text className="text-red-600 text-xs font-medium">Retirer</Text>
+                  </TouchableOpacity>
+                )}
               </View>
 
               {/* Exercise Details */}

@@ -73,11 +73,11 @@ export class PrismaExerciseRepository implements IExerciseRepository {
 
     if (filters.minDuration || filters.maxDuration) {
       where.duration = {};
-      if (filters.minDuration) {
-        where.duration.gte = filters.minDuration;
+      if (typeof filters.minDuration !== 'undefined' && filters.minDuration !== null) {
+        where.duration.gte = Number(filters.minDuration);
       }
-      if (filters.maxDuration) {
-        where.duration.lte = filters.maxDuration;
+      if (typeof filters.maxDuration !== 'undefined' && filters.maxDuration !== null) {
+        where.duration.lte = Number(filters.maxDuration);
       }
     }
 

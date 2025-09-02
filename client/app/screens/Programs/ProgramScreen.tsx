@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, SafeAreaView, TouchableOpacity, ActivityIndicator, RefreshControl, Alert } from 'react-native';
 import Tag from '../../components/Tag';
 import ProgramExercisesList from '../../components/ProgramExercisesList';
+import PresetProgramsModal, { PresetProgram } from '../../components/PresetProgramsModal';
 import { NavigationProp } from '@react-navigation/native';
 import { usePrograms } from '../../hooks/usePrograms';
+import { exerciseApi, programApi } from '../../services/api';
 
 import { Program, ProgramExercise } from '../../types';
 
@@ -16,6 +18,7 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
   const [refreshing, setRefreshing] = useState(false);
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
   const [showExercises, setShowExercises] = useState(false);
+  const [showPresets, setShowPresets] = useState(false);
   
   // Use hooks
   const { 
@@ -25,6 +28,8 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
     error: programsError,
     total,
     refreshPrograms,
+    loadMorePrograms,
+    hasMorePrograms,
     generateProgram,
     startProgram,
     deleteProgram 
@@ -48,16 +53,15 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
 
   // Handle program generation
   const handleGenerateProgram = async () => {
+    const randomSeed = Math.floor(Math.random() * 1_000_000);
     const response = await generateProgram({
       duration: 30,
-      sessionType: 'mixed'
-    });
+      sessionType: 'mixed',
+      randomSeed,
+    } as any);
 
     if (!response) {
-      Alert.alert(
-        'Génération impossible',
-        'Vérifiez que vous êtes connecté(e) et que le suivi du cycle est activé (ou réessayez plus tard).'
-      );
+      setShowPresets(true);
       return;
     }
 
@@ -142,6 +146,92 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
     return 'bg-success-500';
   };
 
+  function getDefaultPresets(): PresetProgram[] {
+    return [
+      {
+        id: 'preset-menstrual-recovery',
+        title: 'Récupération douce (Menstruelle)',
+        goal: 'Mobilité & respiration',
+        phase: 'menstrual',
+        durationWeeks: 2,
+        exercises: [
+          { exerciseTitle: 'Étirements lombaires en douceur', order: 1, duration: 10 },
+          { exerciseTitle: 'Respiration profonde et relaxation', order: 2, duration: 10 },
+          { exerciseTitle: 'Yoga doux - Étirements en douceur', order: 3, duration: 10 },
+        ],
+      },
+      {
+        id: 'preset-follicular-strength',
+        title: 'Force & énergie (Folliculaire)',
+        goal: 'Renforcement global',
+        phase: 'follicular',
+        durationWeeks: 4,
+        exercises: [
+          { exerciseTitle: 'Renforcement bas du corps - Squats', order: 1, sets: 3, reps: '10-12', restTime: 60 },
+          { exerciseTitle: 'Cardio léger - Vélo d\'appartement', order: 2, duration: 15 },
+          { exerciseTitle: 'Pilates - Core et stabilité', order: 3, duration: 12 },
+        ],
+      },
+      {
+        id: 'preset-ovulation-performance',
+        title: 'Performance (Ovulation)',
+        goal: 'Intensité et explosivité',
+        phase: 'ovulation',
+        durationWeeks: 3,
+        exercises: [
+          { exerciseTitle: 'HIIT - Entraînement haute intensité', order: 1, duration: 20 },
+          { exerciseTitle: 'Plyométrie légère (sauts contrôlés)', order: 2, duration: 10 },
+          { exerciseTitle: 'Course à pied - Tempo', order: 3, duration: 20 },
+        ],
+      },
+      {
+        id: 'preset-luteal-balance',
+        title: 'Équilibre & contrôle (Lutéale)',
+        goal: 'Stabilité et mobilité',
+        phase: 'luteal',
+        durationWeeks: 3,
+        exercises: [
+          { exerciseTitle: 'Yoga Power - Force et équilibre', order: 1, duration: 15 },
+          { exerciseTitle: 'Marche inclinée (tapis)', order: 2, duration: 15 },
+          { exerciseTitle: 'Étirements complets', order: 3, duration: 10 },
+        ],
+      },
+    ];
+  }
+
+  async function programApiCreateFromPreset(preset: PresetProgram) {
+    const startDate = new Date().toISOString();
+    // Resolve exercise IDs by title via backend search if available; fallback to creating a minimal set
+    const resolvedExercises = await Promise.all(
+      preset.exercises.map(async (ex) => {
+        try {
+          const res = await exerciseApi.searchExercises(ex.exerciseTitle, { limit: 1 });
+          const found = res.exercises?.[0];
+          if (found?.id) {
+            return {
+              exerciseId: found.id,
+              order: ex.order,
+              sets: ex.sets,
+              reps: ex.reps,
+              duration: ex.duration,
+              restTime: ex.restTime,
+              notes: ex.notes,
+            };
+          }
+        } catch {}
+        return null;
+      })
+    );
+    const valid = resolvedExercises.filter(Boolean) as any[];
+    return programApi.createProgram({
+      title: preset.title,
+      goal: preset.goal,
+      startDate,
+      duration: preset.durationWeeks ? preset.durationWeeks * 7 : undefined,
+      exercises: valid,
+    });
+  }
+
   // Loading state
   if (programsLoading) {
     return (
@@ -169,8 +259,6 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
             Gérez vos entraînements personnalisés
           </Text>
         </View>
-
-
 
         {/* Tabs */}
         <View className="mb-6">
@@ -220,6 +308,14 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
           >
             <Text className="text-surface text-xl mr-2">+</Text>
             <Text className="text-surface font-bold text-lg">Créer un programme personnalisé</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => setShowPresets(true)}
+            className="bg-accent-500 rounded-xl p-4 flex-row items-center justify-center shadow-sm active:bg-accent-600"
+          >
+            <Text className="text-surface text-xl mr-2">📚</Text>
+            <Text className="text-surface font-bold text-lg">Choisir un programme préconfiguré</Text>
           </TouchableOpacity>
         </View>
 
@@ -359,7 +455,21 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
                       {program.isActive ? 'Continuer' : 'Démarrer'}
                     </Text>
                   </TouchableOpacity>
-                  
+                  <TouchableOpacity 
+                    className="bg-error-100 py-3 px-4 rounded-lg active:bg-error-200"
+                    onPress={() => {
+                      Alert.alert(
+                        'Supprimer',
+                        'Voulez-vous supprimer ce programme ?',
+                        [
+                          { text: 'Annuler', style: 'cancel' },
+                          { text: 'Supprimer', style: 'destructive', onPress: () => deleteProgram(program.id) }
+                        ]
+                      );
+                    }}
+                  >
+                    <Text className="text-error-700 font-medium">Supprimer</Text>
+                  </TouchableOpacity>
                   <TouchableOpacity 
                     className="bg-secondary-200 py-3 px-4 rounded-lg active:bg-secondary-300"
                     onPress={() => {
@@ -373,6 +483,16 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
               </TouchableOpacity>
             );
           })}
+          {hasMorePrograms && (
+            <View className="mt-2">
+              <TouchableOpacity
+                onPress={loadMorePrograms}
+                className="bg-secondary-200 py-3 rounded-lg"
+              >
+                <Text className="text-secondary-700 font-bold text-center">Charger plus</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
 
         {/* Quick Stats */}
@@ -410,9 +530,27 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
               setSelectedProgram(null);
             }}
             programTitle={selectedProgram.title}
+            programId={selectedProgram.id}
           />
         )}
       </ScrollView>
+
+      {/* Preset Programs Modal */}
+      <PresetProgramsModal
+        visible={showPresets}
+        onClose={() => setShowPresets(false)}
+        presets={getDefaultPresets()}
+        onPick={async (preset: PresetProgram) => {
+          setShowPresets(false);
+          try {
+            await programApiCreateFromPreset(preset);
+            Alert.alert('Créé', 'Programme préconfiguré créé');
+            await refreshPrograms();
+          } catch (err: any) {
+            Alert.alert('Erreur', err?.response?.data?.message || 'Création impossible');
+          }
+        }}
+      />
     </SafeAreaView>
   );
 };

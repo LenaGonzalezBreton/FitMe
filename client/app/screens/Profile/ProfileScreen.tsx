@@ -57,6 +57,8 @@ const ProfileScreen = ({ navigation }: ProfileScreenProps) => {
     updateProfile,
     changePassword,
     uploadProfileImage,
+    loadMoreWorkoutHistory,
+    hasMoreWorkouts,
   } = useProfile();
   
   // Local states
@@ -513,7 +515,9 @@ const ProfileScreen = ({ navigation }: ProfileScreenProps) => {
         <View className="px-6 mb-6">
           <Text className="text-xl font-bold text-brand-text mb-4">Historique des séances</Text>
           
+          <>
           {workoutHistory.length > 0 ? (
+            <>
             <View className="space-y-3">
               {workoutHistory.map((session) => (
                 <View key={session.id} className="bg-surface rounded-xl p-4 shadow-sm border border-border-light">
@@ -557,6 +561,17 @@ const ProfileScreen = ({ navigation }: ProfileScreenProps) => {
                 </View>
               ))}
             </View>
+            {hasMoreWorkouts && (
+              <View className="mt-3">
+                <TouchableOpacity
+                  onPress={loadMoreWorkoutHistory}
+                  className="bg-secondary-200 py-3 rounded-lg"
+                >
+                  <Text className="text-secondary-700 font-bold text-center">Charger plus</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+            </>
           ) : (
             <View className="bg-surface rounded-xl p-6 items-center shadow-sm border border-border-light">
               <Text className="text-4xl mb-3">📊</Text>
@@ -568,6 +583,7 @@ const ProfileScreen = ({ navigation }: ProfileScreenProps) => {
               </Text>
             </View>
           )}
+          </>
         </View>
 
         {/* Settings Section */}
