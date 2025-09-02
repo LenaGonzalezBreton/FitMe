@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../core/prisma.service';
+import { ICycleProfileConfigRepository } from '../domain/cycle.repository';
 import {
-  ICycleProfileConfigRepository,
-} from '../domain/cycle.repository';
-import { CycleProfileConfig, CreateCycleProfileConfigData, UpdateCycleProfileConfigData } from '../domain/cycle-profile-config.entity';
+  CycleProfileConfig,
+  CreateCycleProfileConfigData,
+  UpdateCycleProfileConfigData,
+} from '../domain/cycle-profile-config.entity';
 import { CycleProfileConfig as PrismaCycleProfileConfig } from '../../../../generated/prisma';
 
 @Injectable()

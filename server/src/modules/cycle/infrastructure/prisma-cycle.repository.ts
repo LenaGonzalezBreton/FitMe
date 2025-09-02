@@ -36,7 +36,10 @@ export class PrismaCycleRepository implements ICycleRepository {
     const cycle = this.toDomainEntity(prismaData);
 
     // Debug logging
-    const daysSinceStart = Math.floor((currentDate.getTime() - cycle.startDate.getTime()) / (1000 * 60 * 60 * 24));
+    const daysSinceStart = Math.floor(
+      (currentDate.getTime() - cycle.startDate.getTime()) /
+        (1000 * 60 * 60 * 24),
+    );
     const cycleLength = cycle.cycleLength || 28;
 
     // Vérifier si c'est vraiment le cycle actuel
@@ -47,10 +50,10 @@ export class PrismaCycleRepository implements ICycleRepository {
 
     // If the most recent cycle is not current, check if we should still use it
     // This handles cases where the user is in a longer cycle than expected
-    
+
     // Handle same-day cycles (when daysSinceStart is 0 or slightly negative due to time differences)
     // Also handle cycles within 1.5x the cycle length for longer cycles
-    if (daysSinceStart >= -1 && daysSinceStart <= (cycleLength * 1.5)) {
+    if (daysSinceStart >= -1 && daysSinceStart <= cycleLength * 1.5) {
       return cycle;
     }
 
