@@ -1,10 +1,3 @@
-export enum CyclePhase {
-  MENSTRUAL = 'MENSTRUAL',
-  FOLLICULAR = 'FOLLICULAR',
-  OVULATION = 'OVULATION',
-  LUTEAL = 'LUTEAL',
-}
-
 export class Cycle {
   constructor(
     public readonly id: string,
@@ -20,41 +13,14 @@ export class Cycle {
   ) {}
 
   /**
-   * Calcule la phase actuelle du cycle en fonction de la date donnée
+   * Calcule le jour actuel dans le cycle
    */
-  getCurrentPhase(currentDate: Date = new Date()): CyclePhase {
+  getCurrentCycleDay(currentDate: Date = new Date()): number {
     const daysSinceStart = Math.floor(
       (currentDate.getTime() - this.startDate.getTime()) /
         (1000 * 60 * 60 * 24),
     );
-
-    const cycleLength = this.cycleLength || 28;
-    const periodLength = this.periodLength || 5;
-
-    // Calculer le jour actuel dans le cycle (1-based)
-    const dayInCycle = daysSinceStart + 1;
-
-    // Phase menstruelle : jours 1 à periodLength
-    if (dayInCycle <= periodLength) {
-      return CyclePhase.MENSTRUAL;
-    }
-
-    // Calculer le jour d'ovulation (14 jours avant la fin du cycle)
-    const ovulationDay = cycleLength - 14;
-
-    // Phase folliculaire : de la fin des règles jusqu'à 3 jours avant l'ovulation
-    if (dayInCycle > periodLength && dayInCycle < ovulationDay - 2) {
-      return CyclePhase.FOLLICULAR;
-    }
-
-    // Phase d'ovulation : période fertile (ovulation ± 2 jours)
-    if (dayInCycle >= ovulationDay - 2 && dayInCycle <= ovulationDay + 2) {
-      return CyclePhase.OVULATION;
-    }
-
-    // Phase lutéale : après l'ovulation jusqu'à la fin du cycle
-    // Cette phase dure toujours environ 14 jours
-    return CyclePhase.LUTEAL;
+    return daysSinceStart + 1;
   }
 
   /**
@@ -129,50 +95,43 @@ export class Cycle {
     // Période fertile : 5 jours avant l'ovulation jusqu'à 2 jours après
     return dayInCycle >= ovulationDay - 5 && dayInCycle <= ovulationDay + 2;
   }
-}
-
-export class CycleProfileConfig {
-  constructor(
-    public readonly id: string,
-    public readonly userId: string,
-    public readonly isCycleTrackingEnabled: boolean = true,
-    public readonly usesExternalProvider: boolean = false,
-    public readonly useMenopauseMode: boolean = false,
-    public readonly averageCycleLength: number = 28,
-    public readonly averagePeriodLength: number = 5,
-    public readonly prefersManualInput: boolean = false,
-    public readonly createdAt?: Date,
-    public readonly updatedAt?: Date,
-  ) {}
-}
-
-export class Phase {
-  constructor(
-    public readonly id: string,
-    public readonly cycleId: string,
-    public readonly name: CyclePhase,
-    public readonly startDate: Date,
-    public readonly endDate: Date,
-    public readonly createdAt?: Date,
-    public readonly updatedAt?: Date,
-  ) {}
 
   /**
-   * Vérifie si la phase est active à la date donnée
+   * Détermine si une date est pendant les règles
    */
-  isActiveAt(date: Date): boolean {
-    return date >= this.startDate && date <= this.endDate;
+  isPeriodDay(date: Date): boolean {
+    const dayInCycle = this.getCurrentCycleDay(date);
+    const periodLength = this.periodLength || 5;
+    return dayInCycle <= periodLength;
   }
 
   /**
-   * Calcule la durée de la phase en jours
+   * Détermine si une date est dans la phase post-règles (énergie croissante)
    */
-  getDurationInDays(): number {
-    return (
-      Math.floor(
-        (this.endDate.getTime() - this.startDate.getTime()) /
-          (1000 * 60 * 60 * 24),
-      ) + 1
-    );
+  isPostPeriodPhase(date: Date): boolean {
+    const dayInCycle = this.getCurrentCycleDay(date);
+    const periodLength = this.periodLength || 5;
+    const ovulationDay = this.getOvulationDay();
+    return dayInCycle > periodLength && dayInCycle < ovulationDay - 2;
+  }
+
+  /**
+   * Détermine si une date est dans la phase d'ovulation
+   */
+  isOvulationPhase(date: Date): boolean {
+    const dayInCycle = this.getCurrentCycleDay(date);
+    const ovulationDay = this.getOvulationDay();
+    return dayInCycle >= ovulationDay - 2 && dayInCycle <= ovulationDay + 2;
+  }
+
+  /**
+   * Détermine si une date est dans la phase post-ovulation
+   */
+  isPostOvulationPhase(date: Date): boolean {
+    const dayInCycle = this.getCurrentCycleDay(date);
+    const ovulationDay = this.getOvulationDay();
+    return dayInCycle > ovulationDay + 2;
   }
 }
+
+

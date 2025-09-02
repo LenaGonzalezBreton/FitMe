@@ -68,6 +68,7 @@ export const usePeriods = (): UsePeriodsReturn => {
       
       // Refresh periods list after logging
       await fetchPeriods();
+      
       return true;
     } catch (err: any) {
       // Don't show error alert for session expiration - user will be redirected to login

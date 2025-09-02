@@ -500,8 +500,10 @@ export class AuthController {
         updateNotificationPreferencesDto.defaultTime !== undefined
       ) {
         settings = {
-          notificationEnabled: updateNotificationPreferencesDto.generalEnabled,
-          notificationTime: updateNotificationPreferencesDto.defaultTime,
+          notifications: {
+            enabled: updateNotificationPreferencesDto.generalEnabled,
+            defaultTime: updateNotificationPreferencesDto.defaultTime,
+          },
         };
       }
 

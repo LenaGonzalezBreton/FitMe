@@ -1,0 +1,88 @@
+// Workout and streak tracking models
+/// @namespace "Workout"
+
+model WorkoutSession {
+  id              String    @id @default(cuid())
+  userId          String    @map("user_id")
+  programId       String?   @map("program_id")
+  title           String?
+  startTime       DateTime  @map("start_time")
+  endTime         DateTime? @map("end_time")
+  totalDuration   Int?      @map("total_duration") // in seconds
+  status          WorkoutStatus @default(ACTIVE)
+  notes           String?   @db.Text
+  rating          Int?      // 1-5 stars
+  
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  program         Program?  @relation(fields: [programId], references: [id])
+  workoutExercises WorkoutExercise[]
+  streakLogs      StreakLog[]
+
+  @@index([userId])
+  @@index([startTime])
+  @@index([status])
+  @@map("workout_session")
+}
+
+model WorkoutExercise {
+  id              String    @id @default(cuid())
+  workoutSessionId String   @map("workout_session_id")
+  exerciseId      String    @map("exercise_id")
+  userId          String    @map("user_id")
+  order           Int
+  sets            Int?
+  reps            String?
+  weight          Float?    // in kg
+  duration        Int?      // in seconds
+  restTime        Int?      @map("rest_time") // in seconds
+  notes           String?   @db.Text
+  completed       Boolean   @default(false)
+  
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  workoutSession  WorkoutSession @relation(fields: [workoutSessionId], references: [id], onDelete: Cascade)
+  exercise        Exercise       @relation(fields: [exerciseId], references: [id])
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([workoutSessionId])
+  @@index([exerciseId])
+  @@index([userId])
+  @@index([order])
+  @@map("workout_exercise")
+}
+
+model StreakLog {
+  id              String    @id @default(cuid())
+  userId          String    @map("user_id")
+  workoutSessionId String?  @map("workout_session_id")
+  date            DateTime  @db.Date
+  duration        Int?      // in seconds
+  intensity       Intensity?
+  notes           String?   @db.Text
+  
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workoutSession  WorkoutSession? @relation(fields: [workoutSessionId], references: [id])
+
+  @@unique([userId, date])
+  @@index([userId])
+  @@index([date])
+  @@map("streak_log")
+}
+
+// Enums for workout models
+enum WorkoutStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+

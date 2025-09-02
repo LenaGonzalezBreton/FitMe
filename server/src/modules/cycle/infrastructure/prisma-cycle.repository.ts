@@ -58,7 +58,7 @@ export class PrismaCycleRepository implements ICycleRepository {
       orderBy: { startDate: 'desc' },
     });
 
-    return prismaData.map((data) => this.toDomainEntity(data));
+    return prismaData.map((data: any) => this.toDomainEntity(data));
   }
 
   async findById(cycleId: string): Promise<Cycle | null> {

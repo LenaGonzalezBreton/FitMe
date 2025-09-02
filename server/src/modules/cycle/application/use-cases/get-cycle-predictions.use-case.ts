@@ -1,5 +1,5 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
-import { Cycle, CyclePhase } from '../../domain/cycle.entity';
+import { Cycle } from '../../domain/cycle.entity';
 import { ICycleRepository, ICycleProfileConfigRepository } from '../../domain/cycle.repository';
 import { CYCLE_REPOSITORY_TOKEN, CYCLE_PROFILE_CONFIG_REPOSITORY_TOKEN } from '../../tokens';
 
@@ -12,7 +12,7 @@ export interface CyclePrediction {
   nextOvulation: Date;
   confidence: number;
   currentCycleDay: number;
-  currentPhase: CyclePhase;
+  currentPhase: string;
   daysUntilNextPeriod: number;
   daysUntilOvulation: number;
 }
@@ -98,7 +98,7 @@ export class GetCyclePredictionsUseCase {
   }
 
   private getCurrentCycle(cycles: Cycle[], currentDate: Date): Cycle | null {
-    // Trouver le cycle actuel basé sur la date
+    // Trouver le cycle actuel (le plus récent qui n'est pas terminé)
     for (const cycle of cycles) {
       const cycleEndDate = new Date(cycle.startDate);
       cycleEndDate.setDate(cycleEndDate.getDate() + (cycle.cycleLength || 28));
@@ -107,48 +107,37 @@ export class GetCyclePredictionsUseCase {
         return cycle;
       }
     }
+
     return null;
   }
 
-  private calculateCycleStatistics(cycles: Cycle[]): {
-    averageCycleLength: number;
-    averagePeriodLength: number;
-    regularityScore: number;
-  } {
-    const recentCycles = cycles.slice(0, 6); // 6 derniers cycles
+  private calculateCycleStatistics(cycles: Cycle[]) {
+    if (cycles.length === 0) {
+      return {
+        averageCycleLength: 28,
+        averagePeriodLength: 5,
+        regularityScore: 0,
+      };
+    }
 
-    // Calculer la durée moyenne du cycle
-    const cycleLengths = recentCycles
-      .filter((cycle) => cycle.cycleLength != null)
-      .map((cycle) => cycle.cycleLength!);
+    // Calculer la longueur moyenne des cycles
+    const cycleLengths = cycles.map((cycle) => cycle.cycleLength || 28);
+    const averageCycleLength = Math.round(
+      cycleLengths.reduce((sum, length) => sum + length, 0) / cycleLengths.length,
+    );
 
-    const averageCycleLength =
-      cycleLengths.length > 0
-        ? cycleLengths.reduce((sum, length) => sum + length, 0) /
-          cycleLengths.length
-        : 28;
+    // Calculer la longueur moyenne des règles
+    const periodLengths = cycles
+      .map((cycle) => cycle.periodLength)
+      .filter((length): length is number => length !== null && length !== undefined);
+    const averagePeriodLength = periodLengths.length > 0
+      ? Math.round(
+          periodLengths.reduce((sum, length) => sum + length, 0) / periodLengths.length,
+        )
+      : 5;
 
-    // Calculer la durée moyenne des règles
-    const periodLengths = recentCycles
-      .filter((cycle) => cycle.periodLength != null)
-      .map((cycle) => cycle.periodLength!);
-
-    const averagePeriodLength =
-      periodLengths.length > 0
-        ? periodLengths.reduce((sum, length) => sum + length, 0) /
-          periodLengths.length
-        : 5;
-
-    // Calculer le score de régularité (variance des durées de cycle)
-    const variance =
-      cycleLengths.length > 1
-        ? cycleLengths.reduce(
-            (sum, length) => sum + Math.pow(length - averageCycleLength, 2),
-            0,
-          ) / cycleLengths.length
-        : 0;
-
-    const regularityScore = Math.max(0, 100 - variance * 10);
+    // Calculer un score de régularité
+    const regularityScore = this.calculateRegularityScore(cycles, averageCycleLength);
 
     return {
       averageCycleLength,
@@ -161,10 +150,10 @@ export class GetCyclePredictionsUseCase {
     currentCycle: Cycle | null,
     currentDate: Date,
     averageCycleLength: number,
-  ): { currentPhase: CyclePhase; currentCycleDay: number } {
+  ): { currentPhase: string; currentCycleDay: number } {
     if (!currentCycle) {
       return {
-        currentPhase: CyclePhase.FOLLICULAR,
+        currentPhase: 'follicular',
         currentCycleDay: 1,
       };
     }
@@ -189,10 +178,10 @@ export class GetCyclePredictionsUseCase {
     cycleDay: number,
     cycleLength: number,
     periodLength: number = 5,
-  ): CyclePhase {
+  ): string {
     // Phase menstruelle : jours 1 à periodLength
     if (cycleDay <= periodLength) {
-      return CyclePhase.MENSTRUAL;
+      return 'menstrual';
     }
 
     // Calculer le jour d'ovulation (14 jours avant la fin du cycle)
@@ -200,17 +189,17 @@ export class GetCyclePredictionsUseCase {
 
     // Phase folliculaire : de la fin des règles jusqu'à 3 jours avant l'ovulation
     if (cycleDay > periodLength && cycleDay < ovulationDay - 2) {
-      return CyclePhase.FOLLICULAR;
+      return 'follicular';
     }
 
     // Phase d'ovulation : période fertile (ovulation ± 2 jours)
     if (cycleDay >= ovulationDay - 2 && cycleDay <= ovulationDay + 2) {
-      return CyclePhase.OVULATION;
+      return 'ovulation';
     }
 
     // Phase lutéale : après l'ovulation jusqu'à la fin du cycle
     // Cette phase dure toujours environ 14 jours
-    return CyclePhase.LUTEAL;
+    return 'luteal';
   }
 
   private predictNextPeriodStart(
@@ -257,28 +246,40 @@ export class GetCyclePredictionsUseCase {
 
     let confidence = 50; // Base
 
-    // Bonus pour l'historique
-    const historyBonus = Math.min(cycles.length * 5, 30);
-    confidence += historyBonus;
+    // Bonus pour le nombre de cycles
+    if (cycles.length >= 3) confidence += 20;
+    if (cycles.length >= 6) confidence += 15;
+    if (cycles.length >= 12) confidence += 15;
 
     // Bonus pour la régularité
-    const regularityBonus = (stats.regularityScore / 100) * 20;
-    confidence += regularityBonus;
+    confidence += Math.min(stats.regularityScore, 20);
 
-    // Malus si peu de données complètes
-    const completeCycles = cycles.filter(
-      (cycle) => cycle.cycleLength != null && cycle.periodLength != null,
-    ).length;
+    return Math.min(confidence, 100);
+  }
 
-    const completeDataRatio =
-      cycles.length > 0 ? completeCycles / cycles.length : 0;
-    confidence *= completeDataRatio;
+  private calculateRegularityScore(cycles: Cycle[], averageCycleLength: number): number {
+    if (cycles.length < 2) return 0;
 
-    return Math.min(Math.max(Math.round(confidence), 10), 95);
+    let totalDeviation = 0;
+    for (let i = 1; i < cycles.length; i++) {
+      const currentCycle = cycles[i];
+      const previousCycle = cycles[i - 1];
+
+      const currentLength = currentCycle.cycleLength || 28;
+      const previousLength = previousCycle.cycleLength || 28;
+
+      const deviation = Math.abs(currentLength - previousLength);
+      totalDeviation += deviation;
+    }
+
+    const averageDeviation = totalDeviation / (cycles.length - 1);
+    const regularityScore = Math.max(0, 20 - averageDeviation);
+
+    return Math.round(regularityScore);
   }
 
   private calculateDaysUntil(currentDate: Date, targetDate: Date): number {
-    const diffTime = targetDate.getTime() - currentDate.getTime();
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const timeDifference = targetDate.getTime() - currentDate.getTime();
+    return Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
   }
 }

@@ -1,14 +1,6 @@
-import { SymptomType } from '@prisma/client';
+import { SymptomLog } from './symptom-log.entity';
 
-export interface SymptomLogEntity {
-  id?: string;
-  userId: string;
-  date: Date;
-  symptomType: SymptomType;
-  value: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
+export type SymptomLogEntity = SymptomLog;
 
 export interface ISymptomLogRepository {
   /**
@@ -51,20 +43,20 @@ export interface ISymptomLogRepository {
 export interface CreateSymptomLogData {
   userId: string;
   date: Date;
-  symptomType: SymptomType;
+  symptomType: string;
   value: string; // Intensité + notes encodées
 }
 
 export interface UpdateSymptomLogData {
   date?: Date;
-  symptomType?: SymptomType;
+  symptomType?: string;
   value?: string;
 }
 
 export interface SymptomLogFilters {
   fromDate?: Date;
   toDate?: Date;
-  symptomType?: SymptomType;
+  symptomType?: string;
   limit?: number;
   offset?: number;
 }

@@ -7,8 +7,8 @@ import {
 } from '../../domain/auth.repository';
 import {
   ICycleProfileConfigRepository,
-  UpdateCycleProfileConfigData,
 } from '../../../cycle/domain/cycle.repository';
+import { UpdateCycleProfileConfigData } from '../../../cycle/domain/cycle-profile-config.entity';
 import { USER_REPOSITORY_TOKEN } from '../../tokens';
 import { CYCLE_PROFILE_CONFIG_REPOSITORY_TOKEN } from '../../../cycle/tokens';
 import { AuthUser } from '../../domain/auth.entity';

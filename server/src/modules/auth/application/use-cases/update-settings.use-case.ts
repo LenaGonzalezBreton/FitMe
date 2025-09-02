@@ -2,6 +2,7 @@ import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import {
   IUserRepository,
   IUserSettingsRepository,
+  UserSettingsData,
 } from '../../domain/auth.repository';
 import {
   USER_REPOSITORY_TOKEN,
@@ -11,9 +12,11 @@ import {
 export interface UpdateSettingsRequest {
   userId: string;
   settings?: {
-    unitPreference?: string;
-    notificationEnabled?: boolean;
-    notificationTime?: string;
+    theme?: UserSettingsData['theme'];
+    language?: UserSettingsData['language'];
+    units?: UserSettingsData['units'];
+    notifications?: UserSettingsData['notifications'];
+    privacy?: UserSettingsData['privacy'];
   };
   reminders?: Array<{
     type: string;
@@ -33,9 +36,11 @@ export interface UpdateSettingsRequest {
 export interface UpdateSettingsResponse {
   message: string;
   settings: {
-    unitPreference: string;
-    notificationEnabled: boolean;
-    notificationTime?: string;
+    theme: string;
+    language: string;
+    units: string;
+    notifications: any;
+    privacy: any;
   };
   updatedReminders: number;
   updatedObjectives: number;
@@ -69,47 +74,48 @@ export class UpdateSettingsUseCase {
 
     // Mettre à jour les paramètres généraux
     if (settings) {
-      // Valider unitPreference si fournie
+      // Valider theme si fournie
       if (
-        settings.unitPreference &&
-        !['METRIC', 'IMPERIAL'].includes(settings.unitPreference)
+        settings.theme &&
+        !['LIGHT', 'DARK', 'AUTO'].includes(settings.theme)
+      ) {
+        throw new Error("Thème invalide (LIGHT, DARK ou AUTO).");
+      }
+
+      // Valider language si fournie
+      if (
+        settings.language &&
+        !['FRENCH', 'ENGLISH'].includes(settings.language)
+      ) {
+        throw new Error("Langue invalide (FRENCH ou ENGLISH).");
+      }
+
+      // Valider units si fournie
+      if (
+        settings.units &&
+        !['METRIC', 'IMPERIAL'].includes(settings.units)
       ) {
         throw new Error("Préférence d'unité invalide (METRIC ou IMPERIAL).");
       }
 
-      // Valider notificationTime si fournie
-      let notificationTime: Date | undefined;
-      if (settings.notificationTime) {
-        const timeMatch = settings.notificationTime.match(
-          /^(\d{2}):(\d{2}):(\d{2})$/,
-        );
-        if (!timeMatch) {
-          throw new Error('Format de temps invalide (HH:MM:SS).');
-        }
-        // Créer une date avec le temps spécifié
-        notificationTime = new Date();
-        notificationTime.setHours(
-          parseInt(timeMatch[1]),
-          parseInt(timeMatch[2]),
-          parseInt(timeMatch[3]),
-          0,
-        );
-      }
-
       updatedSettings =
         await this.userSettingsRepository.createOrUpdateUserSettings(userId, {
-          unitPreference: settings.unitPreference,
-          notificationEnabled: settings.notificationEnabled,
-          notificationTime,
+          theme: settings.theme,
+          language: settings.language,
+          units: settings.units,
+          notifications: settings.notifications,
+          privacy: settings.privacy,
         });
     } else {
       // Récupérer les paramètres existants
       const existingSettings =
         await this.userSettingsRepository.getUserSettings(userId);
       updatedSettings = existingSettings || {
-        unitPreference: 'METRIC',
-        notificationEnabled: true,
-        notificationTime: undefined,
+        theme: 'LIGHT',
+        language: 'FRENCH',
+        units: 'METRIC',
+        notifications: {},
+        privacy: {},
       };
     }
 
@@ -202,11 +208,11 @@ export class UpdateSettingsUseCase {
     return {
       message: 'Paramètres mis à jour avec succès',
       settings: {
-        unitPreference: updatedSettings.unitPreference,
-        notificationEnabled: updatedSettings.notificationEnabled,
-        notificationTime: updatedSettings.notificationTime
-          ?.toTimeString()
-          .slice(0, 8),
+        theme: updatedSettings.theme,
+        language: updatedSettings.language,
+        units: updatedSettings.units,
+        notifications: updatedSettings.notifications,
+        privacy: updatedSettings.privacy,
       },
       updatedReminders: updatedRemindersCount,
       updatedObjectives: updatedObjectivesCount,

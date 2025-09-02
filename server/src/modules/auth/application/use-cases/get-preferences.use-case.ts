@@ -10,9 +10,11 @@ import {
 
 export interface GetPreferencesResponse {
   general: {
-    unitPreference: string;
-    notificationEnabled: boolean;
-    notificationTime?: string;
+    theme: string;
+    language: string;
+    units: string;
+    notifications: any;
+    privacy: any;
   };
   workouts: {
     objectives: Array<{
@@ -84,11 +86,11 @@ export class GetPreferencesUseCase {
 
     return {
       general: {
-        unitPreference: settings?.unitPreference || 'METRIC',
-        notificationEnabled: settings?.notificationEnabled ?? true,
-        notificationTime: settings?.notificationTime
-          ?.toTimeString()
-          .slice(0, 8),
+        theme: settings?.theme || 'LIGHT',
+        language: settings?.language || 'FRENCH',
+        units: settings?.units || 'METRIC',
+        notifications: settings?.notifications || {},
+        privacy: settings?.privacy || {},
       },
       workouts: {
         objectives: objectives.map((objective) => ({
@@ -110,8 +112,8 @@ export class GetPreferencesUseCase {
           enabled: reminder.enabled,
           time: reminder.time?.toTimeString().slice(0, 8),
         })),
-        generalEnabled: settings?.notificationEnabled ?? true,
-        defaultTime: settings?.notificationTime?.toTimeString().slice(0, 8),
+        generalEnabled: true, // Default value since notificationEnabled no longer exists
+        defaultTime: undefined, // Default value since notificationTime no longer exists
       },
     };
   }

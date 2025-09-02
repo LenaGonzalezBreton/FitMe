@@ -7,7 +7,6 @@ import {
   OnboardingProfileData,
 } from '../domain/auth.repository';
 import { AuthUser } from '../domain/auth.entity';
-import { $Enums } from '@prisma/client';
 
 @Injectable()
 export class PrismaUserRepository implements IUserRepository {
@@ -88,7 +87,7 @@ export class PrismaUserRepository implements IUserRepository {
         profileType: profileData.profileType as any,
         contextType: profileData.contextType as any,
         objective: profileData.objective,
-        sportFrequency: profileData.sportFrequency as $Enums.SportFrequency,
+        sportFrequency: profileData.sportFrequency as any,
         isMenopausal: profileData.isMenopausal,
       },
     });

@@ -109,15 +109,6 @@ export class ExerciseTag {
   ) {}
 }
 
-export class PhaseExercise {
-  constructor(
-    public readonly id: string,
-    public readonly phaseName: string, // CyclePhase as string
-    public readonly exerciseId: string,
-    public readonly createdAt?: Date,
-  ) {}
-}
-
 export interface FavoriteExerciseProps {
   id?: string;
   userId: string;

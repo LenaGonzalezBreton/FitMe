@@ -15,37 +15,37 @@ interface HomeScreenProps {
 
 const HomeScreen = ({ navigation }: HomeScreenProps) => {
   const { user } = useAuth();
-  const { currentPhase, cycleConfig, getPhaseLabel, getPhaseEmoji, getPhaseColor } = useCycle();
+  const { currentCycle, cycleConfig, getCycleCharacteristics, getCycleEmoji, getCycleColor } = useCycle();
   const { streakData, logWorkout } = useStreak();
   const { activeProgram } = usePrograms();
   const [showCycleModal, setShowCycleModal] = useState(false);
   const [showPeriodLogging, setShowPeriodLogging] = useState(false);
 
-  // Dynamic cycle phases based on current phase
-  const cyclePhases = [
+  // Dynamic cycle characteristics based on current cycle
+  const cycleCharacteristics = [
     { 
       name: 'Menstruelle', 
-      phase: 'MENSTRUAL',
-      current: currentPhase?.phase === 'MENSTRUAL',
-      color: currentPhase?.phase === 'MENSTRUAL' ? 'bg-phase-menstrual-500' : 'bg-border'
+      characteristics: 'period_day',
+      current: currentCycle?.isPeriodDay,
+      color: currentCycle?.isPeriodDay ? 'bg-phase-menstrual-500' : 'bg-border'
     },
     { 
-      name: 'Folliculaire', 
-      phase: 'FOLLICULAR',
-      current: currentPhase?.phase === 'FOLLICULAR',
-      color: currentPhase?.phase === 'FOLLICULAR' ? 'bg-phase-follicular-500' : 'bg-border'
+      name: 'Post-règles', 
+      characteristics: 'post_period_phase',
+      current: currentCycle && !currentCycle.isPeriodDay && currentCycle.cycleDay <= 14,
+      color: currentCycle && !currentCycle.isPeriodDay && currentCycle.cycleDay <= 14 ? 'bg-phase-follicular-500' : 'bg-border'
     },
     { 
       name: 'Ovulatoire', 
-      phase: 'OVULATION',
-      current: currentPhase?.phase === 'OVULATION',
-      color: currentPhase?.phase === 'OVULATION' ? 'bg-phase-ovulation-500' : 'bg-border'
+      characteristics: 'ovulation_phase',
+      current: currentCycle?.isOvulationPhase,
+      color: currentCycle?.isOvulationPhase ? 'bg-phase-ovulation-500' : 'bg-border'
     },
     { 
-      name: 'Lutéale', 
-      phase: 'LUTEAL',
-      current: currentPhase?.phase === 'LUTEAL',
-      color: currentPhase?.phase === 'LUTEAL' ? 'bg-phase-luteal-500' : 'bg-border'
+      name: 'Post-ovulation', 
+      characteristics: 'post_ovulation_phase',
+      current: currentCycle && !currentCycle.isPeriodDay && !currentCycle.isOvulationPhase && currentCycle.cycleDay > 14,
+      color: currentCycle && !currentCycle.isPeriodDay && !currentCycle.isOvulationPhase && currentCycle.cycleDay > 14 ? 'bg-phase-luteal-500' : 'bg-border'
     },
   ];
 
@@ -85,9 +85,9 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
           </View>
         </View>
 
-        {/* Current Phase Card - Lively Style */}
+        {/* Current Cycle Card - Lively Style */}
         <View className="mb-6">
-          <Text className="text-lg font-semibold text-brand-text mb-3">Phase actuelle</Text>
+          <Text className="text-lg font-semibold text-brand-text mb-3">Cycle actuel</Text>
           <TouchableOpacity 
             className="bg-surface rounded-xl p-6 shadow-sm border border-border-light active:bg-surface-secondary"
             onPress={() => setShowCycleModal(true)}
@@ -102,21 +102,23 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
                   <Text className="text-surface text-2xl">🌙</Text>
                 </View>
               </View>
-            ) : currentPhase ? (
+            ) : currentCycle ? (
               <View>
-                {/* Main Phase Info */}
+                {/* Main Cycle Info */}
                 <View className="flex-row items-center justify-between mb-4">
                   <View className="flex-1">
-                    <Text className="text-2xl font-bold text-brand-text mb-1">{getPhaseLabel(currentPhase.phase)}</Text>
-                    <Text className="text-sm text-secondary-600 mb-1">Jour {currentPhase.cycleDay} de {currentPhase.cycleLength}</Text>
-                    {currentPhase.daysUntilNextPhase > 0 && (
+                    <Text className="text-2xl font-bold text-brand-text mb-1">
+                      {getCycleCharacteristics(currentCycle.cycleDay, currentCycle.isPeriodDay, currentCycle.isOvulationPhase, currentCycle.isFertileDay)}
+                    </Text>
+                    <Text className="text-sm text-secondary-600 mb-1">Jour {currentCycle.cycleDay} de {currentCycle.cycleLength}</Text>
+                    {currentCycle.daysUntilNextCycle > 0 && (
                       <Text className="text-xs text-secondary-500">
-                        {currentPhase.daysUntilNextPhase} jour{currentPhase.daysUntilNextPhase > 1 ? 's' : ''} restant{currentPhase.daysUntilNextPhase > 1 ? 's' : ''}
+                        {currentCycle.daysUntilNextCycle} jour{currentCycle.daysUntilNextCycle > 1 ? 's' : ''} restant{currentCycle.daysUntilNextCycle > 1 ? 's' : ''}
                       </Text>
                     )}
                   </View>
-                  <View className={`${getPhaseColor(currentPhase.phase)} rounded-full w-16 h-16 items-center justify-center`}>
-                    <Text className="text-brand-text text-2xl">{getPhaseEmoji(currentPhase.phase)}</Text>
+                  <View className={`${getCycleColor(currentCycle.cycleDay, currentCycle.isPeriodDay, currentCycle.isOvulationPhase, currentCycle.isFertileDay)} rounded-full w-16 h-16 items-center justify-center`}>
+                    <Text className="text-brand-text text-2xl">{getCycleEmoji(currentCycle.cycleDay, currentCycle.isPeriodDay, currentCycle.isOvulationPhase, currentCycle.isFertileDay)}</Text>
                   </View>
                 </View>
 
@@ -125,31 +127,31 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
                   <View className="flex-row items-center justify-between mb-2">
                     <Text className="text-sm font-medium text-brand-text">Progression du cycle</Text>
                     <Text className="text-sm text-secondary-600">
-                      {Math.round((currentPhase.cycleDay / currentPhase.cycleLength) * 100)}%
+                      {Math.round((currentCycle.cycleDay / currentCycle.cycleLength) * 100)}%
                     </Text>
                   </View>
                   
-                  {/* Progress bar with phase colors */}
+                  {/* Progress bar with cycle colors */}
                   <View className="h-3 bg-gray-200 rounded-full overflow-hidden">
                     <View 
-                      className={`h-full ${getPhaseColor(currentPhase.phase)}`}
-                      style={{ width: `${(currentPhase.cycleDay / currentPhase.cycleLength) * 100}%` }}
+                      className={`h-full ${getCycleColor(currentCycle.cycleDay, currentCycle.isPeriodDay, currentCycle.isOvulationPhase, currentCycle.isFertileDay)}`}
+                      style={{ width: `${(currentCycle.cycleDay / currentCycle.cycleLength) * 100}%` }}
                     />
                   </View>
                   
-                  {/* Phase markers */}
+                  {/* Cycle characteristics markers */}
                   <View className="flex-row justify-between mt-2">
-                    {cyclePhases.map((phase, index) => (
-                      <View key={phase.name} className="items-center">
+                    {cycleCharacteristics.map((characteristic, index) => (
+                      <View key={characteristic.name} className="items-center">
                         <View 
                           className={`w-2 h-2 rounded-full mb-1 ${
-                            phase.current ? phase.color : 'bg-gray-300'
+                            characteristic.current ? characteristic.color : 'bg-gray-300'
                           }`} 
                         />
                         <Text className={`text-xs ${
-                          phase.current ? 'text-brand-text font-medium' : 'text-secondary-500'
+                          characteristic.current ? 'text-brand-text font-medium' : 'text-secondary-500'
                         }`}>
-                          {phase.name}
+                          {characteristic.name}
                         </Text>
                       </View>
                     ))}
@@ -160,27 +162,27 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
                 <View className="flex-row justify-between">
                   <View className="items-center">
                     <Text className="text-lg font-bold text-primary-500">
-                      {currentPhase.phase === 'MENSTRUAL' ? '💤' : 
-                       currentPhase.phase === 'FOLLICULAR' ? '💪' :
-                       currentPhase.phase === 'OVULATION' ? '⚡' : '🧘'}
+                      {currentCycle.isPeriodDay ? '💤' : 
+                       currentCycle.cycleDay <= 14 ? '💪' :
+                       currentCycle.isOvulationPhase ? '⚡' : '🧘'}
                     </Text>
                     <Text className="text-xs text-secondary-600">
-                      {currentPhase.phase === 'MENSTRUAL' ? 'Repos' : 
-                       currentPhase.phase === 'FOLLICULAR' ? 'Force' :
-                       currentPhase.phase === 'OVULATION' ? 'Performance' : 'Récupération'}
+                      {currentCycle.isPeriodDay ? 'Repos' : 
+                       currentCycle.cycleDay <= 14 ? 'Force' :
+                       currentCycle.isOvulationPhase ? 'Performance' : 'Récupération'}
                     </Text>
                   </View>
                   <View className="items-center">
                     <Text className="text-lg font-bold text-accent-500">
-                      {currentPhase.phase === 'MENSTRUAL' ? '🩸' : 
-                       currentPhase.phase === 'FOLLICULAR' ? '🌱' :
-                       currentPhase.phase === 'OVULATION' ? '🌻' : '🍂'}
+                      {currentCycle.isPeriodDay ? '🩸' : 
+                       currentCycle.cycleDay <= 14 ? '🌱' :
+                       currentCycle.isOvulationPhase ? '🌻' : '🍂'}
                     </Text>
-                    <Text className="text-xs text-secondary-600">Phase</Text>
+                    <Text className="text-xs text-secondary-600">Caractéristiques</Text>
                   </View>
                   <View className="items-center">
                     <Text className="text-lg font-bold text-success-500">
-                      {currentPhase.daysUntilNextPhase}
+                      {currentCycle.daysUntilNextCycle}
                     </Text>
                     <Text className="text-xs text-secondary-600">Jours restants</Text>
                   </View>
@@ -194,7 +196,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
                   </View>
                   
                   {/* Quick Period Logging Button */}
-                  {currentPhase.phase === 'MENSTRUAL' && (
+                  {currentCycle.isPeriodDay && (
                     <TouchableOpacity
                       onPress={() => setShowPeriodLogging(true)}
                       className="bg-pink-100 py-2 px-4 rounded-lg flex-row items-center justify-center"
@@ -234,8 +236,8 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
                 <Text className="text-primary-100 text-sm">
                   {user?.isMenopausal 
                     ? 'Adapté à votre situation post-ménopause'
-                    : currentPhase 
-                      ? `Adapté à votre phase ${getPhaseLabel(currentPhase.phase).toLowerCase()}`
+                    : currentCycle 
+                      ? `Adapté à votre cycle (jour ${currentCycle.cycleDay})`
                       : cycleConfig?.isCycleTrackingEnabled === false
                         ? 'Entraînement général recommandé'
                         : 'Configurez votre cycle pour des recommandations personnalisées'

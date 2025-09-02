@@ -10,9 +10,11 @@ import {
 
 export interface GetSettingsResponse {
   settings: {
-    unitPreference: string;
-    notificationEnabled: boolean;
-    notificationTime?: string;
+    theme: string;
+    language: string;
+    units: string;
+    notifications: any;
+    privacy: any;
   };
   reminders: Array<{
     id: string;
@@ -58,11 +60,11 @@ export class GetSettingsUseCase {
 
     return {
       settings: {
-        unitPreference: settings?.unitPreference || 'METRIC',
-        notificationEnabled: settings?.notificationEnabled ?? true,
-        notificationTime: settings?.notificationTime
-          ?.toTimeString()
-          .slice(0, 8),
+        theme: settings?.theme || 'LIGHT',
+        language: settings?.language || 'FRENCH',
+        units: settings?.units || 'METRIC',
+        notifications: settings?.notifications || {},
+        privacy: settings?.privacy || {},
       },
       reminders: reminders.map((reminder) => ({
         id: reminder.id,

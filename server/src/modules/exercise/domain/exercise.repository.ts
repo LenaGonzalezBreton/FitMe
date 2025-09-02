@@ -1,7 +1,6 @@
 import {
   Exercise,
   Tag,
-  PhaseExercise,
   FavoriteExercise,
   ExerciseRating,
   Intensity,
@@ -78,26 +77,8 @@ export interface ITagRepository {
   create(tagData: CreateTagData): Promise<Tag>;
 }
 
-export interface IPhaseExerciseRepository {
-  /**
-   * Trouve les exercices associés à une phase
-   */
-  findByPhaseName(phaseName: string): Promise<PhaseExercise[]>;
-
-  /**
-   * Associe un exercice à une phase
-   */
-  create(phaseExerciseData: CreatePhaseExerciseData): Promise<PhaseExercise>;
-
-  /**
-   * Supprime l'association entre un exercice et une phase
-   */
-  delete(phaseExerciseId: string): Promise<void>;
-}
-
 // Types de filtres et données
 export interface ExerciseFilters {
-  phaseName?: string;
   intensity?: Intensity;
   muscleZone?: MuscleZone;
   minDuration?: number;
@@ -127,11 +108,6 @@ export interface UpdateExerciseData {
 export interface CreateTagData {
   name: string;
   type: TagType;
-}
-
-export interface CreatePhaseExerciseData {
-  phaseName: string;
-  exerciseId: string;
 }
 
 export interface IFavoriteExerciseRepository {

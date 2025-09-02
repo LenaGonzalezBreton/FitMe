@@ -1,0 +1,102 @@
+// Analytics and insights models
+/// @namespace "Analytics"
+
+model UserAnalytics {
+  id              String    @id @default(cuid())
+  userId          String    @map("user_id")
+  period          AnalyticsPeriod
+  fromDate        DateTime  @map("from_date")
+  toDate          DateTime  @map("to_date")
+  data            Json      // Analytics data as JSON
+  
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, period, fromDate, toDate])
+  @@index([userId])
+  @@index([period])
+  @@map("user_analytics")
+}
+
+model WorkoutAnalytics {
+  id              String    @id @default(cuid())
+  userId          String    @map("user_id")
+  period          AnalyticsPeriod
+  fromDate        DateTime  @map("from_date")
+  toDate          DateTime  @map("to_date")
+  programId       String?   @map("program_id")
+  data            Json      // Workout analytics data as JSON
+  
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  program         Program?  @relation(fields: [programId], references: [id])
+
+  @@unique([userId, period, fromDate, toDate, programId])
+  @@index([userId])
+  @@index([period])
+  @@map("workout_analytics")
+}
+
+model CycleAnalytics {
+  id              String    @id @default(cuid())
+  userId          String    @map("user_id")
+  period          AnalyticsPeriod
+  fromDate        DateTime  @map("from_date")
+  toDate          DateTime  @map("to_date")
+  data            Json      // Cycle analytics data as JSON
+  
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, period, fromDate, toDate])
+  @@index([userId])
+  @@index([period])
+  @@map("cycle_analytics")
+}
+
+model ProgressInsight {
+  id              String    @id @default(cuid())
+  userId          String    @map("user_id")
+  type            InsightType
+  title           String
+  description     String    @db.Text
+  data            Json      // Insight data as JSON
+  isRead          Boolean   @default(false) @map("is_read")
+  
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([isRead])
+  @@map("progress_insight")
+}
+
+// Enums for analytics models
+enum AnalyticsPeriod {
+  WEEK
+  MONTH
+  YEAR
+  ALL
+}
+
+enum InsightType {
+  WORKOUT_PROGRESS
+  CYCLE_INSIGHT
+  STREAK_MILESTONE
+  RECOMMENDATION
+  ACHIEVEMENT
+}
+

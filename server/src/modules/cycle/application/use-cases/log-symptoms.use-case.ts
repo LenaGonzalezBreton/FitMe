@@ -1,14 +1,13 @@
 import { Injectable, Inject, BadRequestException } from '@nestjs/common';
-import { SymptomType } from '@prisma/client';
 import {
   ISymptomLogRepository,
-  CreateSymptomLogData,
   SymptomLogEntity,
 } from '../../domain/symptom-log.repository';
+import { CreateSymptomLogData } from '../../domain/symptom-log.entity';
 import { SYMPTOM_LOG_REPOSITORY_TOKEN } from '../../tokens';
 
 export interface LogSymptomRequest {
-  type: SymptomType;
+  type: string;
   intensity: number;
   notes?: string;
 }

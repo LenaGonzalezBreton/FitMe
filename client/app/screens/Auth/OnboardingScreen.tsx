@@ -103,6 +103,11 @@ const OnboardingScreen = () => {
   const handleBack = () => setStep(step - 1);
 
   const handleSubmit = async () => {
+    if (!token) {
+      Alert.alert('Erreur', 'Token d\'authentification manquant. Veuillez vous reconnecter.');
+      return;
+    }
+
     setIsLoading(true);
     try {
       // First, complete the basic onboarding
@@ -135,7 +140,7 @@ const OnboardingScreen = () => {
         };
         
         // Update the user in context with the completed onboarding data
-        await login(userWithCompletedOnboarding, token!, token!); // Using token for both access and refresh
+        await login(userWithCompletedOnboarding, token, token); // Using token for both access and refresh
         
         // Now handle cycle configuration if user is not menopausal
         if (!formData.isMenopausal) {

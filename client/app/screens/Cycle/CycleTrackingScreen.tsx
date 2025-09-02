@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import { useCycle } from '../../hooks/useCycle';
 import { useAuth } from '../../context/AuthContext';
-import { CyclePhase } from '../../types';
 import { Ionicons } from '@expo/vector-icons';
 import HormoneGraph from '../../components/HormoneGraph';
 import PeriodLoggingScreen from './PeriodLoggingScreen';
@@ -28,7 +27,7 @@ interface HormoneData {
 }
 
 interface CycleRecommendation {
-  phase: CyclePhase;
+  cycleDay: number;
   title: string;
   description: string;
   exercises: string[];
@@ -43,14 +42,13 @@ interface CycleTrackingScreenProps {
 }
 
 const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
-  const { currentPhase, cycleConfig, getPhaseLabel, getPhaseEmoji, getPhaseColor } = useCycle();
+  const { currentCycle, cycleConfig, getCycleCharacteristics, getCycleEmoji, getCycleColor } = useCycle();
   const { user } = useAuth();
   const [refreshing, setRefreshing] = useState(false);
   const [selectedTab, setSelectedTab] = useState<'overview' | 'hormones' | 'recommendations'>('overview');
   const [showPeriodLogging, setShowPeriodLogging] = useState(false);
   const [showPeriodHistory, setShowPeriodHistory] = useState(false);
-
-  // Generate hormone data for a 28-day cycle
+  
   const generateHormoneData = (cycleLength: number = 28): HormoneData[] => {
     const data: HormoneData[] = [];
     
@@ -95,11 +93,11 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
 
   const hormoneData = generateHormoneData(cycleConfig?.averageCycleLength || 28);
 
-  // Phase-specific recommendations
-  const getPhaseRecommendations = (phase: CyclePhase): CycleRecommendation => {
-    const recommendations: Record<CyclePhase, CycleRecommendation> = {
-      [CyclePhase.MENSTRUAL]: {
-        phase: CyclePhase.MENSTRUAL,
+  // Cycle-based recommendations
+  const getCycleRecommendations = (cycleDay: number, isPeriodDay: boolean, isOvulationPhase: boolean, isFertileDay: boolean): CycleRecommendation => {
+    if (isPeriodDay) {
+      return {
+        cycleDay,
         title: 'Phase Menstruelle',
         description: 'Période de repos et de récupération. Votre corps a besoin de douceur.',
         exercises: [
@@ -122,9 +120,10 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
         ],
         energy: 'low',
         intensity: 'low'
-      },
-      [CyclePhase.FOLLICULAR]: {
-        phase: CyclePhase.FOLLICULAR,
+      };
+    } else if (cycleDay <= 14) {
+      return {
+        cycleDay,
         title: 'Phase Folliculaire',
         description: 'Énergie en hausse ! Moment idéal pour les entraînements intenses.',
         exercises: [
@@ -147,9 +146,10 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
         ],
         energy: 'high',
         intensity: 'high'
-      },
-      [CyclePhase.OVULATION]: {
-        phase: CyclePhase.OVULATION,
+      };
+    } else if (isOvulationPhase) {
+      return {
+        cycleDay,
         title: 'Phase Ovulatoire',
         description: 'Pic d\'énergie et de performance. Profitez de votre potentiel maximal !',
         exercises: [
@@ -172,9 +172,10 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
         ],
         energy: 'high',
         intensity: 'high'
-      },
-      [CyclePhase.LUTEAL]: {
-        phase: CyclePhase.LUTEAL,
+      };
+    } else {
+      return {
+        cycleDay,
         title: 'Phase Lutéale',
         description: 'Énergie qui diminue progressivement. Privilégiez la récupération.',
         exercises: [
@@ -197,13 +198,16 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
         ],
         energy: 'medium',
         intensity: 'medium'
-      }
-    };
-
-    return recommendations[phase];
+      };
+    }
   };
 
-  const currentRecommendations = currentPhase ? getPhaseRecommendations(currentPhase.phase) : null;
+  const currentRecommendations = currentCycle ? getCycleRecommendations(
+    currentCycle.cycleDay,
+    currentCycle.isPeriodDay,
+    currentCycle.isOvulationPhase,
+    currentCycle.isFertileDay
+  ) : null;
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -243,7 +247,7 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
     );
   }
 
-  if (!currentPhase || !cycleConfig?.isCycleTrackingEnabled) {
+  if (!currentCycle || !cycleConfig?.isCycleTrackingEnabled) {
     return (
       <SafeAreaView className="flex-1 bg-brand-background">
         <View className="flex-1 justify-center items-center px-6">
@@ -290,31 +294,31 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
           </View>
         </View>
 
-        {/* Current Phase Card */}
+        {/* Current Cycle Card */}
         <View className="px-4 mb-4">
           <View className="bg-surface rounded-xl p-4 shadow-sm border border-border-light">
             <View className="flex-row items-center justify-between mb-4">
               <View className="flex-1">
                 <Text className="text-2xl font-bold text-brand-text mb-1">
-                  {getPhaseLabel(currentPhase.phase)}
+                  {getCycleCharacteristics(currentCycle.cycleDay, currentCycle.isPeriodDay, currentCycle.isOvulationPhase, currentCycle.isFertileDay)}
                 </Text>
                 <Text className="text-sm text-secondary-600 mb-2">
-                  Jour {currentPhase.cycleDay} de votre cycle ({currentPhase.cycleLength} jours)
+                  Jour {currentCycle.cycleDay} de votre cycle ({currentCycle.cycleLength} jours)
                 </Text>
-                {currentPhase.daysUntilNextPhase > 0 && (
+                {currentCycle.daysUntilNextCycle > 0 && (
                   <Text className="text-xs text-secondary-500">
-                    {currentPhase.daysUntilNextPhase} jour{currentPhase.daysUntilNextPhase > 1 ? 's' : ''} avant la prochaine phase
+                    {currentCycle.daysUntilNextCycle} jour{currentCycle.daysUntilNextCycle > 1 ? 's' : ''} avant le prochain cycle
                   </Text>
                 )}
               </View>
-              <View className={`${getPhaseColor(currentPhase.phase)} rounded-full w-16 h-16 items-center justify-center`}>
-                <Text className="text-brand-text text-2xl">{getPhaseEmoji(currentPhase.phase)}</Text>
+              <View className={`${getCycleColor(currentCycle.cycleDay, currentCycle.isPeriodDay, currentCycle.isOvulationPhase, currentCycle.isFertileDay)} rounded-full w-16 h-16 items-center justify-center`}>
+                <Text className="text-brand-text text-2xl">{getCycleEmoji(currentCycle.cycleDay, currentCycle.isPeriodDay, currentCycle.isOvulationPhase, currentCycle.isFertileDay)}</Text>
               </View>
             </View>
             
-            {/* Phase Description */}
+            {/* Cycle Description */}
             <Text className="text-sm text-secondary-600 mb-4">
-              {currentPhase.phaseDescription}
+              {currentCycle.cycleDescription}
             </Text>
 
             {/* Energy and Intensity Indicators */}
@@ -393,7 +397,7 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
                 {[1, 7, 14, 21, 28].map((day) => (
                   <View key={day} className="items-center">
                     <View className={`w-4 h-4 rounded-full mb-2 ${
-                      currentPhase.cycleDay >= day ? 'bg-primary-500' : 'bg-border'
+                      currentCycle.cycleDay >= day ? 'bg-primary-500' : 'bg-border'
                     }`} />
                     <Text className="text-xs text-secondary-600">J{day}</Text>
                   </View>
@@ -414,7 +418,7 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
               <Text className="text-lg font-bold text-brand-text mb-4">Statistiques</Text>
               <View className="flex-row justify-between">
                 <View className="items-center">
-                  <Text className="text-2xl font-bold text-primary-500">{currentPhase.cycleLength}</Text>
+                  <Text className="text-2xl font-bold text-primary-500">{currentCycle.cycleLength}</Text>
                   <Text className="text-sm text-secondary-600">Jours de cycle</Text>
                 </View>
                 <View className="items-center">
@@ -422,7 +426,7 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
                   <Text className="text-sm text-secondary-600">Jours de règles</Text>
                 </View>
                 <View className="items-center">
-                  <Text className="text-2xl font-bold text-success-500">{currentPhase.cycleDay}</Text>
+                  <Text className="text-2xl font-bold text-success-500">{currentCycle.cycleDay}</Text>
                   <Text className="text-sm text-secondary-600">Jour actuel</Text>
                 </View>
               </View>
@@ -461,8 +465,8 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
           <View className="px-4 mb-4">
             <HormoneGraph 
               data={hormoneData}
-              currentDay={currentPhase.cycleDay}
-              cycleLength={currentPhase.cycleLength}
+              currentDay={currentCycle.cycleDay}
+              cycleLength={currentCycle.cycleLength}
             />
             
             {/* Additional hormone info */}

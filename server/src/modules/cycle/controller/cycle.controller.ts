@@ -19,7 +19,7 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { GetCurrentPhaseUseCase } from '../application/use-cases/get-current-phase.use-case';
+import { GetCurrentCycleUseCase } from '../application/use-cases/get-current-cycle.use-case';
 import { GetCycleConfigUseCase } from '../application/use-cases/get-cycle-config.use-case';
 import { UpdateCycleConfigUseCase } from '../application/use-cases/update-cycle-config.use-case';
 import { LogPeriodUseCase } from '../application/use-cases/log-period.use-case';
@@ -29,7 +29,7 @@ import { GetCycleCalendarUseCase } from '../application/use-cases/get-cycle-cale
 import { LogSymptomsUseCase } from '../application/use-cases/log-symptoms.use-case';
 import { GetSymptomsHistoryUseCase } from '../application/use-cases/get-symptoms-history.use-case';
 import {
-  CurrentPhaseResponseDto,
+  CurrentCycleResponseDto,
   CycleConfigResponseDto,
   UpdateCycleConfigDto,
   LogPeriodDto,
@@ -41,7 +41,6 @@ import {
   LogSymptomsResponseDto,
   SymptomsHistoryResponseDto,
 } from './dto/cycle.dto';
-import { SymptomType } from '@prisma/client';
 
 interface AuthenticatedRequest {
   user: {
@@ -59,7 +58,7 @@ interface AuthenticatedRequest {
 @ApiBearerAuth()
 export class CycleController {
   constructor(
-    private readonly getCurrentPhaseUseCase: GetCurrentPhaseUseCase,
+    private readonly getCurrentCycleUseCase: GetCurrentCycleUseCase,
     private readonly getCycleConfigUseCase: GetCycleConfigUseCase,
     private readonly updateCycleConfigUseCase: UpdateCycleConfigUseCase,
     private readonly logPeriodUseCase: LogPeriodUseCase,
@@ -70,28 +69,28 @@ export class CycleController {
     private readonly getSymptomsHistoryUseCase: GetSymptomsHistoryUseCase,
   ) {}
 
-  @Get('current-phase')
+  @Get('current-cycle')
   @ApiOperation({
-    summary: 'Récupérer la phase actuelle du cycle',
+    summary: 'Récupérer les informations actuelles du cycle',
     description:
-      "Retourne la phase actuelle du cycle menstruel de l'utilisatrice connectée",
+      "Retourne les informations actuelles du cycle menstruel de l'utilisatrice connectée",
   })
   @ApiResponse({
     status: 200,
-    description: 'Phase actuelle retournée avec succès',
-    type: CurrentPhaseResponseDto,
+    description: 'Informations du cycle retournées avec succès',
+    type: CurrentCycleResponseDto,
   })
   @ApiResponse({
     status: 404,
     description: 'Aucun cycle trouvé ou suivi des cycles désactivé',
   })
-  async getCurrentPhase(
+  async getCurrentCycle(
     @Request() req: AuthenticatedRequest,
-  ): Promise<CurrentPhaseResponseDto> {
+  ): Promise<CurrentCycleResponseDto> {
     try {
       const userId = req.user.id;
 
-      const result = await this.getCurrentPhaseUseCase.execute({
+      const result = await this.getCurrentCycleUseCase.execute({
         userId,
         date: new Date(),
       });
@@ -99,21 +98,23 @@ export class CycleController {
       return {
         success: true,
         data: {
-          phase: result.phase,
           cycleDay: result.cycleDay,
           cycleLength: result.cycleLength,
           periodLength: result.periodLength,
-          daysUntilNextPhase: result.daysUntilNextPhase,
-          phaseDescription: result.phaseDescription,
+          isPeriodDay: result.isPeriodDay,
+          isOvulationPhase: result.isOvulationPhase,
+          isFertileDay: result.isFertileDay,
+          daysUntilNextCycle: result.daysUntilNextCycle,
+          cycleDescription: result.cycleDescription,
           recommendations: result.recommendations,
         },
-        message: `Vous êtes actuellement en ${result.phaseDescription}`,
+        message: result.cycleDescription,
       };
     } catch (error) {
       const message =
         error instanceof Error
           ? error.message
-          : 'Erreur lors de la récupération de la phase actuelle';
+          : 'Erreur lors de la récupération des informations du cycle';
       const statusCode =
         error instanceof Error && error.message.includes('trouvé')
           ? HttpStatus.NOT_FOUND
@@ -406,7 +407,7 @@ export class CycleController {
         nextOvulation: result.nextOvulation.toISOString(),
         confidence: result.confidence,
         currentCycleDay: result.currentCycleDay,
-        currentPhase: result.currentPhase,
+        currentCycleCharacteristics: result.currentPhase,
         daysUntilNextPeriod: result.daysUntilNextPeriod,
         daysUntilOvulation: result.daysUntilOvulation,
       };
@@ -628,7 +629,7 @@ export class CycleController {
         userId: req.user.id,
         fromDate: fromDate ? new Date(fromDate) : undefined,
         toDate: toDate ? new Date(toDate) : undefined,
-        symptomType: symptomType as SymptomType,
+        symptomType: symptomType as string,
         limit,
         offset,
       });

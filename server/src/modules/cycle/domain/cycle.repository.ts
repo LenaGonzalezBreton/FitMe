@@ -1,4 +1,5 @@
-import { Cycle, CycleProfileConfig, Phase, CyclePhase } from './cycle.entity';
+import { Cycle } from './cycle.entity';
+import { CycleProfileConfig, CreateCycleProfileConfigData, UpdateCycleProfileConfigData } from './cycle-profile-config.entity';
 
 export interface ICycleRepository {
   /**
@@ -52,33 +53,6 @@ export interface ICycleProfileConfigRepository {
   ): Promise<CycleProfileConfig>;
 }
 
-export interface IPhaseRepository {
-  /**
-   * Trouve les phases d'un cycle
-   */
-  findByCycleId(cycleId: string): Promise<Phase[]>;
-
-  /**
-   * Trouve la phase active à une date donnée pour un cycle
-   */
-  findActivePhase(cycleId: string, date: Date): Promise<Phase | null>;
-
-  /**
-   * Crée une nouvelle phase
-   */
-  create(phaseData: CreatePhaseData): Promise<Phase>;
-
-  /**
-   * Met à jour une phase
-   */
-  update(phaseId: string, updateData: UpdatePhaseData): Promise<Phase>;
-
-  /**
-   * Supprime une phase
-   */
-  delete(phaseId: string): Promise<void>;
-}
-
 // Types de données pour la création et mise à jour
 export interface CreateCycleData {
   userId: string;
@@ -99,34 +73,4 @@ export interface UpdateCycleData {
   externalCycleId?: string;
 }
 
-export interface CreateCycleProfileConfigData {
-  userId: string;
-  isCycleTrackingEnabled?: boolean;
-  usesExternalProvider?: boolean;
-  useMenopauseMode?: boolean;
-  averageCycleLength?: number;
-  averagePeriodLength?: number;
-  prefersManualInput?: boolean;
-}
 
-export interface UpdateCycleProfileConfigData {
-  isCycleTrackingEnabled?: boolean;
-  usesExternalProvider?: boolean;
-  useMenopauseMode?: boolean;
-  averageCycleLength?: number;
-  averagePeriodLength?: number;
-  prefersManualInput?: boolean;
-}
-
-export interface CreatePhaseData {
-  cycleId: string;
-  name: CyclePhase;
-  startDate: Date;
-  endDate: Date;
-}
-
-export interface UpdatePhaseData {
-  name?: CyclePhase;
-  startDate?: Date;
-  endDate?: Date;
-}

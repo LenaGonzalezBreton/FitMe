@@ -7,14 +7,13 @@ import {
   UserObjectiveData,
   UserFeatureFlagData,
 } from '../domain/auth.repository';
-import { $Enums } from '@prisma/client';
 
 @Injectable()
 export class PrismaUserSettingsRepository implements IUserSettingsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async getUserSettings(userId: string): Promise<UserSettingsData | null> {
-    const settings = await this.prisma.userSettings.findUnique({
+    const settings = await this.prisma.userPreferences.findUnique({
       where: { userId },
     });
 
@@ -22,9 +21,11 @@ export class PrismaUserSettingsRepository implements IUserSettingsRepository {
       ? {
           id: settings.id,
           userId: settings.userId,
-          unitPreference: settings.unitPreference,
-          notificationEnabled: settings.notificationEnabled,
-          notificationTime: settings.notificationTime || undefined,
+          theme: settings.theme,
+          language: settings.language,
+          units: settings.units,
+          notifications: settings.notifications as any,
+          privacy: settings.privacy as any,
           createdAt: settings.createdAt,
           updatedAt: settings.updatedAt,
         }
@@ -35,29 +36,33 @@ export class PrismaUserSettingsRepository implements IUserSettingsRepository {
     userId: string,
     data: Partial<UserSettingsData>,
   ): Promise<UserSettingsData> {
-    const settings = await this.prisma.userSettings.upsert({
+    const settings = await this.prisma.userPreferences.upsert({
       where: { userId },
       create: {
         userId,
-        unitPreference:
-          (data.unitPreference as $Enums.UnitPreference) ||
-          $Enums.UnitPreference.METRIC,
-        notificationEnabled: data.notificationEnabled ?? true,
-        notificationTime: data.notificationTime,
+        theme: data.theme || 'LIGHT',
+        language: data.language || 'FRENCH',
+        units: data.units || 'METRIC',
+        notifications: data.notifications || {},
+        privacy: data.privacy || {},
       },
       update: {
-        unitPreference: data.unitPreference as $Enums.UnitPreference,
-        notificationEnabled: data.notificationEnabled,
-        notificationTime: data.notificationTime,
+        theme: data.theme,
+        language: data.language,
+        units: data.units,
+        notifications: data.notifications,
+        privacy: data.privacy,
       },
     });
 
     return {
       id: settings.id,
       userId: settings.userId,
-      unitPreference: settings.unitPreference,
-      notificationEnabled: settings.notificationEnabled,
-      notificationTime: settings.notificationTime || undefined,
+      theme: settings.theme,
+      language: settings.language,
+      units: settings.units,
+      notifications: settings.notifications as any,
+      privacy: settings.privacy as any,
       createdAt: settings.createdAt,
       updatedAt: settings.updatedAt,
     };
@@ -69,7 +74,7 @@ export class PrismaUserSettingsRepository implements IUserSettingsRepository {
       orderBy: { type: 'asc' },
     });
 
-    return reminders.map((reminder) => ({
+    return reminders.map((reminder: any) => ({
       id: reminder.id,
       userId: reminder.userId,
       type: reminder.type,
@@ -87,7 +92,7 @@ export class PrismaUserSettingsRepository implements IUserSettingsRepository {
   ): Promise<ReminderSettingsData> {
     // Chercher un reminder existant
     const existingReminder = await this.prisma.reminderSettings.findFirst({
-      where: { userId, type: type as $Enums.ReminderType },
+      where: { userId, type: type as any },
     });
 
     let reminder;
@@ -105,7 +110,7 @@ export class PrismaUserSettingsRepository implements IUserSettingsRepository {
       reminder = await this.prisma.reminderSettings.create({
         data: {
           userId,
-          type: type as $Enums.ReminderType,
+          type: type as any,
           enabled: data.enabled ?? true,
           time: data.time,
         },
@@ -129,7 +134,7 @@ export class PrismaUserSettingsRepository implements IUserSettingsRepository {
       orderBy: { createdAt: 'desc' },
     });
 
-    return objectives.map((objective) => ({
+    return objectives.map((objective: any) => ({
       id: objective.id,
       userId: objective.userId,
       type: objective.type,
@@ -146,7 +151,7 @@ export class PrismaUserSettingsRepository implements IUserSettingsRepository {
   ): Promise<UserObjectiveData> {
     // Chercher un objectif existant
     const existingObjective = await this.prisma.userObjective.findFirst({
-      where: { userId, type: type as $Enums.ObjectiveType },
+      where: { userId, type: type as any },
     });
 
     let objective;
@@ -161,7 +166,7 @@ export class PrismaUserSettingsRepository implements IUserSettingsRepository {
       objective = await this.prisma.userObjective.create({
         data: {
           userId,
-          type: type as $Enums.ObjectiveType,
+          type: type as any,
           note,
         },
       });
@@ -183,7 +188,7 @@ export class PrismaUserSettingsRepository implements IUserSettingsRepository {
       orderBy: { feature: 'asc' },
     });
 
-    return flags.map((flag) => ({
+    return flags.map((flag: any) => ({
       id: flag.id,
       userId: flag.userId,
       feature: flag.feature,

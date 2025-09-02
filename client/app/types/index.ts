@@ -81,26 +81,21 @@ export interface GeneratedProgramResponse {
 }
 
 // Cycle types
-export enum CyclePhase {
-  MENSTRUAL = 'MENSTRUAL',
-  FOLLICULAR = 'FOLLICULAR',
-  OVULATION = 'OVULATION',
-  LUTEAL = 'LUTEAL',
-}
-
-export interface CurrentPhaseData {
-  phase: CyclePhase;
+export interface CurrentCycleData {
   cycleDay: number;
   cycleLength: number;
   periodLength: number;
-  daysUntilNextPhase: number;
-  phaseDescription: string;
+  isPeriodDay: boolean;
+  isOvulationPhase: boolean;
+  isFertileDay: boolean;
+  daysUntilNextCycle: number;
+  cycleDescription: string;
   recommendations: string[];
 }
 
-export interface CurrentPhaseResponse {
+export interface CurrentCycleResponse {
   success: boolean;
-  data: CurrentPhaseData;
+  data: CurrentCycleData;
   message: string;
 }
 

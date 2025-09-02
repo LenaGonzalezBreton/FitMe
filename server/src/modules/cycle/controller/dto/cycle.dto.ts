@@ -13,17 +13,8 @@ import {
   IsNotEmpty,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { CyclePhase } from '../../domain/cycle.entity';
-import { SymptomType } from '@prisma/client';
 
-export class CurrentPhaseDataDto {
-  @ApiProperty({
-    enum: CyclePhase,
-    example: CyclePhase.FOLLICULAR,
-    description: 'Phase actuelle du cycle menstruel',
-  })
-  phase: CyclePhase;
-
+export class CurrentCycleDataDto {
   @ApiProperty({
     example: 12,
     description: 'Jour actuel dans le cycle (1-28 généralement)',
@@ -49,19 +40,37 @@ export class CurrentPhaseDataDto {
   periodLength: number;
 
   @ApiProperty({
-    example: 2,
-    description: 'Nombre de jours avant la prochaine phase',
+    example: true,
+    description: 'Indique si le jour actuel est un jour de règles',
+  })
+  isPeriodDay: boolean;
+
+  @ApiProperty({
+    example: false,
+    description: 'Indique si le jour actuel est dans la phase d\'ovulation',
+  })
+  isOvulationPhase: boolean;
+
+  @ApiProperty({
+    example: false,
+    description: 'Indique si le jour actuel est dans la période fertile',
+  })
+  isFertileDay: boolean;
+
+  @ApiProperty({
+    example: 16,
+    description: 'Nombre de jours avant le prochain cycle',
     minimum: 0,
   })
-  daysUntilNextPhase: number;
+  daysUntilNextCycle: number;
 
   @ApiProperty({
     example:
-      'Phase folliculaire - Énergie croissante, idéale pour commencer de nouveaux défis',
+      'Phase post-règles - Énergie croissante, idéale pour commencer de nouveaux défis',
     description:
-      'Description détaillée de la phase actuelle et de ses caractéristiques',
+      'Description détaillée du jour actuel du cycle et de ses caractéristiques',
   })
-  phaseDescription: string;
+  cycleDescription: string;
 
   @ApiProperty({
     example: [
@@ -69,13 +78,13 @@ export class CurrentPhaseDataDto {
       'Exercices cardiovasculaires modérés',
       'Renforcement musculaire avec poids légers',
     ],
-    description: 'Liste des recommandations spécifiques à cette phase',
+    description: 'Liste des recommandations spécifiques à ce jour du cycle',
     type: [String],
   })
   recommendations: string[];
 }
 
-export class CurrentPhaseResponseDto {
+export class CurrentCycleResponseDto {
   @ApiProperty({
     example: true,
     description: 'Indique si la requête a été traitée avec succès',
@@ -83,15 +92,15 @@ export class CurrentPhaseResponseDto {
   success: boolean;
 
   @ApiProperty({
-    type: CurrentPhaseDataDto,
-    description: 'Données détaillées sur la phase actuelle du cycle',
+    type: CurrentCycleDataDto,
+    description: 'Données détaillées sur le jour actuel du cycle',
   })
-  data: CurrentPhaseDataDto;
+  data: CurrentCycleDataDto;
 
   @ApiProperty({
     example:
-      'Vous êtes actuellement en Phase folliculaire - Énergie croissante, idéale pour commencer de nouveaux défis',
-    description: 'Message descriptif sur la phase actuelle',
+      'Phase post-règles - Énergie croissante, idéale pour commencer de nouveaux défis',
+    description: 'Message descriptif sur le jour actuel du cycle',
   })
   message: string;
 }
@@ -380,14 +389,14 @@ export class PeriodsHistoryResponseDto {
 
 export class CyclePredictionDto {
   @ApiProperty({
-    description: 'Date prédite des prochaines règles',
-    example: '2024-02-12T00:00:00.000Z',
+    description: 'Date de début des prochaines règles',
+    example: '2024-02-15',
   })
   nextPeriodStart: string;
 
   @ApiProperty({
-    description: 'Date prédite de la prochaine ovulation',
-    example: '2024-01-28T00:00:00.000Z',
+    description: 'Date de la prochaine ovulation',
+    example: '2024-02-01',
   })
   nextOvulation: string;
 
@@ -406,11 +415,11 @@ export class CyclePredictionDto {
   currentCycleDay: number;
 
   @ApiProperty({
-    description: 'Phase actuelle du cycle',
-    enum: CyclePhase,
-    example: CyclePhase.OVULATION,
+    description: 'Caractéristiques du jour actuel',
+    example: 'post_period_phase',
+    enum: ['period_day', 'post_period_phase', 'ovulation_phase', 'post_ovulation_phase'],
   })
-  currentPhase: CyclePhase;
+  currentCycleCharacteristics: string;
 
   @ApiProperty({
     description: "Jours jusqu'aux prochaines règles",
@@ -452,11 +461,11 @@ export class CalendarDayDto {
   date: string;
 
   @ApiPropertyOptional({
-    description: 'Phase du cycle ce jour',
-    enum: CyclePhase,
-    example: CyclePhase.MENSTRUAL,
+    description: 'Caractéristiques du cycle ce jour',
+    example: 'period_day',
+    enum: ['period_day', 'post_period_phase', 'ovulation_phase', 'post_ovulation_phase'],
   })
-  phase?: CyclePhase;
+  cycleCharacteristics?: string;
 
   @ApiPropertyOptional({
     description: 'Jour du cycle (1-40)',
@@ -532,12 +541,11 @@ export class CycleCalendarResponseDto {
 export class LogSymptomDto {
   @ApiProperty({
     description: 'Type de symptôme',
-    enum: SymptomType,
-    example: SymptomType.CRAMPS,
+    example: 'cramps',
+    enum: ['cramps', 'bloating', 'fatigue', 'mood_swings', 'breast_tenderness', 'headache', 'back_pain', 'other'],
   })
-  @IsEnum(SymptomType)
   @IsNotEmpty()
-  type: SymptomType;
+  type: string;
 
   @ApiProperty({
     description: 'Intensité du symptôme (1=léger, 5=très fort)',
@@ -589,10 +597,10 @@ export class SymptomEntryDto {
 
   @ApiProperty({
     description: 'Type de symptôme',
-    enum: SymptomType,
-    example: SymptomType.CRAMPS,
+    example: 'cramps',
+    enum: ['cramps', 'bloating', 'fatigue', 'mood_swings', 'breast_tenderness', 'headache', 'back_pain', 'other'],
   })
-  type: SymptomType;
+  type: string;
 
   @ApiProperty({
     description: 'Intensité (1-5)',
@@ -642,10 +650,10 @@ export class LogSymptomsResponseDto {
 export class SymptomStatsDto {
   @ApiProperty({
     description: 'Type de symptôme',
-    enum: SymptomType,
-    example: SymptomType.CRAMPS,
+    enum: ['period_day', 'post_period_phase', 'ovulation_phase', 'post_ovulation_phase'],
+    example: 'period_day',
   })
-  type: SymptomType;
+  type: string;
 
   @ApiProperty({
     description: 'Intensité moyenne',
@@ -661,18 +669,18 @@ export class SymptomStatsDto {
 
   @ApiProperty({
     description: 'Phase du cycle la plus fréquente',
-    enum: CyclePhase,
-    example: CyclePhase.MENSTRUAL,
+    enum: ['period_day', 'post_period_phase', 'ovulation_phase', 'post_ovulation_phase'],
+    example: 'period_day',
   })
-  mostCommonPhase: CyclePhase;
+  mostCommonPhase: string;
 
   @ApiProperty({
     description: "Pourcentage d'occurrence par phase",
     example: {
-      MENSTRUAL: 80,
-      FOLLICULAR: 10,
-      OVULATION: 5,
-      LUTEAL: 15,
+      period_day: 80,
+      post_period_phase: 10,
+      ovulation_phase: 5,
+      post_ovulation_phase: 15,
     },
   })
   phaseDistribution: Record<string, number>;
@@ -721,4 +729,43 @@ export class SymptomsHistoryResponseDto {
       'Analyse de 45 symptômes sur 31 jours - 8 types différents identifiés',
   })
   message: string;
+}
+
+export class CycleStatisticsDto {
+  @ApiProperty({
+    description: 'Nombre total de cycles enregistrés',
+    example: 12,
+  })
+  totalCycles: number;
+
+  @ApiProperty({
+    description: 'Durée moyenne du cycle en jours',
+    example: 28.5,
+  })
+  averageCycleLength: number;
+
+  @ApiProperty({
+    description: 'Durée moyenne des règles en jours',
+    example: 5.2,
+  })
+  averagePeriodLength: number;
+
+  @ApiProperty({
+    description: 'Pourcentage de cycles réguliers',
+    example: 83.3,
+  })
+  regularityPercentage: number;
+
+  @ApiProperty({
+    description: 'Caractéristiques les plus communes',
+    example: 'post_period_phase',
+    enum: ['period_day', 'post_period_phase', 'ovulation_phase', 'post_ovulation_phase'],
+  })
+  mostCommonCharacteristics: string;
+
+  @ApiProperty({
+    description: 'Nombre de types de symptômes uniques',
+    example: 8,
+  })
+  uniqueSymptomTypes: number;
 }

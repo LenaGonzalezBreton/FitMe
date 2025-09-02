@@ -1,6 +1,4 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { SymptomType } from '@prisma/client';
-import { CyclePhase } from '../../domain/cycle.entity';
 import {
   ISymptomLogRepository,
   SymptomLogFilters,
@@ -12,7 +10,7 @@ export interface GetSymptomsHistoryRequest {
   userId: string;
   fromDate?: Date;
   toDate?: Date;
-  symptomType?: SymptomType;
+  symptomType?: string;
   groupByPhase?: boolean;
   limit?: number;
   offset?: number;
@@ -20,7 +18,7 @@ export interface GetSymptomsHistoryRequest {
 
 export interface SymptomEntry {
   id: string;
-  type: SymptomType;
+  type: string;
   intensity: number;
   notes?: string;
   date: Date;
@@ -28,10 +26,10 @@ export interface SymptomEntry {
 }
 
 export interface SymptomStats {
-  type: SymptomType;
+  type: string;
   averageIntensity: number;
   occurrences: number;
-  mostCommonPhase: CyclePhase;
+  mostCommonPhase: string;
   phaseDistribution: Record<string, number>;
 }
 
@@ -141,7 +139,7 @@ export class GetSymptomsHistoryUseCase {
         acc[symptom.type].push(symptom);
         return acc;
       },
-      {} as Record<SymptomType, SymptomEntry[]>,
+      {} as Record<string, SymptomEntry[]>,
     );
 
     // Calculer les stats pour chaque type
@@ -154,16 +152,16 @@ export class GetSymptomsHistoryUseCase {
 
       // Pour l'instant, on ne peut pas déterminer la phase sans cycle data
       // On utilise des valeurs par défaut
-      const mostCommonPhase = CyclePhase.MENSTRUAL; // À améliorer avec les données de cycle
+      const mostCommonPhase = 'menstrual'; // À améliorer avec les données de cycle
       const phaseDistribution = {
-        [CyclePhase.MENSTRUAL]: 40,
-        [CyclePhase.FOLLICULAR]: 20,
-        [CyclePhase.OVULATION]: 10,
-        [CyclePhase.LUTEAL]: 30,
+        'menstrual': 40,
+        'follicular': 20,
+        'ovulation': 10,
+        'luteal': 30,
       };
 
       stats.push({
-        type: type as SymptomType,
+        type,
         averageIntensity: Math.round(averageIntensity * 10) / 10,
         occurrences: typeSymptoms.length,
         mostCommonPhase,

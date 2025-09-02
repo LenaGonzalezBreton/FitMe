@@ -176,6 +176,11 @@ export const programApi = {
     startDate: string;
     endDate?: string;
     isTemplate?: boolean;
+    type?: string;
+    trainingDays?: number[];
+    duration?: number;
+    focusZone?: string;
+    cyclePhase?: number | null;
     exercises?: Array<{
       exerciseId: string;
       order: number;
@@ -214,13 +219,25 @@ export const programApi = {
     const response = await api.delete(`/programs/${programId}`);
     return response.data;
   },
+
+  // Get program types
+  getProgramTypes: async () => {
+    const response = await api.get('/programs/types');
+    return response.data;
+  },
+
+  // Get training days
+  getTrainingDays: async () => {
+    const response = await api.get('/programs/training-days');
+    return response.data;
+  },
 };
 
 // Cycle API calls
 export const cycleApi = {
-  // Get current phase
-  getCurrentPhase: async () => {
-    const response = await api.get('/cycle/current-phase');
+  // Get current cycle
+  getCurrentCycle: async () => {
+    const response = await api.get('/cycle/current-cycle');
     return response.data;
   },
 
@@ -310,7 +327,7 @@ export const profileApi = {
   },
 };
 
-// Workout History API calls (placeholder for future implementation)
+// Workout History API calls
 export const workoutHistoryApi = {
   // Get user workout sessions
   getWorkoutSessions: async (params?: {
@@ -326,6 +343,347 @@ export const workoutHistoryApi = {
   // Get workout session details
   getSessionDetails: async (sessionId: string) => {
     const response = await api.get(`/workouts/sessions/${sessionId}`);
+    return response.data;
+  },
+
+  // Get workout statistics
+  getWorkoutStats: async (params?: {
+    period?: 'week' | 'month' | 'year' | 'all';
+    fromDate?: string;
+    toDate?: string;
+  }) => {
+    const response = await api.get('/workouts/stats', { params });
+    return response.data;
+  },
+
+  // Export workout data
+  exportWorkoutData: async (params?: {
+    format?: 'csv' | 'json' | 'pdf';
+    fromDate?: string;
+    toDate?: string;
+  }) => {
+    const response = await api.get('/workouts/export', { params });
+    return response.data;
+  },
+};
+
+// Workout API calls
+export const workoutApi = {
+  // Start a workout session
+  startWorkoutSession: async (programId: string) => {
+    const response = await api.post('/workouts/sessions', { programId });
+    return response.data;
+  },
+
+  // Complete a workout session
+  completeWorkoutSession: async (sessionId: string, data?: {
+    completedExercises: string[];
+    totalDuration: number;
+    notes?: string;
+    rating?: number;
+  }) => {
+    const response = await api.put(`/workouts/sessions/${sessionId}/complete`, data);
+    return response.data;
+  },
+
+  // Get workout session details
+  getWorkoutSession: async (sessionId: string) => {
+    const response = await api.get(`/workouts/sessions/${sessionId}`);
+    return response.data;
+  },
+
+  // Get user's workout sessions
+  getUserWorkoutSessions: async (params?: {
+    limit?: number;
+    offset?: number;
+    fromDate?: string;
+    toDate?: string;
+    programId?: string;
+    completed?: boolean;
+  }) => {
+    const response = await api.get('/workouts/sessions', { params });
+    return response.data;
+  },
+
+  // Log exercise completion within a session
+  logExerciseCompletion: async (sessionId: string, exerciseId: string, data: {
+    sets?: number;
+    reps?: string;
+    weight?: number;
+    duration?: number;
+    notes?: string;
+  }) => {
+    const response = await api.post(`/workouts/sessions/${sessionId}/exercises/${exerciseId}/complete`, data);
+    return response.data;
+  },
+
+  // Pause workout session
+  pauseWorkoutSession: async (sessionId: string) => {
+    const response = await api.put(`/workouts/sessions/${sessionId}/pause`);
+    return response.data;
+  },
+
+  // Resume workout session
+  resumeWorkoutSession: async (sessionId: string) => {
+    const response = await api.put(`/workouts/sessions/${sessionId}/resume`);
+    return response.data;
+  },
+};
+
+// Exercise API calls
+export const exerciseApi = {
+  // Get all exercises
+  getExercises: async (params?: {
+    category?: string;
+    intensity?: string;
+    muscleGroup?: string;
+    limit?: number;
+    offset?: number;
+  }) => {
+    const response = await api.get('/exercises', { params });
+    return response.data;
+  },
+
+  // Get exercise categories
+  getCategories: async () => {
+    const response = await api.get('/exercises/categories');
+    return response.data;
+  },
+
+  // Get exercise by ID
+  getExerciseById: async (id: string) => {
+    const response = await api.get(`/exercises/${id}`);
+    return response.data;
+  },
+
+  // Create custom exercise
+  createExercise: async (exerciseData: {
+    title: string;
+    description: string;
+    category: string;
+    intensity: 'LOW' | 'MEDIUM' | 'HIGH';
+    muscleGroups: string[];
+    duration: number;
+    instructions?: string;
+    imageUrl?: string;
+  }) => {
+    const response = await api.post('/exercises', exerciseData);
+    return response.data;
+  },
+
+  // Update exercise
+  updateExercise: async (id: string, updates: Partial<{
+    title: string;
+    description: string;
+    category: string;
+    intensity: 'LOW' | 'MEDIUM' | 'HIGH';
+    muscleGroups: string[];
+    duration: number;
+    instructions: string;
+    imageUrl: string;
+  }>) => {
+    const response = await api.put(`/exercises/${id}`, updates);
+    return response.data;
+  },
+
+  // Delete exercise
+  deleteExercise: async (id: string) => {
+    const response = await api.delete(`/exercises/${id}`);
+    return response.data;
+  },
+
+  // Search exercises
+  searchExercises: async (query: string, params?: {
+    category?: string;
+    intensity?: string;
+    muscleGroup?: string;
+    limit?: number;
+    offset?: number;
+  }) => {
+    const response = await api.get('/exercises/search', { 
+      params: { query, ...params } 
+    });
+    return response.data;
+  },
+
+  // Get exercises by muscle group
+  getExercisesByMuscleGroup: async (muscleGroup: string, params?: {
+    limit?: number;
+    offset?: number;
+    intensity?: string;
+  }) => {
+    const response = await api.get(`/exercises/muscle-groups/${muscleGroup}`, { params });
+    return response.data;
+  },
+
+  // Get exercises by category
+  getExercisesByCategory: async (category: string, params?: {
+    limit?: number;
+    offset?: number;
+    intensity?: string;
+  }) => {
+    const response = await api.get(`/exercises/categories/${category}`, { params });
+    return response.data;
+  },
+};
+
+// Streak API calls
+export const streakApi = {
+  // Get streak data
+  getStreakData: async () => {
+    const response = await api.get('/streaks');
+    return response.data;
+  },
+
+  // Log a workout
+  logWorkout: async (data?: {
+    duration?: number;
+    intensity?: 'LOW' | 'MEDIUM' | 'HIGH';
+    notes?: string;
+  }) => {
+    const response = await api.post('/streaks/log-workout', data);
+    return response.data;
+  },
+
+  // Get streak statistics
+  getStreakStats: async (params?: {
+    period?: 'week' | 'month' | 'year' | 'all';
+    fromDate?: string;
+    toDate?: string;
+  }) => {
+    const response = await api.get('/streaks/stats', { params });
+    return response.data;
+  },
+
+  // Get streak milestones
+  getStreakMilestones: async () => {
+    const response = await api.get('/streaks/milestones');
+    return response.data;
+  },
+
+  // Reset streak (for testing or corrections)
+  resetStreak: async (reason?: string) => {
+    const response = await api.post('/streaks/reset', { reason });
+    return response.data;
+  },
+};
+
+// Notification API calls
+export const notificationApi = {
+  // Get user notifications
+  getNotifications: async (params?: {
+    limit?: number;
+    offset?: number;
+    read?: boolean;
+  }) => {
+    const response = await api.get('/notifications', { params });
+    return response.data;
+  },
+
+  // Mark notification as read
+  markAsRead: async (notificationId: string) => {
+    const response = await api.put(`/notifications/${notificationId}/read`);
+    return response.data;
+  },
+
+  // Mark all notifications as read
+  markAllAsRead: async () => {
+    const response = await api.put('/notifications/read-all');
+    return response.data;
+  },
+
+  // Update notification preferences
+  updatePreferences: async (preferences: {
+    email?: boolean;
+    push?: boolean;
+    sms?: boolean;
+    workoutReminders?: boolean;
+    cycleReminders?: boolean;
+    progressUpdates?: boolean;
+  }) => {
+    const response = await api.put('/notifications/preferences', preferences);
+    return response.data;
+  },
+};
+
+// Analytics API calls
+export const analyticsApi = {
+  // Get user analytics
+  getUserAnalytics: async (params?: {
+    period?: 'week' | 'month' | 'year' | 'all';
+    fromDate?: string;
+    toDate?: string;
+  }) => {
+    const response = await api.get('/analytics/user', { params });
+    return response.data;
+  },
+
+  // Get workout analytics
+  getWorkoutAnalytics: async (params?: {
+    period?: 'week' | 'month' | 'year' | 'all';
+    fromDate?: string;
+    toDate?: string;
+    programId?: string;
+  }) => {
+    const response = await api.get('/analytics/workouts', { params });
+    return response.data;
+  },
+
+  // Get cycle analytics
+  getCycleAnalytics: async (params?: {
+    period?: 'week' | 'month' | 'year' | 'all';
+    fromDate?: string;
+    toDate?: string;
+  }) => {
+    const response = await api.get('/analytics/cycle', { params });
+    return response.data;
+  },
+
+  // Get progress insights
+  getProgressInsights: async () => {
+    const response = await api.get('/analytics/progress-insights');
+    return response.data;
+  },
+};
+
+// User Preferences API calls
+export const preferencesApi = {
+  // Get user preferences
+  getUserPreferences: async () => {
+    const response = await api.get('/user/preferences');
+    return response.data;
+  },
+
+  // Update user preferences
+  updateUserPreferences: async (preferences: {
+    theme?: 'light' | 'dark' | 'auto';
+    language?: 'fr' | 'en';
+    units?: 'metric' | 'imperial';
+    privacy?: {
+      shareProgress?: boolean;
+      shareCycle?: boolean;
+      allowAnalytics?: boolean;
+    };
+    notifications?: {
+      workoutReminders?: boolean;
+      cycleReminders?: boolean;
+      progressUpdates?: boolean;
+      weeklyReports?: boolean;
+    };
+  }) => {
+    const response = await api.put('/user/preferences', preferences);
+    return response.data;
+  },
+
+  // Get available themes
+  getAvailableThemes: async () => {
+    const response = await api.get('/user/preferences/themes');
+    return response.data;
+  },
+
+  // Get available languages
+  getAvailableLanguages: async () => {
+    const response = await api.get('/user/preferences/languages');
     return response.data;
   },
 };

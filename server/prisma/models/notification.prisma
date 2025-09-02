@@ -1,0 +1,73 @@
+// Notification and reminder models
+/// @namespace "Notification"
+
+model Notification {
+  id              String           @id @default(cuid())
+  userId          String           @map("user_id")
+  type            NotificationType
+  message         String           @db.Text
+  date            DateTime
+  relatedPhase    String?          @map("related_phase")
+  relatedProgramId String?         @map("related_program_id")
+  isRead          Boolean          @default(false) @map("is_read")
+  
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+
+  // Relations
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  relatedProgram  Program?         @relation(fields: [relatedProgramId], references: [id])
+
+  @@index([userId])
+  @@index([date])
+  @@map("notification")
+}
+
+model NotificationPreference {
+  id              String           @id @default(cuid())
+  userId          String           @map("user_id")
+  type            NotificationType
+  email           Boolean          @default(true)
+  push            Boolean          @default(true)
+  sms             Boolean          @default(false)
+  frequency       NotificationFrequency @default(IMMEDIATE)
+  time            DateTime?        @db.Time // Preferred time for notifications
+  
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+
+  // Relations
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, type])
+  @@index([userId])
+  @@map("notification_preference")
+}
+
+model PushNotification {
+  id              String           @id @default(cuid())
+  userId          String           @map("user_id")
+  title           String
+  body            String
+  data            Json?            // Additional data for the app
+  sentAt          DateTime         @map("sent_at")
+  deliveredAt     DateTime?        @map("delivered_at")
+  readAt          DateTime?        @map("read_at")
+  
+  createdAt       DateTime         @default(now()) @map("created_at")
+
+  // Relations
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([sentAt])
+  @@map("push_notification")
+}
+
+// Enums for notification models
+enum NotificationFrequency {
+  IMMEDIATE
+  DAILY
+  WEEKLY
+  NEVER
+}

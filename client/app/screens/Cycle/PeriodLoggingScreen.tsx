@@ -20,10 +20,10 @@ interface PeriodLoggingScreenProps {
 
 const PeriodLoggingScreen = ({ onClose }: PeriodLoggingScreenProps) => {
   const { logPeriod, loading } = usePeriods();
-  const { refreshPhase } = useCycle();
+  const { refreshCycle } = useCycle();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [flowIntensity, setFlowIntensity] = useState<number>(3); // Default medium
+  const [flowIntensity, setFlowIntensity] = useState<number>(3);
   const [notes, setNotes] = useState('');
 
   const handleLogPeriod = async () => {
@@ -46,8 +46,8 @@ const PeriodLoggingScreen = ({ onClose }: PeriodLoggingScreenProps) => {
             {
               text: 'OK',
               onPress: () => {
-                // Refresh cycle phase data
-                refreshPhase();
+                // Refresh cycle data
+                refreshCycle();
                 onClose?.();
               },
             },

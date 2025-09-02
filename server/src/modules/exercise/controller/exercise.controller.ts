@@ -37,7 +37,6 @@ import {
   CreateExerciseDto,
   CreateExerciseResponseDto,
 } from './dto/exercise.dto';
-import { CyclePhase } from '../../cycle/domain/cycle.entity';
 import { Intensity, MuscleZone } from '../domain/exercise.entity';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 
@@ -63,9 +62,9 @@ export class ExerciseController {
   })
   @ApiQuery({
     name: 'phase',
-    enum: CyclePhase,
+    type: String,
     required: false,
-    description: 'Phase du cycle menstruel',
+    description: 'Phase du cycle menstruel (menstrual, follicular, ovulation, luteal)',
   })
   @ApiQuery({
     name: 'intensity',
@@ -105,7 +104,7 @@ export class ExerciseController {
   ): Promise<ExerciseListResponseDto> {
     try {
       // Utiliser une phase par défaut si non spécifiée
-      const phase = query.phase || CyclePhase.FOLLICULAR;
+      const phase = query.phase || 'follicular';
 
       const result = await this.getExercisesByPhaseUseCase.execute({
         phase,

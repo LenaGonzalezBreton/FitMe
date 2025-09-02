@@ -10,19 +10,18 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { CyclePhase } from '../../../cycle/domain/cycle.entity';
 import { Intensity, MuscleZone } from '../../domain/exercise.entity';
 
 export class ExerciseQueryDto {
   @ApiProperty({
-    enum: CyclePhase,
+    type: String,
     required: false,
-    example: CyclePhase.FOLLICULAR,
-    description: 'Phase du cycle menstruel pour filtrer les exercices adaptés',
+    example: 'follicular',
+    description: 'Phase du cycle menstruel pour filtrer les exercices adaptés (menstrual, follicular, ovulation, luteal)',
   })
   @IsOptional()
-  @IsEnum(CyclePhase)
-  phase?: CyclePhase;
+  @IsString()
+  phase?: string;
 
   @ApiProperty({
     enum: Intensity,
@@ -153,11 +152,11 @@ export class ExerciseDto {
 
 export class PhaseInfoDto {
   @ApiProperty({
-    enum: CyclePhase,
-    example: CyclePhase.FOLLICULAR,
-    description: 'Phase du cycle menstruel',
+    type: String,
+    example: 'follicular',
+    description: 'Phase du cycle menstruel (menstrual, follicular, ovulation, luteal)',
   })
-  phase: CyclePhase | string;
+  phase: string;
 
   @ApiProperty({
     example: 'Phase Folliculaire',

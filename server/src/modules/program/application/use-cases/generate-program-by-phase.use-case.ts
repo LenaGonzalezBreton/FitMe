@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { GetCurrentPhaseUseCase } from '../../../cycle/application/use-cases/get-current-phase.use-case';
+import { GetCurrentCycleUseCase } from '../../../cycle/application/use-cases/get-current-cycle.use-case';
 import { GetExercisesByPhaseUseCase } from '../../../exercise/application/use-cases/get-exercises-by-phase.use-case';
 import {
   Intensity,
@@ -84,7 +84,7 @@ interface CurrentPhaseData {
 @Injectable()
 export class GenerateProgramByPhaseUseCase {
   constructor(
-    private readonly getCurrentPhaseUseCase: GetCurrentPhaseUseCase,
+    private readonly getCurrentCycleUseCase: GetCurrentCycleUseCase,
     private readonly getExercisesByPhaseUseCase: GetExercisesByPhaseUseCase,
   ) {}
 
@@ -93,16 +93,22 @@ export class GenerateProgramByPhaseUseCase {
   ): Promise<GenerateProgramResponse> {
     const { userId, duration = 30, focusZone, sessionType = 'mixed' } = request;
 
-    // 1. Récupérer la phase actuelle de l'utilisatrice
-    const currentPhase = await this.getCurrentPhaseUseCase.execute({ userId });
+    // 1. Récupérer le cycle actuel de l'utilisatrice
+    const currentCycle = await this.getCurrentCycleUseCase.execute({ 
+      userId,
+      date: new Date(),
+    });
 
-    // 2. Déterminer les paramètres optimaux pour cette phase
+    // 2. Déterminer la phase basée sur les caractéristiques du cycle
+    const currentPhase = this.mapCycleToPhase(currentCycle);
+
+    // 3. Déterminer les paramètres optimaux pour cette phase
     const phaseConfig = this.getPhaseConfiguration(
       currentPhase.phase,
       sessionType,
     );
 
-    // 3. Récupérer les exercices adaptés
+    // 4. Récupérer les exercices adaptés
     const exercisesResult = await this.getExercisesByPhaseUseCase.execute({
       phase: currentPhase.phase,
       intensity: phaseConfig.intensity,
@@ -111,7 +117,7 @@ export class GenerateProgramByPhaseUseCase {
       limit: 15,
     });
 
-    // 4. Sélectionner et organiser les exercices
+    // 5. Sélectionner et organiser les exercices
     const selectedExercises = this.selectAndOrganizeExercises(
       exercisesResult.exercises,
       duration,
@@ -119,7 +125,7 @@ export class GenerateProgramByPhaseUseCase {
       focusZone,
     );
 
-    // 5. Créer le programme final
+    // 6. Créer le programme final
     const program = this.createProgram(
       selectedExercises,
       currentPhase,
@@ -127,7 +133,7 @@ export class GenerateProgramByPhaseUseCase {
       duration,
     );
 
-    // 6. Générer les adaptations et conseils
+    // 7. Générer les adaptations et conseils
     const adaptations = this.generateAdaptations(currentPhase.phase);
 
     return {
@@ -139,6 +145,25 @@ export class GenerateProgramByPhaseUseCase {
         recommendations: currentPhase.recommendations,
       },
       adaptations,
+    };
+  }
+
+  private mapCycleToPhase(cycleData: any): CurrentPhaseData {
+    let phase = 'follicular';
+    
+    if (cycleData.isPeriodDay) {
+      phase = 'menstrual';
+    } else if (cycleData.isOvulationPhase) {
+      phase = 'ovulation';
+    } else if (cycleData.cycleDay > 14) {
+      phase = 'luteal';
+    }
+
+    return {
+      phase,
+      phaseDescription: cycleData.cycleDescription,
+      cycleDay: cycleData.cycleDay,
+      recommendations: cycleData.recommendations,
     };
   }
 

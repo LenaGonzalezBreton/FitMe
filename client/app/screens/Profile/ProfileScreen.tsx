@@ -47,7 +47,7 @@ interface ProfileData {
 
 const ProfileScreen = ({ navigation }: ProfileScreenProps) => {
   const { logout } = useAuth();
-  const { currentPhase, cycleConfig, getPhaseLabel, getPhaseEmoji, getPhaseColor } = useCycle();
+  const { currentCycle, cycleConfig, getCycleCharacteristics, getCycleEmoji, getCycleColor } = useCycle();
   const { streakData } = useStreak();
   const {
     profileData,
@@ -412,22 +412,22 @@ const ProfileScreen = ({ navigation }: ProfileScreenProps) => {
                   </View>
                 </View>
 
-                {/* Current Phase */}
-                {currentPhase && (
+                {/* Current Cycle */}
+                {currentCycle && (
                   <View className="bg-primary-50 p-3 rounded-lg">
                     <View className="flex-row items-center justify-between mb-2">
-                      <Text className="text-sm font-semibold text-primary-700">Phase actuelle</Text>
-                      <View className={`${getPhaseColor(currentPhase.phase)} rounded-full w-8 h-8 items-center justify-center`}>
-                        <Text className="text-brand-text text-sm">{getPhaseEmoji(currentPhase.phase)}</Text>
+                      <Text className="text-sm font-semibold text-primary-700">Cycle actuel</Text>
+                      <View className={`${getCycleColor(currentCycle.cycleDay, currentCycle.isPeriodDay, currentCycle.isOvulationPhase, currentCycle.isFertileDay)} rounded-full w-8 h-8 items-center justify-center`}>
+                        <Text className="text-brand-text text-sm">{getCycleEmoji(currentCycle.cycleDay, currentCycle.isPeriodDay, currentCycle.isOvulationPhase, currentCycle.isFertileDay)}</Text>
                       </View>
                     </View>
                     <Text className="text-sm text-primary-600 mb-1">
-                      {getPhaseLabel(currentPhase.phase)} - Jour {currentPhase.cycleDay}
+                      {getCycleCharacteristics(currentCycle.cycleDay, currentCycle.isPeriodDay, currentCycle.isOvulationPhase, currentCycle.isFertileDay)} - Jour {currentCycle.cycleDay}
                     </Text>
                     <Text className="text-xs text-primary-500">
-                      {currentPhase.daysUntilNextPhase > 0 
-                        ? `${currentPhase.daysUntilNextPhase} jour${currentPhase.daysUntilNextPhase > 1 ? 's' : ''} avant la prochaine phase`
-                        : 'Fin de phase aujourd\'hui'
+                      {currentCycle.daysUntilNextCycle > 0 
+                        ? `${currentCycle.daysUntilNextCycle} jour${currentCycle.daysUntilNextCycle > 1 ? 's' : ''} avant le prochain cycle`
+                        : 'Fin de cycle aujourd\'hui'
                       }
                     </Text>
                   </View>
@@ -526,7 +526,7 @@ const ProfileScreen = ({ navigation }: ProfileScreenProps) => {
                     </View>
                     <View className={`px-3 py-1 rounded-full ${getWorkoutPhaseColor(session.phase)}`}>
                       <Text className="text-xs font-medium">
-                        {getPhaseEmoji(session.phase as any)} {session.phaseLabel}
+                        {session.phaseLabel}
                       </Text>
                     </View>
                   </View>
