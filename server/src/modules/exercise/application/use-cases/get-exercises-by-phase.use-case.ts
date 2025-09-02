@@ -14,6 +14,7 @@ export interface GetExercisesByPhaseRequest {
   muscleZone?: MuscleZone;
   maxDuration?: number;
   limit?: number;
+  offset?: number;
 }
 
 export interface ExerciseResponse {
@@ -51,7 +52,7 @@ export class GetExercisesByPhaseUseCase {
   async execute(
     request: GetExercisesByPhaseRequest,
   ): Promise<GetExercisesByPhaseResponse> {
-    const { phase, intensity, muscleZone, maxDuration, limit = 20 } = request;
+    const { phase, intensity, muscleZone, maxDuration, limit = 20, offset = 0 } = request;
 
     // Valider la phase
     if (!this.isValidPhase(phase)) {
@@ -71,8 +72,8 @@ export class GetExercisesByPhaseUseCase {
     // Récupérer les exercices avec filtres
     let exercises = await this.exerciseRepository.findWithFilters(filters);
 
-    // Limiter le nombre total d'exercices
-    exercises = exercises.slice(0, limit);
+    // Pagination simple en mémoire (repo ne pagine pas encore)
+    exercises = exercises.slice(offset, offset + limit);
 
     // Convertir en format de réponse
     const exerciseResponses: ExerciseResponse[] = exercises.map((exercise) => ({

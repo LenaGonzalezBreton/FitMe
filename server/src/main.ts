@@ -7,6 +7,7 @@ import { setupFirebase } from './config/firebase-config';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as fs from 'fs';
 import { Request, Response } from 'express';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -14,6 +15,13 @@ async function bootstrap() {
 
   setupFirebase(configService);
   app.enableCors();
+
+  // Global validation pipe with transform enabled
+  app.useGlobalPipes(new ValidationPipe({ 
+    transform: true,
+    whitelist: true,
+    forbidNonWhitelisted: true,
+  }));
 
   app.useStaticAssets(join(__dirname, '..', 'public'), {
     prefix: '/public/',

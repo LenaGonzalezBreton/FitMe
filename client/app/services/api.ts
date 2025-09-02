@@ -152,6 +152,29 @@ export const programApi = {
     const response = await api.get('/programs', { params: cleanParams });
     return response.data;
   },
+  
+  // Add an exercise to a program
+  addExerciseToProgram: async (
+    programId: string,
+    exercise: {
+      exerciseId: string;
+      order: number;
+      sets?: number;
+      reps?: string;
+      duration?: number;
+      restTime?: number;
+      notes?: string;
+    }
+  ) => {
+    const response = await api.post(`/programs/${programId}/exercises`, exercise);
+    return response.data;
+  },
+
+  // Remove an exercise from a program by programExerciseId
+  removeProgramExercise: async (programId: string, programExerciseId: string) => {
+    const response = await api.delete(`/programs/${programId}/exercises/${programExerciseId}`);
+    return response.data;
+  },
 
   // Get program by ID
   getProgramById: async (programId: string) => {
@@ -164,6 +187,9 @@ export const programApi = {
     duration?: number;
     focusZone?: string;
     sessionType?: 'cardio' | 'strength' | 'flexibility' | 'mixed';
+    phase?: 'menstrual' | 'follicular' | 'ovulation' | 'luteal';
+    trainingType?: string;
+    randomSeed?: number;
   }) => {
     const response = await api.post('/programs/generate', params);
     return response.data;
@@ -375,6 +401,23 @@ export const workoutApi = {
     return response.data;
   },
 
+  // Update a workout session (e.g., notes, rating)
+  updateWorkoutSession: async (sessionId: string, updates: {
+    notes?: string;
+    rating?: number;
+    completedExercises?: string[];
+    totalDuration?: number;
+  }) => {
+    const response = await api.put(`/workouts/sessions/${sessionId}`, updates);
+    return response.data;
+  },
+
+  // Delete a workout session
+  deleteWorkoutSession: async (sessionId: string) => {
+    const response = await api.delete(`/workouts/sessions/${sessionId}`);
+    return response.data;
+  },
+
   // Complete a workout session
   completeWorkoutSession: async (sessionId: string, data?: {
     completedExercises: string[];
@@ -461,9 +504,8 @@ export const exerciseApi = {
   createExercise: async (exerciseData: {
     title: string;
     description: string;
-    category: string;
     intensity: 'LOW' | 'MEDIUM' | 'HIGH';
-    muscleGroups: string[];
+    muscleZone: string;
     duration: number;
     instructions?: string;
     imageUrl?: string;
@@ -476,9 +518,8 @@ export const exerciseApi = {
   updateExercise: async (id: string, updates: Partial<{
     title: string;
     description: string;
-    category: string;
     intensity: 'LOW' | 'MEDIUM' | 'HIGH';
-    muscleGroups: string[];
+    muscleZone: string;
     duration: number;
     instructions: string;
     imageUrl: string;
@@ -497,12 +538,18 @@ export const exerciseApi = {
   searchExercises: async (query: string, params?: {
     category?: string;
     intensity?: string;
-    muscleGroup?: string;
+    muscleZone?: string;
     limit?: number;
     offset?: number;
   }) => {
-    const response = await api.get('/exercises/search', { 
-      params: { query, ...params } 
+    const response = await api.get('/exercises', { 
+      params: { 
+        search: query,
+        limit: params?.limit || 20,
+        offset: params?.offset || 0,
+        intensity: params?.intensity,
+        muscleZone: params?.muscleZone
+      } 
     });
     return response.data;
   },

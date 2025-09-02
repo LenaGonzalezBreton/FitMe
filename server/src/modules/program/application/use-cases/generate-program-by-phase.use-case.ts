@@ -92,7 +92,7 @@ export class GenerateProgramByPhaseUseCase {
   async execute(
     request: GenerateProgramRequest,
   ): Promise<GenerateProgramResponse> {
-    const { userId, duration = 30, focusZone, sessionType = 'mixed' } = request;
+    const { userId, focusZone, sessionType = 'mixed' } = request;
 
     // 1. Récupérer le cycle actuel de l'utilisatrice
     const currentCycle = await this.getCurrentCycleUseCase.execute({ 
@@ -109,30 +109,30 @@ export class GenerateProgramByPhaseUseCase {
       sessionType,
     );
 
-    // 4. Récupérer les exercices adaptés
+    // 4. Récupérer les exercices adaptés (sans limite de durée)
     const exercisesResult = await this.getExercisesByPhaseUseCase.execute({
       phase: currentPhase.phase,
       intensity: phaseConfig.intensity,
       muscleZone: focusZone,
-      maxDuration: Math.floor(duration / 3), // Exercices individuels pas trop longs
-      limit: 15,
+      limit: 20, // Plus d'exercices pour avoir plus de choix
     });
 
-    // 5. Sélectionner et organiser les exercices
+    // 5. Sélectionner et organiser les exercices (sans durée cible)
     const selectedExercises = this.selectAndOrganizeExercises(
       exercisesResult.exercises,
-      duration,
       sessionType,
       focusZone,
     );
 
-    // 6. Créer le programme final
+    // 6. Calculer la durée totale basée sur les exercices sélectionnés
+    const totalDuration = this.calculateTotalDuration(selectedExercises);
+
+    // 7. Créer le programme final
     const programData = this.createProgramData(
       selectedExercises,
-      
       currentPhase,
       sessionType,
-      duration,
+      totalDuration,
       userId,
     );
 
@@ -147,8 +147,8 @@ export class GenerateProgramByPhaseUseCase {
         id: savedProgram.id!,
         title: savedProgram.title,
         description: savedProgram.goal || '',
-        totalDuration: duration,
-        formattedTotalDuration: this.formatDuration(duration),
+        totalDuration: totalDuration,
+        formattedTotalDuration: this.formatDuration(totalDuration),
         exercises: selectedExercises,
         phaseRecommendations: currentPhase.recommendations,
         tips: this.generateTips(currentPhase.phase),
@@ -217,7 +217,6 @@ export class GenerateProgramByPhaseUseCase {
 
   private selectAndOrganizeExercises(
     exercises: ExerciseData[],
-    targetDuration: number,
     sessionType: string,
     focusZone?: MuscleZone,
   ): Array<{
@@ -249,7 +248,8 @@ export class GenerateProgramByPhaseUseCase {
       selectedExercises = this.prioritizeByZone(selectedExercises, focusZone);
     }
 
-    // Sélectionner les exercices pour remplir la durée cible
+    // Sélectionner un nombre optimal d'exercices (6-10 exercices)
+    const targetExerciseCount = Math.min(8, selectedExercises.length);
     const finalExercises: Array<{
       id: string;
       title: string;
@@ -264,27 +264,37 @@ export class GenerateProgramByPhaseUseCase {
       order: number;
       restTime?: number;
     }> = [];
-    let currentDuration = 0;
     let order = 1;
 
-    for (const exercise of selectedExercises) {
-      const exerciseDuration = exercise.duration || 10;
+    for (let i = 0; i < targetExerciseCount; i++) {
+      const exercise = selectedExercises[i];
       const restTime = this.calculateRestTime(exercise.intensity, sessionType);
 
-      if (currentDuration + exerciseDuration <= targetDuration) {
-        finalExercises.push({
-          ...exercise,
-          order,
-          restTime,
-        });
-        currentDuration += exerciseDuration;
-        order++;
-      }
-
-      if (currentDuration >= targetDuration * 0.9) break; // 90% de la durée cible
+      finalExercises.push({
+        ...exercise,
+        order,
+        restTime,
+      });
+      order++;
     }
 
     return finalExercises;
+  }
+
+  private calculateTotalDuration(exercises: Array<{ duration?: number; restTime?: number }>): number {
+    let totalDuration = 0;
+    
+    for (const exercise of exercises) {
+      // Add exercise duration
+      totalDuration += exercise.duration || 10;
+      
+      // Add rest time between exercises
+      if (exercise.restTime) {
+        totalDuration += exercise.restTime;
+      }
+    }
+    
+    return totalDuration;
   }
 
   private filterBySessionType(

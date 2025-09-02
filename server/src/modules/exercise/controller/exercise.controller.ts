@@ -26,6 +26,7 @@ import { RemoveFromFavoritesUseCase } from '../application/use-cases/remove-from
 import { GetFavoriteExercisesUseCase } from '../application/use-cases/get-favorite-exercises.use-case';
 import { RateExerciseUseCase } from '../application/use-cases/rate-exercise.use-case';
 import { CreateExerciseUseCase } from '../application/use-cases/create-exercise.use-case';
+import { GetAllExercisesUseCase } from '../application/use-cases/get-all-exercises.use-case';
 import {
   ExerciseQueryDto,
   ExerciseListResponseDto,
@@ -53,6 +54,7 @@ export class ExerciseController {
     private readonly getFavoriteExercisesUseCase: GetFavoriteExercisesUseCase,
     private readonly rateExerciseUseCase: RateExerciseUseCase,
     private readonly createExerciseUseCase: CreateExerciseUseCase,
+    private readonly getAllExercisesUseCase: GetAllExercisesUseCase,
   ) {}
 
   @Get('categories')
@@ -77,15 +79,15 @@ export class ExerciseController {
 
   @Get()
   @ApiOperation({
-    summary: 'Récupérer les exercices par phase de cycle',
+    summary: 'Récupérer les exercices',
     description:
-      "Retourne une liste d'exercices adaptés à la phase de cycle spécifiée",
+      "Retourne une liste d'exercices. Si une phase est spécifiée, retourne les exercices adaptés à cette phase. Sinon, retourne tous les exercices avec filtres optionnels.",
   })
   @ApiQuery({
     name: 'phase',
     type: String,
     required: false,
-    description: 'Phase du cycle menstruel (menstrual, follicular, ovulation, luteal)',
+    description: 'Phase du cycle menstruel (menstrual, follicular, ovulation, luteal). Si non spécifiée, retourne tous les exercices.',
   })
   @ApiQuery({
     name: 'intensity',
@@ -98,6 +100,12 @@ export class ExerciseController {
     enum: MuscleZone,
     required: false,
     description: 'Zone musculaire ciblée',
+  })
+  @ApiQuery({
+    name: 'search',
+    type: String,
+    required: false,
+    description: 'Terme de recherche pour filtrer les exercices par titre ou description',
   })
   @ApiQuery({
     name: 'maxDuration',
@@ -124,26 +132,68 @@ export class ExerciseController {
     @Query() query: ExerciseQueryDto,
   ): Promise<ExerciseListResponseDto> {
     try {
-      // Utiliser une phase par défaut si non spécifiée
-      const phase = query.phase || 'follicular';
+      // If phase is specified, use cycle-based approach
+      if (query.phase) {
+        const result = await this.getExercisesByPhaseUseCase.execute({
+          phase: query.phase,
+          intensity: query.intensity,
+          muscleZone: query.muscleZone,
+          maxDuration: query.maxDuration,
+          limit: query.limit,
+          offset: query.offset || 0,
+        });
 
-      const result = await this.getExercisesByPhaseUseCase.execute({
-        phase,
-        intensity: query.intensity,
-        muscleZone: query.muscleZone,
-        maxDuration: query.maxDuration,
-        limit: query.limit,
-      });
+        return {
+          success: true,
+          data: {
+            exercises: result.exercises,
+            phaseInfo: result.phaseInfo,
+            totalCount: result.totalCount,
+          },
+          message: `${result.totalCount} exercice(s) trouvé(s) pour la phase ${result.phaseInfo.phaseLabel}`,
+        };
+      } else {
+        // If no phase specified, return all exercises with filters
+        const result = await this.getAllExercisesUseCase.execute({
+          intensity: query.intensity,
+          muscleZone: query.muscleZone,
+          minDuration: undefined,
+          maxDuration: query.maxDuration,
+          search: query.search,
+          limit: query.limit,
+          offset: query.offset || 0,
+        });
 
-      return {
-        success: true,
-        data: {
-          exercises: result.exercises,
-          phaseInfo: result.phaseInfo,
-          totalCount: result.totalCount,
-        },
-        message: `${result.totalCount} exercice(s) trouvé(s) pour la phase ${result.phaseInfo.phaseLabel}`,
-      };
+        // Map exercises to DTO format
+        const exercisesDto = result.exercises.map(exercise => ({
+          id: exercise.id,
+          title: exercise.title,
+          description: exercise.description,
+          imageUrl: exercise.imageUrl,
+          duration: exercise.duration,
+          formattedDuration: exercise.getFormattedDuration(),
+          intensity: exercise.intensity,
+          intensityLabel: this.getIntensityLabel(exercise.intensity),
+          muscleZone: exercise.muscleZone,
+          muscleZoneLabel: this.getMuscleZoneLabel(exercise.muscleZone),
+          isRecommendedForPhase: false, // All exercises mode doesn't have phase recommendations
+        }));
+
+        return {
+          success: true,
+          data: {
+            exercises: exercisesDto,
+            phaseInfo: {
+              phase: 'all',
+              phaseLabel: 'Tous les exercices',
+              recommendedIntensity: Intensity.MODERATE,
+              description: 'Tous les exercices disponibles avec filtres appliqués',
+            },
+            totalCount: result.totalCount,
+          },
+          message: `${result.totalCount} exercice(s) trouvé(s)`,
+        };
+      }
     } catch (error) {
       const message =
         error instanceof Error
@@ -175,11 +225,11 @@ export class ExerciseController {
   })
   async createExercise(
     @Body() createExerciseDto: CreateExerciseDto,
-    @Request() req: { user: { sub: string } },
+    @Request() req: { user: { id: string } },
   ): Promise<CreateExerciseResponseDto> {
     try {
       const exercise = await this.createExerciseUseCase.execute({
-        userId: req.user.sub,
+        userId: req.user.id,
         title: createExerciseDto.title,
         description: createExerciseDto.description,
         imageUrl: createExerciseDto.imageUrl,
@@ -242,11 +292,11 @@ export class ExerciseController {
     description: 'Non autorisé - token JWT requis',
   })
   async getFavoriteExercises(
-    @Request() req: { user: { sub: string } },
+    @Request() req: { user: { id: string } },
   ): Promise<FavoriteExercisesResponseDto> {
     try {
       const result = await this.getFavoriteExercisesUseCase.execute({
-        userId: req.user.sub,
+        userId: req.user.id,
       });
 
       // Map domain entities to DTOs
@@ -397,11 +447,11 @@ export class ExerciseController {
   })
   async addToFavorites(
     @Param('id') exerciseId: string,
-    @Request() req: { user: { sub: string } },
+    @Request() req: { user: { id: string } },
   ): Promise<AddToFavoritesResponseDto> {
     try {
       await this.addToFavoritesUseCase.execute({
-        userId: req.user.sub,
+        userId: req.user.id,
         exerciseId,
       });
 
@@ -450,11 +500,11 @@ export class ExerciseController {
   })
   async removeFromFavorites(
     @Param('id') exerciseId: string,
-    @Request() req: { user: { sub: string } },
+    @Request() req: { user: { id: string } },
   ): Promise<{ success: boolean; message: string }> {
     try {
       await this.removeFromFavoritesUseCase.execute({
-        userId: req.user.sub,
+        userId: req.user.id,
         exerciseId,
       });
 
@@ -506,11 +556,11 @@ export class ExerciseController {
   async rateExercise(
     @Param('id') exerciseId: string,
     @Body() rateExerciseDto: RateExerciseDto,
-    @Request() req: { user: { sub: string } },
+    @Request() req: { user: { id: string } },
   ): Promise<RateExerciseResponseDto> {
     try {
       const result = await this.rateExerciseUseCase.execute({
-        userId: req.user.sub,
+        userId: req.user.id,
         exerciseId,
         rating: rateExerciseDto.rating,
         comment: rateExerciseDto.comment,

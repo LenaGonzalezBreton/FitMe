@@ -276,7 +276,7 @@ export class ProgramController {
     description: 'Accès non autorisé',
   })
   async getProgramById(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id') id: string,
     @Request() req: AuthenticatedRequest,
   ): Promise<ProgramResponseDto> {
     try {
@@ -320,7 +320,7 @@ export class ProgramController {
     description: 'Conflit (date de fin avant date de début)',
   })
   async updateProgram(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id') id: string,
     @Body() updateDto: UpdateProgramDto,
     @Request() req: AuthenticatedRequest,
   ): Promise<ProgramResponseDto> {
@@ -368,7 +368,7 @@ export class ProgramController {
     description: 'Suppression non autorisée',
   })
   async deleteProgram(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id') id: string,
     @Request() req: AuthenticatedRequest,
   ): Promise<void> {
     try {
@@ -410,7 +410,7 @@ export class ProgramController {
     description: 'Programme déjà actif ou expiré',
   })
   async startProgram(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id') id: string,
     @Request() req: AuthenticatedRequest,
   ): Promise<ProgramResponseDto> {
     try {
@@ -441,7 +441,7 @@ export class ProgramController {
     type: ProgramResponseDto,
   })
   async pauseProgram(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id') id: string,
     @Request() req: AuthenticatedRequest,
   ): Promise<ProgramResponseDto> {
     try {
@@ -473,7 +473,7 @@ export class ProgramController {
     type: ProgramResponseDto,
   })
   async resumeProgram(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id') id: string,
     @Request() req: AuthenticatedRequest,
   ): Promise<ProgramResponseDto> {
     try {
@@ -505,7 +505,7 @@ export class ProgramController {
     type: ProgramResponseDto,
   })
   async completeProgram(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id') id: string,
     @Request() req: AuthenticatedRequest,
   ): Promise<ProgramResponseDto> {
     try {
@@ -538,7 +538,7 @@ export class ProgramController {
     description: 'Statut du programme récupéré avec succès',
   })
   async getProgramStatus(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id') id: string,
     @Request() req: AuthenticatedRequest,
   ) {
     try {
@@ -572,7 +572,7 @@ export class ProgramController {
     description: 'Progression du programme récupérée avec succès',
   })
   async getProgramProgress(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id') id: string,
     @Request() req: AuthenticatedRequest,
   ) {
     try {

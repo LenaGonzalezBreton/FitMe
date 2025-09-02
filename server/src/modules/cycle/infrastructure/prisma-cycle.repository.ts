@@ -6,7 +6,7 @@ import {
   UpdateCycleData,
 } from '../domain/cycle.repository';
 import { Cycle } from '../domain/cycle.entity';
-import { Cycle as PrismaCycle } from '../../../../generated/prisma';
+import { Cycle as PrismaCycle } from '@prisma/client';
 
 @Injectable()
 export class PrismaCycleRepository implements ICycleRepository {

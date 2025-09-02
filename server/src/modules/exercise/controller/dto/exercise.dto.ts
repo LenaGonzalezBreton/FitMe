@@ -24,6 +24,16 @@ export class ExerciseQueryDto {
   phase?: string;
 
   @ApiProperty({
+    type: String,
+    required: false,
+    example: 'squats',
+    description: 'Terme de recherche pour filtrer les exercices par titre ou description',
+  })
+  @IsOptional()
+  @IsString()
+  search?: string;
+
+  @ApiProperty({
     enum: Intensity,
     required: false,
     example: Intensity.MODERATE,
@@ -72,6 +82,19 @@ export class ExerciseQueryDto {
   @Min(1)
   @Max(50)
   limit?: number;
+
+  @ApiProperty({
+    type: Number,
+    required: false,
+    example: 0,
+    description: 'Décalage de pagination (offset)',
+    minimum: 0,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  offset?: number;
 }
 
 export class ExerciseDto {

@@ -3,6 +3,7 @@ import { CoreModule } from '../../core/core.module';
 
 // Application Use Cases
 import { GetExercisesByPhaseUseCase } from './application/use-cases/get-exercises-by-phase.use-case';
+import { GetAllExercisesUseCase } from './application/use-cases/get-all-exercises.use-case';
 import { GetExerciseDetailsUseCase } from './application/use-cases/get-exercise-details.use-case';
 import { AddToFavoritesUseCase } from './application/use-cases/add-to-favorites.use-case';
 import { RemoveFromFavoritesUseCase } from './application/use-cases/remove-from-favorites.use-case';
@@ -31,6 +32,7 @@ import {
   providers: [
     // Use Cases
     GetExercisesByPhaseUseCase,
+    GetAllExercisesUseCase,
     GetExerciseDetailsUseCase,
     AddToFavoritesUseCase,
     RemoveFromFavoritesUseCase,
@@ -54,6 +56,7 @@ import {
   ],
   exports: [
     GetExercisesByPhaseUseCase,
+    GetAllExercisesUseCase,
     GetExerciseDetailsUseCase,
     AddToFavoritesUseCase,
     RemoveFromFavoritesUseCase,

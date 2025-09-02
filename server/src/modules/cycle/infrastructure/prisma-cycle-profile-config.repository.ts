@@ -4,7 +4,7 @@ import {
   ICycleProfileConfigRepository,
 } from '../domain/cycle.repository';
 import { CycleProfileConfig, CreateCycleProfileConfigData, UpdateCycleProfileConfigData } from '../domain/cycle-profile-config.entity';
-import { CycleProfileConfig as PrismaCycleProfileConfig } from '../../../../generated/prisma';
+import { CycleProfileConfig as PrismaCycleProfileConfig } from '@prisma/client';
 
 @Injectable()
 export class PrismaCycleProfileConfigRepository

@@ -132,6 +132,35 @@ const WorkoutSessionScreen = () => {
     }
   };
 
+  const deleteWorkoutSession = async () => {
+    if (!workoutSession) return;
+    try {
+      setLoading(true);
+      await workoutApi.deleteWorkoutSession(workoutSession.id);
+      Alert.alert('Supprimée', 'La séance a été supprimée.');
+      navigation.goBack();
+    } catch (err: any) {
+      Alert.alert('Erreur', err?.response?.data?.message || 'Impossible de supprimer la séance');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateWorkoutNotes = async () => {
+    if (!workoutSession) return;
+    try {
+      setLoading(true);
+      await workoutApi.updateWorkoutSession(workoutSession.id, {
+        notes: `Notes automatiquement ajoutées le ${new Date().toISOString()}`,
+      });
+      Alert.alert('Mis à jour', 'Notes de séance enregistrées');
+    } catch (err: any) {
+      Alert.alert('Erreur', err?.response?.data?.message || 'Mise à jour impossible');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const onRefresh = async () => {
     setRefreshing(true);
     await initializeWorkoutSession();
@@ -337,6 +366,21 @@ const WorkoutSessionScreen = () => {
                 }
               </Text>
             </TouchableOpacity>
+            {/* Edit/Delete quick actions */}
+            <View className="flex-row space-x-3 mt-3">
+              <TouchableOpacity
+                onPress={updateWorkoutNotes}
+                className="flex-1 bg-secondary-200 py-3 rounded-xl"
+              >
+                <Text className="text-secondary-700 font-bold text-center">Ajouter une note</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={deleteWorkoutSession}
+                className="bg-error-500 py-3 px-4 rounded-xl"
+              >
+                <Text className="text-surface font-bold">Supprimer</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
 

@@ -17,9 +17,10 @@ datasource db {
 
 // Generator configuration for Prisma Client
 generator client {
-  provider = "prisma-client-js"
-  output   = "../node_modules/.prisma/client"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x", "linux-musl-openssl-3.0.x"]
 }
+
 // --- ÉNUMÉRATIONS ---
 // Enumerations for cycle-related data
 // Note: CyclePhase enum removed - using only cycle-based logic now

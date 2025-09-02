@@ -16,10 +16,15 @@ export interface UseProgramsReturn {
   error: string | null;
   total: number;
   refreshPrograms: () => Promise<void>;
+  loadMorePrograms: () => Promise<void>;
+  hasMorePrograms: boolean;
   generateProgram: (params?: {
     duration?: number;
     focusZone?: string;
     sessionType?: 'cardio' | 'strength' | 'flexibility' | 'mixed';
+    phase?: 'menstrual' | 'follicular' | 'ovulation' | 'luteal';
+    trainingType?: string;
+    randomSeed?: number;
   }) => Promise<GeneratedProgramResponse | null>;
   startProgram: (programId: string) => Promise<boolean>;
   deleteProgram: (programId: string) => Promise<boolean>;
@@ -31,10 +36,13 @@ export const usePrograms = (options: UseProgramsOptions = {}): UseProgramsReturn
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [total, setTotal] = useState(0);
+  const [programOffset, setProgramOffset] = useState(0);
+  const [programLimit] = useState(10);
+  const [hasMorePrograms, setHasMorePrograms] = useState(true);
 
   const { isActive, isTemplate, autoFetch = true } = options;
 
-  const fetchPrograms = async () => {
+  const fetchPrograms = async (opts?: { append?: boolean; reset?: boolean }) => {
     try {
       setLoading(true);
       setError(null);
@@ -42,10 +50,16 @@ export const usePrograms = (options: UseProgramsOptions = {}): UseProgramsReturn
       const response: ProgramListResponse = await programApi.getUserPrograms({
         isActive,
         isTemplate,
-        limit: 50,
+        limit: programLimit,
+        offset: programOffset,
       });
 
-      setPrograms(response.programs);
+      setHasMorePrograms(response.programs.length === programLimit);
+      if (opts?.append) {
+        setPrograms(prev => [...prev, ...response.programs]);
+      } else {
+        setPrograms(response.programs);
+      }
       setTotal(response.total);
 
       // Find active program
@@ -60,6 +74,7 @@ export const usePrograms = (options: UseProgramsOptions = {}): UseProgramsReturn
         setPrograms([]);
         setTotal(0);
         setActiveProgram(null);
+        setHasMorePrograms(false);
         return;
       }
       
@@ -76,12 +91,14 @@ export const usePrograms = (options: UseProgramsOptions = {}): UseProgramsReturn
         setPrograms([]);
         setTotal(0);
         setActiveProgram(null);
+        setHasMorePrograms(false);
       } else if (err.response?.status === 404) {
         // Pas de programmes trouvés - c'est normal pour un nouvel utilisateur
         setError(null);
         setPrograms([]);
         setTotal(0);
         setActiveProgram(null);
+        setHasMorePrograms(false);
       }
     } finally {
       setLoading(false);
@@ -100,7 +117,9 @@ export const usePrograms = (options: UseProgramsOptions = {}): UseProgramsReturn
       const response: GeneratedProgramResponse = await programApi.generateProgram(params);
       
       // Refresh programs list after generating
-      await fetchPrograms();
+      // reset and refetch after generation
+      setProgramOffset(0);
+      await fetchPrograms({ reset: true });
       
       return response;
     } catch (err: any) {
@@ -127,7 +146,8 @@ export const usePrograms = (options: UseProgramsOptions = {}): UseProgramsReturn
       await programApi.startProgram(programId);
       
       // Refresh programs list to update active status
-      await fetchPrograms();
+      setProgramOffset(0);
+      await fetchPrograms({ reset: true });
       
       Alert.alert('Succès', 'Programme démarré avec succès !');
       return true;
@@ -155,7 +175,8 @@ export const usePrograms = (options: UseProgramsOptions = {}): UseProgramsReturn
       await programApi.deleteProgram(programId);
       
       // Refresh programs list
-      await fetchPrograms();
+      setProgramOffset(0);
+      await fetchPrograms({ reset: true });
       
       Alert.alert('Succès', 'Programme supprimé avec succès !');
       return true;
@@ -177,9 +198,22 @@ export const usePrograms = (options: UseProgramsOptions = {}): UseProgramsReturn
 
   useEffect(() => {
     if (autoFetch) {
-      fetchPrograms();
+      setProgramOffset(0);
+      fetchPrograms({ reset: true });
     }
   }, [isActive, isTemplate, autoFetch]);
+
+  const refreshPrograms = async () => {
+    setProgramOffset(0);
+    await fetchPrograms({ reset: true });
+  };
+
+  const loadMorePrograms = async () => {
+    if (!hasMorePrograms || loading) return;
+    const nextOffset = programOffset + programLimit;
+    setProgramOffset(nextOffset);
+    await fetchPrograms({ append: true });
+  };
 
   return {
     programs,
@@ -187,7 +221,9 @@ export const usePrograms = (options: UseProgramsOptions = {}): UseProgramsReturn
     loading,
     error,
     total,
-    refreshPrograms: fetchPrograms,
+    refreshPrograms,
+    loadMorePrograms,
+    hasMorePrograms,
     generateProgram,
     startProgram,
     deleteProgram,
