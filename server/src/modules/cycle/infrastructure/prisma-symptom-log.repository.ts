@@ -10,8 +10,7 @@ import {
   CreateSymptomLogData,
   UpdateSymptomLogData,
 } from '../domain/symptom-log.entity';
-import { SymptomLog as PrismaSymptomLog } from '@prisma/client';
-import { $Enums } from '@prisma/client';
+import { SymptomLog as PrismaSymptomLog, $Enums } from '@prisma/client';
 
 @Injectable()
 export class PrismaSymptomLogRepository implements ISymptomLogRepository {

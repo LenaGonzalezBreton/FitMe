@@ -119,7 +119,7 @@ export class GetSymptomsHistoryUseCase {
       }
 
       return {
-        id: symptom.id!,
+        id: symptom.id,
         type: symptom.symptomType,
         intensity,
         notes,
@@ -154,10 +154,10 @@ export class GetSymptomsHistoryUseCase {
       // On utilise des valeurs par défaut
       const mostCommonPhase = 'menstrual'; // À améliorer avec les données de cycle
       const phaseDistribution = {
-        'menstrual': 40,
-        'follicular': 20,
-        'ovulation': 10,
-        'luteal': 30,
+        menstrual: 40,
+        follicular: 20,
+        ovulation: 10,
+        luteal: 30,
       };
 
       stats.push({

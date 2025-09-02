@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, RefreshControl, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { AppStackParamList } from '../../types';
 import { useAuth } from '../../context/AuthContext';
-import { useCycle } from '../../hooks/useCycle';
+import { useCycleContext } from '../../context/CycleContext';
 import { exerciseApi } from '../../services/api';
 import ExerciseFormModal from '../../components/ExerciseFormModal';
 import { INTENSITY_OPTIONS, MUSCLE_ZONE_OPTIONS, getIntensityLabel, getMuscleZoneLabel } from '../../utils/constants';
@@ -20,9 +22,9 @@ interface Exercise {
 }
 
 const ExercicesScreen: React.FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<AppStackParamList, 'Exercices'>>();
   const { user } = useAuth();
-  const { currentCycle } = useCycle();
+  const { currentCycle, getPhaseApiKey } = useCycleContext();
   
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,23 +53,14 @@ const ExercicesScreen: React.FC = () => {
   ];
 
   useEffect(() => {
-    if (currentCycle?.cycleDescription) {
-      // Extract phase from cycle description or use default
-      const phaseMap: { [key: string]: string } = {
-        'menstrual': 'menstrual',
-        'follicular': 'follicular', 
-        'ovulation': 'ovulation',
-        'luteal': 'luteal'
-      };
-      
-      for (const [key, value] of Object.entries(phaseMap)) {
-        if (currentCycle.cycleDescription.toLowerCase().includes(key)) {
-          setSelectedPhase(value);
-          break;
-        }
+    // Update selected phase based on current cycle using getPhaseApiKey
+    if (currentCycle && getPhaseApiKey) {
+      const currentPhaseKey = getPhaseApiKey();
+      if (currentPhaseKey) {
+        setSelectedPhase(currentPhaseKey);
       }
     }
-  }, [currentCycle]);
+  }, [currentCycle, getPhaseApiKey]);
 
   useEffect(() => {
     // Reset to first page and clear exercises when filters change
@@ -107,6 +100,9 @@ const ExercicesScreen: React.FC = () => {
 
       if (!showAllExercises && selectedPhase) {
         params.phase = selectedPhase;
+      } else if (!showAllExercises && getPhaseApiKey) {
+        // Use current cycle phase if no specific phase selected
+        params.phase = getPhaseApiKey();
       }
       
       if (selectedIntensity) {

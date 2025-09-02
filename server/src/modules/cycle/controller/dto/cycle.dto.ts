@@ -47,7 +47,7 @@ export class CurrentCycleDataDto {
 
   @ApiProperty({
     example: false,
-    description: 'Indique si le jour actuel est dans la phase d\'ovulation',
+    description: "Indique si le jour actuel est dans la phase d'ovulation",
   })
   isOvulationPhase: boolean;
 
@@ -246,15 +246,15 @@ export class UpdateCycleConfigDto {
 // ============================================
 
 export class LogPeriodDto {
-  @ApiProperty({
-    description: 'Date de début des règles',
+  @ApiPropertyOptional({
+    description: 'Date de début des règles (obligatoire pour nouveau cycle)',
     example: '2024-01-15',
     type: String,
     format: 'date',
   })
+  @IsOptional()
   @IsDateString()
-  @IsNotEmpty()
-  startDate: string;
+  startDate?: string;
 
   @ApiPropertyOptional({
     description: 'Date de fin des règles',
@@ -285,6 +285,16 @@ export class LogPeriodDto {
   @IsOptional()
   @IsString()
   notes?: string;
+
+  @ApiPropertyOptional({
+    description:
+      "Indique si c'est un nouveau cycle ou une mise à jour du cycle actuel",
+    example: true,
+    default: true,
+  })
+  @IsOptional()
+  @IsBoolean()
+  isNewCycle?: boolean;
 }
 
 export class PeriodDto {
@@ -417,7 +427,12 @@ export class CyclePredictionDto {
   @ApiProperty({
     description: 'Caractéristiques du jour actuel',
     example: 'post_period_phase',
-    enum: ['period_day', 'post_period_phase', 'ovulation_phase', 'post_ovulation_phase'],
+    enum: [
+      'period_day',
+      'post_period_phase',
+      'ovulation_phase',
+      'post_ovulation_phase',
+    ],
   })
   currentCycleCharacteristics: string;
 
@@ -463,7 +478,12 @@ export class CalendarDayDto {
   @ApiPropertyOptional({
     description: 'Caractéristiques du cycle ce jour',
     example: 'period_day',
-    enum: ['period_day', 'post_period_phase', 'ovulation_phase', 'post_ovulation_phase'],
+    enum: [
+      'period_day',
+      'post_period_phase',
+      'ovulation_phase',
+      'post_ovulation_phase',
+    ],
   })
   cycleCharacteristics?: string;
 
@@ -542,7 +562,16 @@ export class LogSymptomDto {
   @ApiProperty({
     description: 'Type de symptôme',
     example: 'cramps',
-    enum: ['cramps', 'bloating', 'fatigue', 'mood_swings', 'breast_tenderness', 'headache', 'back_pain', 'other'],
+    enum: [
+      'cramps',
+      'bloating',
+      'fatigue',
+      'mood_swings',
+      'breast_tenderness',
+      'headache',
+      'back_pain',
+      'other',
+    ],
   })
   @IsNotEmpty()
   type: string;
@@ -598,7 +627,16 @@ export class SymptomEntryDto {
   @ApiProperty({
     description: 'Type de symptôme',
     example: 'cramps',
-    enum: ['cramps', 'bloating', 'fatigue', 'mood_swings', 'breast_tenderness', 'headache', 'back_pain', 'other'],
+    enum: [
+      'cramps',
+      'bloating',
+      'fatigue',
+      'mood_swings',
+      'breast_tenderness',
+      'headache',
+      'back_pain',
+      'other',
+    ],
   })
   type: string;
 
@@ -650,7 +688,12 @@ export class LogSymptomsResponseDto {
 export class SymptomStatsDto {
   @ApiProperty({
     description: 'Type de symptôme',
-    enum: ['period_day', 'post_period_phase', 'ovulation_phase', 'post_ovulation_phase'],
+    enum: [
+      'period_day',
+      'post_period_phase',
+      'ovulation_phase',
+      'post_ovulation_phase',
+    ],
     example: 'period_day',
   })
   type: string;
@@ -669,7 +712,12 @@ export class SymptomStatsDto {
 
   @ApiProperty({
     description: 'Phase du cycle la plus fréquente',
-    enum: ['period_day', 'post_period_phase', 'ovulation_phase', 'post_ovulation_phase'],
+    enum: [
+      'period_day',
+      'post_period_phase',
+      'ovulation_phase',
+      'post_ovulation_phase',
+    ],
     example: 'period_day',
   })
   mostCommonPhase: string;
@@ -759,7 +807,12 @@ export class CycleStatisticsDto {
   @ApiProperty({
     description: 'Caractéristiques les plus communes',
     example: 'post_period_phase',
-    enum: ['period_day', 'post_period_phase', 'ovulation_phase', 'post_ovulation_phase'],
+    enum: [
+      'period_day',
+      'post_period_phase',
+      'ovulation_phase',
+      'post_ovulation_phase',
+    ],
   })
   mostCommonCharacteristics: string;
 
@@ -768,4 +821,167 @@ export class CycleStatisticsDto {
     example: 8,
   })
   uniqueSymptomTypes: number;
+}
+
+// ============================================
+// Cycle Comparison DTOs
+// ============================================
+
+export class CycleComparisonDataDto {
+  @ApiProperty({
+    description: 'Numéro du cycle dans la comparaison',
+    example: 1,
+  })
+  cycleNumber: number;
+
+  @ApiProperty({
+    description: 'Date de début du cycle',
+    example: '2024-01-15',
+  })
+  startDate: string;
+
+  @ApiProperty({
+    description: 'Durée du cycle en jours',
+    example: 28,
+  })
+  cycleLength: number;
+
+  @ApiProperty({
+    description: 'Durée des règles en jours',
+    example: 5,
+  })
+  periodLength: number;
+
+  @ApiProperty({
+    description: 'Le cycle est-il régulier',
+    example: true,
+  })
+  isRegular: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Intensité du flux (1-5)',
+    example: 3,
+  })
+  flowIntensity?: number;
+
+  @ApiPropertyOptional({
+    description: 'Notes sur le cycle',
+    example: "Cycle plus court que d'habitude",
+  })
+  notes?: string;
+}
+
+export class CycleTrendDto {
+  @ApiProperty({
+    description: 'Métrique analysée',
+    example: 'Durée du cycle',
+  })
+  metric: string;
+
+  @ApiProperty({
+    description: 'Tendance observée',
+    example: 'increasing',
+    enum: ['increasing', 'decreasing', 'stable'],
+  })
+  trend: string;
+
+  @ApiProperty({
+    description: 'Changement absolu',
+    example: 2,
+  })
+  change: number;
+
+  @ApiProperty({
+    description: 'Changement en pourcentage',
+    example: 7.1,
+  })
+  changePercentage: number;
+
+  @ApiProperty({
+    description: 'Description de la tendance',
+    example: 'Durée du cycle en augmentation (+2 jours)',
+  })
+  description: string;
+}
+
+export class CycleComparisonAveragesDto {
+  @ApiProperty({
+    description: 'Durée moyenne du cycle',
+    example: 28.3,
+  })
+  cycleLength: number;
+
+  @ApiProperty({
+    description: 'Durée moyenne des règles',
+    example: 5.2,
+  })
+  periodLength: number;
+
+  @ApiProperty({
+    description: 'Taux de régularité (%)',
+    example: 67,
+  })
+  regularityRate: number;
+}
+
+export class CycleComparisonPeriodDto {
+  @ApiProperty({
+    description: 'Date de début de la période comparée',
+    example: '2024-01-01',
+  })
+  startDate: string;
+
+  @ApiProperty({
+    description: 'Date de fin de la période comparée',
+    example: '2024-03-15',
+  })
+  endDate: string;
+
+  @ApiProperty({
+    description: 'Nombre total de cycles comparés',
+    example: 3,
+  })
+  totalCycles: number;
+}
+
+export class CycleComparisonResponseDto {
+  @ApiProperty({
+    description: 'Données des cycles comparés',
+    type: [CycleComparisonDataDto],
+  })
+  cycles: CycleComparisonDataDto[];
+
+  @ApiProperty({
+    description: 'Tendances détectées',
+    type: [CycleTrendDto],
+  })
+  trends: CycleTrendDto[];
+
+  @ApiProperty({
+    description: 'Insights et recommandations',
+    type: [String],
+    example: [
+      '🎯 Excellente régularité : vos cycles varient de moins de 3 jours',
+      '📈 Évolutions notables : Durée du cycle en augmentation (+2 jours)',
+    ],
+  })
+  insights: string[];
+
+  @ApiProperty({
+    description: 'Moyennes calculées',
+    type: CycleComparisonAveragesDto,
+  })
+  averages: CycleComparisonAveragesDto;
+
+  @ApiProperty({
+    description: 'Période analysée',
+    type: CycleComparisonPeriodDto,
+  })
+  comparedPeriod: CycleComparisonPeriodDto;
+
+  @ApiProperty({
+    description: 'Message informatif',
+    example: 'Comparaison de 3 cycles récents avec tendances et insights',
+  })
+  message: string;
 }

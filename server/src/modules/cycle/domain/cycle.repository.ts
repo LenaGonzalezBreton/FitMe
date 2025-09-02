@@ -1,5 +1,9 @@
 import { Cycle } from './cycle.entity';
-import { CycleProfileConfig, CreateCycleProfileConfigData, UpdateCycleProfileConfigData } from './cycle-profile-config.entity';
+import {
+  CycleProfileConfig,
+  CreateCycleProfileConfigData,
+  UpdateCycleProfileConfigData,
+} from './cycle-profile-config.entity';
 
 export interface ICycleRepository {
   /**
@@ -72,5 +76,3 @@ export interface UpdateCycleData {
   providerId?: string;
   externalCycleId?: string;
 }
-
-

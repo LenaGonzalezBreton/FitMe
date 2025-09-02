@@ -9,6 +9,7 @@ import { LogPeriodUseCase } from './application/use-cases/log-period.use-case';
 import { GetPeriodsHistoryUseCase } from './application/use-cases/get-periods-history.use-case';
 import { GetCyclePredictionsUseCase } from './application/use-cases/get-cycle-predictions.use-case';
 import { GetCycleCalendarUseCase } from './application/use-cases/get-cycle-calendar.use-case';
+import { GetCycleComparisonUseCase } from './application/use-cases/get-cycle-comparison.use-case';
 import { LogSymptomsUseCase } from './application/use-cases/log-symptoms.use-case';
 import { GetSymptomsHistoryUseCase } from './application/use-cases/get-symptoms-history.use-case';
 
@@ -39,6 +40,7 @@ import {
     GetPeriodsHistoryUseCase,
     GetCyclePredictionsUseCase,
     GetCycleCalendarUseCase,
+    GetCycleComparisonUseCase,
     LogSymptomsUseCase,
     GetSymptomsHistoryUseCase,
 
@@ -64,6 +66,7 @@ import {
     GetPeriodsHistoryUseCase,
     GetCyclePredictionsUseCase,
     GetCycleCalendarUseCase,
+    GetCycleComparisonUseCase,
     LogSymptomsUseCase,
     GetSymptomsHistoryUseCase,
     CYCLE_REPOSITORY_TOKEN,

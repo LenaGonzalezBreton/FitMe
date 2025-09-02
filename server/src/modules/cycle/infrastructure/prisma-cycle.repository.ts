@@ -29,23 +29,31 @@ export class PrismaCycleRepository implements ICycleRepository {
     });
 
     if (!prismaData) {
+      console.log(`No cycles found for user ${userId}`);
       return null;
     }
 
     const cycle = this.toDomainEntity(prismaData);
 
+    // Debug logging
+    const daysSinceStart = Math.floor(
+      (currentDate.getTime() - cycle.startDate.getTime()) /
+        (1000 * 60 * 60 * 24),
+    );
+    const cycleLength = cycle.cycleLength || 28;
+
     // Vérifier si c'est vraiment le cycle actuel
     if (cycle.isCurrentCycle(currentDate)) {
+      console.log(`Returning current cycle for user ${userId}`);
       return cycle;
     }
 
     // If the most recent cycle is not current, check if we should still use it
     // This handles cases where the user is in a longer cycle than expected
-    const daysSinceStart = Math.floor((currentDate.getTime() - cycle.startDate.getTime()) / (1000 * 60 * 60 * 24));
-    const cycleLength = cycle.cycleLength || 28;
-    
-    // If we're within 1.5x the cycle length, consider it current even if past expected end
-    if (daysSinceStart >= 0 && daysSinceStart <= (cycleLength * 1.5)) {
+
+    // Handle same-day cycles (when daysSinceStart is 0 or slightly negative due to time differences)
+    // Also handle cycles within 1.5x the cycle length for longer cycles
+    if (daysSinceStart >= -1 && daysSinceStart <= cycleLength * 1.5) {
       return cycle;
     }
 

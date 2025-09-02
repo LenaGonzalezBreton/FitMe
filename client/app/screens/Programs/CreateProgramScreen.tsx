@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, SafeAreaView, ActivityIndicator, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { useCycle } from '../../hooks/useCycle';
+import { useCycleContext } from '../../context/CycleContext';
 import { usePrograms } from '../../hooks/usePrograms';
 import { programApi } from '../../services/api';
 import { INTENSITY_OPTIONS, MUSCLE_ZONE_OPTIONS } from '../../utils/constants';
@@ -24,7 +24,7 @@ interface TrainingDay {
 
 const CreateProgramScreen = () => {
   const navigation = useNavigation();
-  const { currentCycle } = useCycle();
+  const { currentCycle, getPhaseApiKey } = useCycleContext();
   const { generateProgram } = usePrograms();
   
   const [programTitle, setProgramTitle] = useState('');
@@ -133,17 +133,15 @@ const CreateProgramScreen = () => {
       setLoading(true);
       setError(null);
 
-              const response = await programApi.createProgram({
-          title: programTitle,
-          goal: `Programme ${selectedType} - ${focusZones.length > 0 ? `Zones: ${focusZones.map(zone => MUSCLE_ZONE_OPTIONS.find(z => z.value === zone)?.label).join(', ')}` : 'Toutes zones'} - ${duration} semaines`,
-          startDate: new Date().toISOString(),
-          // Note: Backend doesn't support these fields yet:
-          // type: selectedType,
-          // trainingDays: selectedDays,
-          // duration: parseInt(duration),
-          // focusZone: focusZones.join(','),
-          // cyclePhase: currentCycle?.cycleDay || null
-        });
+      const response = await programApi.createProgram({
+        title: programTitle,
+        type: selectedType,
+        trainingDays: selectedDays,
+        startDate: new Date().toISOString(),
+        duration: parseInt(duration),
+        focusZone: focusZones.join(','),
+        cyclePhase: getPhaseApiKey() || null
+      });
 
       Alert.alert(
         'Programme créé !',

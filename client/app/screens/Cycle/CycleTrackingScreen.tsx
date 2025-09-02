@@ -10,7 +10,7 @@ import {
   StatusBar,
   Modal,
 } from 'react-native';
-import { useCycle } from '../../hooks/useCycle';
+import { useCycleContext } from '../../context/CycleContext';
 import { useAuth } from '../../context/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 import HormoneGraph from '../../components/HormoneGraph';
@@ -42,57 +42,101 @@ interface CycleTrackingScreenProps {
 }
 
 const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
-  const { currentCycle, cycleConfig, getCycleCharacteristics, getCycleEmoji, getCycleColor, refreshCycle, refreshConfig } = useCycle();
+  const { currentCycle, cycleConfig, getCycleCharacteristics, getCycleEmoji, getCycleColor, refreshCycle, refreshConfig } = useCycleContext();
   const { user } = useAuth();
   const [refreshing, setRefreshing] = useState(false);
   const [selectedTab, setSelectedTab] = useState<'overview' | 'hormones' | 'recommendations'>('overview');
   const [showPeriodLogging, setShowPeriodLogging] = useState(false);
   const [showPeriodHistory, setShowPeriodHistory] = useState(false);
   
-  const generateHormoneData = (cycleLength: number = 28): HormoneData[] => {
+  const generateHormoneData = (cycleLength: number, periodLength: number, currentCycleData: any): HormoneData[] => {
     const data: HormoneData[] = [];
+    
+    // Use the SAME logic as the API server for calculating phases
+    const ovulationDay = Math.max(1, cycleLength - 14); // Same as server logic
     
     for (let day = 1; day <= cycleLength; day++) {
       let estrogen = 0;
       let progesterone = 0;
       let testosterone = 0;
       
-      // Estrogen curve - approximate peak near ovulation using cycle midpoint
-      const midPoint = Math.ceil(cycleLength / 2);
-      if (day <= midPoint) {
-        estrogen = Math.sin((day / midPoint) * Math.PI) * 100;
-      } else {
-        estrogen = Math.sin(((day - midPoint) / midPoint) * Math.PI) * 30;
+      // Use the SAME phase detection logic as the server
+      const isPeriodDay = day <= periodLength;
+      const isOvulationPhase = day >= ovulationDay - 2 && day <= ovulationDay + 2;
+      const isFertileDay = day >= ovulationDay - 5 && day <= ovulationDay + 2;
+      const isFollicularPhase = day > periodLength && day <= 14;
+      const isLutealPhase = day > ovulationDay + 2;
+      
+      // Realistic estrogen curve based on cycle phases
+      if (isPeriodDay) {
+        // Low during menstruation
+        estrogen = 15 + (day / periodLength) * 25;
+      } else if (isFollicularPhase) {
+        // Rising during follicular phase
+        const progress = (day - periodLength) / (14 - periodLength);
+        estrogen = 40 + progress * 45;
+      } else if (isOvulationPhase) {
+        // Peak during ovulation
+        const distance = Math.abs(day - ovulationDay);
+        estrogen = 85 - (distance * 15);
+      } else if (isLutealPhase) {
+        // Declining during luteal phase  
+        const progress = (day - (ovulationDay + 2)) / (cycleLength - (ovulationDay + 2));
+        estrogen = 70 - progress * 50;
       }
       
-      // Progesterone curve - low until ovulation, then rises
-      if (day <= midPoint) {
-        progesterone = 10 + Math.random() * 10;
-      } else {
-        progesterone = 20 + Math.sin(((day - midPoint) / midPoint) * Math.PI) * 80;
+      // Realistic progesterone curve
+      if (isPeriodDay || isFollicularPhase) {
+        // Very low during period and follicular phase
+        progesterone = 5 + Math.random() * 10;
+      } else if (isOvulationPhase) {
+        // Starts to rise during ovulation
+        progesterone = 20 + (day - (ovulationDay - 2)) * 15;
+      } else if (isLutealPhase) {
+        // High during luteal phase, then drops before period
+        const lutealLength = cycleLength - (ovulationDay + 2);
+        const progress = (day - (ovulationDay + 2)) / lutealLength;
+        if (progress < 0.7) {
+          progesterone = 50 + progress * 40; // Rising to peak
+        } else {
+          progesterone = 90 - ((progress - 0.7) / 0.3) * 85; // Dropping sharply
+        }
       }
       
-      // Testosterone curve - peaks around day 8-10 and day 20-22
-      if (day <= 10) {
-        testosterone = 30 + Math.sin((day / 10) * Math.PI) * 40;
-      } else if (day <= 20) {
-        testosterone = 20 + Math.random() * 20;
-      } else {
-        testosterone = 30 + Math.sin(((day - 20) / 8) * Math.PI) * 30;
+      // Realistic testosterone curve  
+      if (isPeriodDay) {
+        // Moderate during period
+        testosterone = 25 + Math.random() * 15;
+      } else if (isFollicularPhase) {
+        // Rising during follicular phase
+        const progress = (day - periodLength) / (14 - periodLength);
+        testosterone = 40 + progress * 35;
+      } else if (isOvulationPhase) {
+        // Peak around ovulation
+        testosterone = 70 + Math.random() * 15;
+      } else if (isLutealPhase) {
+        // Declining during luteal phase
+        const progress = (day - (ovulationDay + 2)) / (cycleLength - (ovulationDay + 2));
+        testosterone = 60 - progress * 30;
       }
       
       data.push({
         day,
-        estrogen: Math.max(0, estrogen),
-        progesterone: Math.max(0, progesterone),
-        testosterone: Math.max(0, testosterone),
+        estrogen: Math.max(5, Math.min(100, estrogen)),
+        progesterone: Math.max(5, Math.min(100, progesterone)),
+        testosterone: Math.max(15, Math.min(85, testosterone)),
       });
     }
     
     return data;
   };
 
-  const hormoneData = generateHormoneData(currentCycle?.cycleLength);
+  // Generate hormone data using the EXACT same data as the API
+  const hormoneData = currentCycle ? generateHormoneData(
+    currentCycle.cycleLength, 
+    currentCycle.periodLength,
+    currentCycle
+  ) : [];
 
   // Cycle-based recommendations
   const getCycleRecommendations = (cycleDay: number, isPeriodDay: boolean, isOvulationPhase: boolean, isFertileDay: boolean): CycleRecommendation => {
@@ -242,11 +286,11 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
     return (
       <SafeAreaView className="flex-1 bg-brand-background">
         <View className="flex-1 justify-center items-center px-6">
-          <Text className="text-6xl mb-4">🌙</Text>
-          <Text className="text-2xl font-bold text-brand-text mb-4 text-center">
+          <Text className="mb-4 text-6xl">🌙</Text>
+          <Text className="mb-4 text-2xl font-bold text-center text-brand-text">
             Suivi du cycle non disponible
           </Text>
-          <Text className="text-secondary-600 text-center">
+          <Text className="text-center text-secondary-600">
             Le suivi détaillé du cycle n'est pas applicable en période de ménopause.
           </Text>
         </View>
@@ -258,15 +302,15 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
     return (
       <SafeAreaView className="flex-1 bg-brand-background">
         <View className="flex-1 justify-center items-center px-6">
-          <Text className="text-6xl mb-4">📅</Text>
-          <Text className="text-2xl font-bold text-brand-text mb-4 text-center">
+          <Text className="mb-4 text-6xl">📅</Text>
+          <Text className="mb-4 text-2xl font-bold text-center text-brand-text">
             Cycle non configuré
           </Text>
-          <Text className="text-secondary-600 text-center mb-6">
+          <Text className="mb-6 text-center text-secondary-600">
             Activez le suivi de votre cycle pour accéder aux recommandations personnalisées.
           </Text>
-          <TouchableOpacity className="bg-primary-500 py-3 px-6 rounded-xl">
-            <Text className="text-surface font-bold">Configurer le cycle</Text>
+          <TouchableOpacity className="px-6 py-3 rounded-xl bg-primary-500">
+            <Text className="font-bold text-surface">Configurer le cycle</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -283,9 +327,9 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
       >
         {/* Header */}
         <View className="px-4 pt-4 pb-4">
-          <View className="flex-row items-center justify-between mb-4">
+          <View className="flex-row justify-between items-center mb-4">
             <View className="flex-1">
-              <Text className="text-2xl font-bold text-brand-text mb-1">Suivi du cycle</Text>
+              <Text className="mb-1 text-2xl font-bold text-brand-text">Suivi du cycle</Text>
               <Text className="text-sm text-secondary-600">
                 Comprenez votre corps et optimisez votre bien-être
               </Text>
@@ -293,7 +337,7 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
             {onClose && (
               <TouchableOpacity
                 onPress={onClose}
-                className="bg-surface rounded-full w-10 h-10 items-center justify-center shadow-sm border border-border-light"
+                className="justify-center items-center w-10 h-10 rounded-full border shadow-sm bg-surface border-border-light"
               >
                 <Ionicons name="close" size={20} color="#8B5A3C" />
               </TouchableOpacity>
@@ -303,10 +347,10 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
 
         {/* Current Cycle Card */}
         <View className="px-4 mb-4">
-          <View className="bg-surface rounded-xl p-4 shadow-sm border border-border-light">
-            <View className="flex-row items-center justify-between mb-4">
+          <View className="p-4 rounded-xl border shadow-sm bg-surface border-border-light">
+            <View className="flex-row justify-between items-center mb-4">
               <View className="flex-1">
-                <Text className="text-2xl font-bold text-brand-text mb-1">
+                <Text className="mb-1 text-2xl font-bold text-brand-text">
                   {getCycleCharacteristics(
                     currentCycle.cycleDay,
                     currentCycle.isPeriodDay,
@@ -315,7 +359,7 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
                     currentCycle.cycleLength
                   )}
                 </Text>
-                <Text className="text-sm text-secondary-600 mb-2">
+                <Text className="mb-2 text-sm text-secondary-600">
                   Jour {currentCycle.cycleDay} de votre cycle ({currentCycle.cycleLength} jours)
                 </Text>
                 {currentCycle.daysUntilNextCycle > 0 && (
@@ -331,7 +375,7 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
                 currentCycle.isFertileDay,
                 currentCycle.cycleLength
               )} rounded-full w-16 h-16 items-center justify-center`}>
-                <Text className="text-brand-text text-2xl">{getCycleEmoji(
+                <Text className="text-2xl text-brand-text">{getCycleEmoji(
                   currentCycle.cycleDay,
                   currentCycle.isPeriodDay,
                   currentCycle.isOvulationPhase,
@@ -342,8 +386,8 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
             </View>
             
             {/* Cycle Description (more prominent) */}
-            <View className="bg-primary-50 border border-primary-200 rounded-lg p-3 mb-4">
-              <Text className="text-primary-700 text-sm">
+            <View className="p-3 mb-4 rounded-lg border bg-primary-50 border-primary-200">
+              <Text className="text-sm text-primary-700">
                 {currentCycle.cycleDescription}
               </Text>
             </View>
@@ -370,7 +414,7 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
 
         {/* Tabs */}
         <View className="px-4 mb-4">
-          <View className="flex-row bg-surface rounded-xl p-1 shadow-sm border border-border-light">
+          <View className="flex-row p-1 rounded-xl border shadow-sm bg-surface border-border-light">
             <TouchableOpacity
               onPress={() => setSelectedTab('overview')}
               className={`flex-1 py-3 px-4 rounded-lg ${
@@ -416,8 +460,8 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
         {selectedTab === 'overview' && (
           <View className="px-4 mb-4">
             {/* Cycle Timeline */}
-            <View className="bg-surface rounded-xl p-4 shadow-sm border border-border-light mb-4">
-              <Text className="text-lg font-bold text-brand-text mb-4">Timeline du cycle</Text>
+            <View className="p-4 mb-4 rounded-xl border shadow-sm bg-surface border-border-light">
+              <Text className="mb-4 text-lg font-bold text-brand-text">Timeline du cycle</Text>
               
               {/* Simple cycle visualization */}
               <View className="flex-row justify-between items-center mb-4">
@@ -446,8 +490,8 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
             </View>
 
             {/* Quick Stats */}
-            <View className="bg-surface rounded-xl p-4 shadow-sm border border-border-light">
-              <Text className="text-lg font-bold text-brand-text mb-4">Statistiques</Text>
+            <View className="p-4 rounded-xl border shadow-sm bg-surface border-border-light">
+              <Text className="mb-4 text-lg font-bold text-brand-text">Statistiques</Text>
               <View className="flex-row justify-between">
                 <View className="items-center">
                   <Text className="text-2xl font-bold text-primary-500">{currentCycle.cycleLength}</Text>
@@ -465,28 +509,28 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
             </View>
 
             {/* Period Tracking Actions */}
-            <View className="bg-surface rounded-xl p-4 shadow-sm border border-border-light mt-4">
-              <Text className="text-lg font-bold text-brand-text mb-4">Suivi des règles</Text>
+            <View className="p-4 mt-4 rounded-xl border shadow-sm bg-surface border-border-light">
+              <Text className="mb-4 text-lg font-bold text-brand-text">Suivi des règles</Text>
               
               <View className="space-y-3">
                 <TouchableOpacity
                   onPress={() => setShowPeriodLogging(true)}
-                  className="bg-primary-500 py-4 px-4 rounded-xl flex-row items-center justify-center"
+                  className="flex-row justify-center items-center px-4 py-4 rounded-xl bg-primary-500"
                 >
                   <Ionicons name="add-circle" size={20} color="white" />
-                  <Text className="text-surface font-bold text-lg ml-2">Enregistrer mes règles</Text>
+                  <Text className="ml-2 text-lg font-bold text-surface">Enregistrer mes règles</Text>
                 </TouchableOpacity>
                 
                 <TouchableOpacity
                   onPress={() => setShowPeriodHistory(true)}
-                  className="bg-secondary-200 py-4 px-4 rounded-xl flex-row items-center justify-center"
+                  className="flex-row justify-center items-center px-4 py-4 rounded-xl bg-secondary-200"
                 >
                   <Ionicons name="calendar" size={20} color="#8B5A3C" />
-                  <Text className="text-secondary-700 font-bold text-lg ml-2">Voir l'historique</Text>
+                  <Text className="ml-2 text-lg font-bold text-secondary-700">Voir l'historique</Text>
                 </TouchableOpacity>
               </View>
               
-              <Text className="text-xs text-secondary-500 text-center mt-3">
+              <Text className="mt-3 text-xs text-center text-secondary-500">
                 Enregistrez le début de vos règles pour un suivi précis de votre cycle
               </Text>
             </View>
@@ -499,36 +543,37 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
               data={hormoneData}
               currentDay={currentCycle.cycleDay}
               cycleLength={currentCycle.cycleLength}
+              periodLength={currentCycle.periodLength}
             />
             
             {/* Additional hormone info */}
-            <View className="bg-surface rounded-xl p-4 shadow-sm border border-border-light mt-4">
-              <Text className="text-lg font-bold text-brand-text mb-4">Informations hormonales</Text>
+            <View className="p-4 mt-4 rounded-xl border shadow-sm bg-surface border-border-light">
+              <Text className="mb-4 text-lg font-bold text-brand-text">Informations hormonales</Text>
               
               <View className="space-y-4">
                 <View className="p-3 bg-pink-50 rounded-lg">
-                  <Text className="text-sm font-semibold text-pink-700 mb-1">Œstrogène</Text>
+                  <Text className="mb-1 text-sm font-semibold text-pink-700">Œstrogène</Text>
                   <Text className="text-xs text-pink-600">
                     Hormone principale de la première moitié du cycle. Favorise l'énergie, la motivation et la performance physique.
                   </Text>
                 </View>
                 
                 <View className="p-3 bg-blue-50 rounded-lg">
-                  <Text className="text-sm font-semibold text-blue-700 mb-1">Progestérone</Text>
+                  <Text className="mb-1 text-sm font-semibold text-blue-700">Progestérone</Text>
                   <Text className="text-xs text-blue-600">
                     Hormone dominante de la seconde moitié du cycle. Favorise la récupération et la préparation à la menstruation.
                   </Text>
                 </View>
                 
                 <View className="p-3 bg-green-50 rounded-lg">
-                  <Text className="text-sm font-semibold text-green-700 mb-1">Testostérone</Text>
+                  <Text className="mb-1 text-sm font-semibold text-green-700">Testostérone</Text>
                   <Text className="text-xs text-green-600">
                     Hormone présente tout au long du cycle avec des pics. Améliore la force, la confiance et la libido.
                   </Text>
                 </View>
               </View>
 
-              <Text className="text-xs text-secondary-500 mt-4">
+              <Text className="mt-4 text-xs text-secondary-500">
                 * Les niveaux sont approximatifs et basés sur des moyennes. Consultez un professionnel de santé pour des analyses précises.
               </Text>
             </View>
@@ -538,48 +583,48 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
         {selectedTab === 'recommendations' && currentRecommendations && (
           <View className="px-4 mb-4 space-y-4">
             {/* Exercise Recommendations */}
-            <View className="bg-surface rounded-xl p-4 shadow-sm border border-border-light">
+            <View className="p-4 rounded-xl border shadow-sm bg-surface border-border-light">
               <View className="flex-row items-center mb-4">
                 <Ionicons name="fitness" size={24} color="#8B5A3C" />
-                <Text className="text-lg font-bold text-brand-text ml-3">Exercices recommandés</Text>
+                <Text className="ml-3 text-lg font-bold text-brand-text">Exercices recommandés</Text>
               </View>
               <View className="space-y-2">
                 {currentRecommendations.exercises.map((exercise, index) => (
                   <View key={index} className="flex-row items-center">
-                    <View className="w-2 h-2 bg-primary-500 rounded-full mr-3" />
-                    <Text className="text-sm text-brand-text flex-1">{exercise}</Text>
+                    <View className="mr-3 w-2 h-2 rounded-full bg-primary-500" />
+                    <Text className="flex-1 text-sm text-brand-text">{exercise}</Text>
                   </View>
                 ))}
               </View>
             </View>
 
             {/* Nutrition Recommendations */}
-            <View className="bg-surface rounded-xl p-4 shadow-sm border border-border-light">
+            <View className="p-4 rounded-xl border shadow-sm bg-surface border-border-light">
               <View className="flex-row items-center mb-4">
                 <Ionicons name="nutrition" size={24} color="#8B5A3C" />
-                <Text className="text-lg font-bold text-brand-text ml-3">Nutrition</Text>
+                <Text className="ml-3 text-lg font-bold text-brand-text">Nutrition</Text>
               </View>
               <View className="space-y-2">
                 {currentRecommendations.nutrition.map((item, index) => (
                   <View key={index} className="flex-row items-center">
-                    <View className="w-2 h-2 bg-accent-500 rounded-full mr-3" />
-                    <Text className="text-sm text-brand-text flex-1">{item}</Text>
+                    <View className="mr-3 w-2 h-2 rounded-full bg-accent-500" />
+                    <Text className="flex-1 text-sm text-brand-text">{item}</Text>
                   </View>
                 ))}
               </View>
             </View>
 
             {/* Wellness Recommendations */}
-            <View className="bg-surface rounded-xl p-4 shadow-sm border border-border-light">
+            <View className="p-4 rounded-xl border shadow-sm bg-surface border-border-light">
               <View className="flex-row items-center mb-4">
                 <Ionicons name="heart" size={24} color="#8B5A3C" />
-                <Text className="text-lg font-bold text-brand-text ml-3">Bien-être</Text>
+                <Text className="ml-3 text-lg font-bold text-brand-text">Bien-être</Text>
               </View>
               <View className="space-y-2">
                 {currentRecommendations.wellness.map((item, index) => (
                   <View key={index} className="flex-row items-center">
-                    <View className="w-2 h-2 bg-success-500 rounded-full mr-3" />
-                    <Text className="text-sm text-brand-text flex-1">{item}</Text>
+                    <View className="mr-3 w-2 h-2 rounded-full bg-success-500" />
+                    <Text className="flex-1 text-sm text-brand-text">{item}</Text>
                   </View>
                 ))}
               </View>

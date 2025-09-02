@@ -191,6 +191,8 @@ enum SymptomType {
   COLD_FLASHES
   JOINT_PAIN
   INSOMNIA
+  FLOW_INTENSITY
+  PERIOD_NOTES
 }
 
 // Enumerations for user-related data

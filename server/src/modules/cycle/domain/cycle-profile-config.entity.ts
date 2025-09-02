@@ -17,20 +17,30 @@ export class CycleProfileConfig {
    */
   static validateConfig(config: CreateCycleProfileConfigData): boolean {
     // Vérifier que la durée du cycle est dans les limites normales (21-35 jours)
-    if (config.averageCycleLength && (config.averageCycleLength < 21 || config.averageCycleLength > 35)) {
+    if (
+      config.averageCycleLength &&
+      (config.averageCycleLength < 21 || config.averageCycleLength > 35)
+    ) {
       return false;
     }
-    
+
     // Vérifier que la durée des règles est dans les limites normales (2-8 jours)
-    if (config.averagePeriodLength && (config.averagePeriodLength < 2 || config.averagePeriodLength > 8)) {
+    if (
+      config.averagePeriodLength &&
+      (config.averagePeriodLength < 2 || config.averagePeriodLength > 8)
+    ) {
       return false;
     }
-    
+
     // Vérifier que la durée des règles ne dépasse pas la durée du cycle
-    if (config.averagePeriodLength && config.averageCycleLength && config.averagePeriodLength >= config.averageCycleLength) {
+    if (
+      config.averagePeriodLength &&
+      config.averageCycleLength &&
+      config.averagePeriodLength >= config.averageCycleLength
+    ) {
       return false;
     }
-    
+
     return true;
   }
 

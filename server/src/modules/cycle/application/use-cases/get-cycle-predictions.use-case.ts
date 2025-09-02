@@ -1,7 +1,13 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { Cycle } from '../../domain/cycle.entity';
-import { ICycleRepository, ICycleProfileConfigRepository } from '../../domain/cycle.repository';
-import { CYCLE_REPOSITORY_TOKEN, CYCLE_PROFILE_CONFIG_REPOSITORY_TOKEN } from '../../tokens';
+import {
+  ICycleRepository,
+  ICycleProfileConfigRepository,
+} from '../../domain/cycle.repository';
+import {
+  CYCLE_REPOSITORY_TOKEN,
+  CYCLE_PROFILE_CONFIG_REPOSITORY_TOKEN,
+} from '../../tokens';
 
 export interface GetCyclePredictionsRequest {
   userId: string;
@@ -28,8 +34,10 @@ export class GetCyclePredictionsUseCase {
 
   async execute(request: GetCyclePredictionsRequest): Promise<CyclePrediction> {
     // Vérifier la configuration du profil pour la ménopause
-    const profileConfig = await this.cycleProfileConfigRepository.findByUserId(request.userId);
-    
+    const profileConfig = await this.cycleProfileConfigRepository.findByUserId(
+      request.userId,
+    );
+
     if (profileConfig?.useMenopauseMode) {
       throw new NotFoundException(
         'Le suivi des cycles est désactivé en mode ménopause. Les prédictions ne sont pas disponibles.',
@@ -123,21 +131,29 @@ export class GetCyclePredictionsUseCase {
     // Calculer la longueur moyenne des cycles
     const cycleLengths = cycles.map((cycle) => cycle.cycleLength || 28);
     const averageCycleLength = Math.round(
-      cycleLengths.reduce((sum, length) => sum + length, 0) / cycleLengths.length,
+      cycleLengths.reduce((sum, length) => sum + length, 0) /
+        cycleLengths.length,
     );
 
     // Calculer la longueur moyenne des règles
     const periodLengths = cycles
       .map((cycle) => cycle.periodLength)
-      .filter((length): length is number => length !== null && length !== undefined);
-    const averagePeriodLength = periodLengths.length > 0
-      ? Math.round(
-          periodLengths.reduce((sum, length) => sum + length, 0) / periodLengths.length,
-        )
-      : 5;
+      .filter(
+        (length): length is number => length !== null && length !== undefined,
+      );
+    const averagePeriodLength =
+      periodLengths.length > 0
+        ? Math.round(
+            periodLengths.reduce((sum, length) => sum + length, 0) /
+              periodLengths.length,
+          )
+        : 5;
 
     // Calculer un score de régularité
-    const regularityScore = this.calculateRegularityScore(cycles, averageCycleLength);
+    const regularityScore = this.calculateRegularityScore(
+      cycles,
+      averageCycleLength,
+    );
 
     return {
       averageCycleLength,
@@ -228,7 +244,9 @@ export class GetCyclePredictionsUseCase {
     if (ovulationDate < currentDate) {
       // Calculer l'ovulation pour le cycle suivant
       const nextCycleOvulation = new Date(nextPeriodStart);
-      nextCycleOvulation.setDate(nextCycleOvulation.getDate() + cycleLength - 14);
+      nextCycleOvulation.setDate(
+        nextCycleOvulation.getDate() + cycleLength - 14,
+      );
       return nextCycleOvulation;
     }
 
@@ -257,7 +275,10 @@ export class GetCyclePredictionsUseCase {
     return Math.min(confidence, 100);
   }
 
-  private calculateRegularityScore(cycles: Cycle[], averageCycleLength: number): number {
+  private calculateRegularityScore(
+    cycles: Cycle[],
+    averageCycleLength: number,
+  ): number {
     if (cycles.length < 2) return 0;
 
     let totalDeviation = 0;

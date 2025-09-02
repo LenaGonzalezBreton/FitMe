@@ -772,6 +772,47 @@
         ]
       }
     },
+    "/cycle/comparison": {
+      "get": {
+        "operationId": "CycleController_getCycleComparison",
+        "summary": "Comparer les cycles récents",
+        "description": "Analyse comparative des derniers cycles avec tendances et insights",
+        "parameters": [
+          {
+            "name": "lastNCycles",
+            "required": false,
+            "in": "query",
+            "description": "Nombre de cycles à comparer (défaut: 3)",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comparaison des cycles calculée avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CycleComparisonResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pas assez de données pour la comparaison"
+          }
+        },
+        "tags": [
+          "Cycle"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
     "/cycle/symptoms": {
       "post": {
         "operationId": "CycleController_logSymptoms",
@@ -3428,7 +3469,7 @@
         "properties": {
           "startDate": {
             "type": "string",
-            "description": "Date de début des règles",
+            "description": "Date de début des règles (obligatoire pour nouveau cycle)",
             "example": "2024-01-15",
             "format": "date"
           },
@@ -3449,11 +3490,14 @@
             "type": "string",
             "description": "Notes additionnelles",
             "example": "Flux normal, quelques crampes le premier jour"
+          },
+          "isNewCycle": {
+            "type": "boolean",
+            "description": "Indique si c'est un nouveau cycle ou une mise à jour du cycle actuel",
+            "example": true,
+            "default": true
           }
-        },
-        "required": [
-          "startDate"
-        ]
+        }
       },
       "PeriodDto": {
         "type": "object",
@@ -3743,6 +3787,204 @@
           "startDate",
           "endDate",
           "monthsCount",
+          "message"
+        ]
+      },
+      "CycleComparisonDataDto": {
+        "type": "object",
+        "properties": {
+          "cycleNumber": {
+            "type": "number",
+            "description": "Numéro du cycle dans la comparaison",
+            "example": 1
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Date de début du cycle",
+            "example": "2024-01-15"
+          },
+          "cycleLength": {
+            "type": "number",
+            "description": "Durée du cycle en jours",
+            "example": 28
+          },
+          "periodLength": {
+            "type": "number",
+            "description": "Durée des règles en jours",
+            "example": 5
+          },
+          "isRegular": {
+            "type": "boolean",
+            "description": "Le cycle est-il régulier",
+            "example": true
+          },
+          "flowIntensity": {
+            "type": "number",
+            "description": "Intensité du flux (1-5)",
+            "example": 3
+          },
+          "notes": {
+            "type": "string",
+            "description": "Notes sur le cycle",
+            "example": "Cycle plus court que d'habitude"
+          }
+        },
+        "required": [
+          "cycleNumber",
+          "startDate",
+          "cycleLength",
+          "periodLength",
+          "isRegular"
+        ]
+      },
+      "CycleTrendDto": {
+        "type": "object",
+        "properties": {
+          "metric": {
+            "type": "string",
+            "description": "Métrique analysée",
+            "example": "Durée du cycle"
+          },
+          "trend": {
+            "type": "string",
+            "description": "Tendance observée",
+            "example": "increasing",
+            "enum": [
+              "increasing",
+              "decreasing",
+              "stable"
+            ]
+          },
+          "change": {
+            "type": "number",
+            "description": "Changement absolu",
+            "example": 2
+          },
+          "changePercentage": {
+            "type": "number",
+            "description": "Changement en pourcentage",
+            "example": 7.1
+          },
+          "description": {
+            "type": "string",
+            "description": "Description de la tendance",
+            "example": "Durée du cycle en augmentation (+2 jours)"
+          }
+        },
+        "required": [
+          "metric",
+          "trend",
+          "change",
+          "changePercentage",
+          "description"
+        ]
+      },
+      "CycleComparisonAveragesDto": {
+        "type": "object",
+        "properties": {
+          "cycleLength": {
+            "type": "number",
+            "description": "Durée moyenne du cycle",
+            "example": 28.3
+          },
+          "periodLength": {
+            "type": "number",
+            "description": "Durée moyenne des règles",
+            "example": 5.2
+          },
+          "regularityRate": {
+            "type": "number",
+            "description": "Taux de régularité (%)",
+            "example": 67
+          }
+        },
+        "required": [
+          "cycleLength",
+          "periodLength",
+          "regularityRate"
+        ]
+      },
+      "CycleComparisonPeriodDto": {
+        "type": "object",
+        "properties": {
+          "startDate": {
+            "type": "string",
+            "description": "Date de début de la période comparée",
+            "example": "2024-01-01"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "Date de fin de la période comparée",
+            "example": "2024-03-15"
+          },
+          "totalCycles": {
+            "type": "number",
+            "description": "Nombre total de cycles comparés",
+            "example": 3
+          }
+        },
+        "required": [
+          "startDate",
+          "endDate",
+          "totalCycles"
+        ]
+      },
+      "CycleComparisonResponseDto": {
+        "type": "object",
+        "properties": {
+          "cycles": {
+            "description": "Données des cycles comparés",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CycleComparisonDataDto"
+            }
+          },
+          "trends": {
+            "description": "Tendances détectées",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CycleTrendDto"
+            }
+          },
+          "insights": {
+            "description": "Insights et recommandations",
+            "example": [
+              "🎯 Excellente régularité : vos cycles varient de moins de 3 jours",
+              "📈 Évolutions notables : Durée du cycle en augmentation (+2 jours)"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "averages": {
+            "description": "Moyennes calculées",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CycleComparisonAveragesDto"
+              }
+            ]
+          },
+          "comparedPeriod": {
+            "description": "Période analysée",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CycleComparisonPeriodDto"
+              }
+            ]
+          },
+          "message": {
+            "type": "string",
+            "description": "Message informatif",
+            "example": "Comparaison de 3 cycles récents avec tendances et insights"
+          }
+        },
+        "required": [
+          "cycles",
+          "trends",
+          "insights",
+          "averages",
+          "comparedPeriod",
           "message"
         ]
       },

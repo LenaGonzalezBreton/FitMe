@@ -99,8 +99,10 @@ api.interceptors.response.use(
     return response;
   },
   async error => {
-    // Don't log 400 errors for cycle tracking as they're expected when not enabled
-    const isCycleTrackingError = error.config?.url?.includes('/cycle/') && error.response?.status === 400;
+    // Détection spécifique des erreurs de cycle tracking basée sur le message
+    const isCycleTrackingError = error.config?.url?.includes('/cycle/') && 
+      error.response?.status === 400 && 
+      error.response?.data?.message?.includes('Le suivi des cycles n\'est pas activé');
     
     if (__DEV__ && !isCycleTrackingError) {
       console.error(`[API] Error ${error.response?.status}:`, {
@@ -293,6 +295,29 @@ export const cycleApi = {
     toDate?: string;
   }) => {
     const response = await api.get('/cycle/periods', { params });
+    return response.data;
+  },
+
+  // Get cycle predictions
+  getCyclePredictions: async () => {
+    const response = await api.get('/cycle/predictions');
+    return response.data;
+  },
+
+  // Get cycle comparison
+  getCycleComparison: async (params?: {
+    lastNCycles?: number;
+  }) => {
+    const response = await api.get('/cycle/comparison', { params });
+    return response.data;
+  },
+
+  // Get cycle calendar
+  getCycleCalendar: async (params?: {
+    startDate?: string;
+    months?: number;
+  }) => {
+    const response = await api.get('/cycle/calendar', { params });
     return response.data;
   },
 };

@@ -38,35 +38,42 @@ export class Cycle {
    */
   isCurrentCycle(currentDate: Date = new Date()): boolean {
     // A cycle is considered current if:
-    // 1. The current date is after the start date, AND
+    // 1. The current date is after or equal to the start date, AND
     // 2. Either we're within the expected cycle length OR no new cycle has started
-    const daysSinceStart = Math.floor((currentDate.getTime() - this.startDate.getTime()) / (1000 * 60 * 60 * 24));
+    const daysSinceStart = Math.floor(
+      (currentDate.getTime() - this.startDate.getTime()) /
+        (1000 * 60 * 60 * 24),
+    );
     const cycleLength = this.cycleLength || 28;
-    
+
+    // Handle same-day cycles and time zone differences (allow -1 for edge cases)
     // If we're within a reasonable range (up to 1.5x the cycle length), consider it current
     // This handles cases where cycles are longer than expected
-    return daysSinceStart >= 0 && daysSinceStart <= (cycleLength * 1.5);
+    return daysSinceStart >= -1 && daysSinceStart <= cycleLength * 1.5;
   }
 
   /**
    * Valide les paramètres du cycle
    */
-  static validateCycleParameters(cycleLength: number, periodLength: number): boolean {
+  static validateCycleParameters(
+    cycleLength: number,
+    periodLength: number,
+  ): boolean {
     // Vérifier que la durée du cycle est dans les limites normales (21-35 jours)
     if (cycleLength < 21 || cycleLength > 35) {
       return false;
     }
-    
+
     // Vérifier que la durée des règles est dans les limites normales (2-8 jours)
     if (periodLength < 2 || periodLength > 8) {
       return false;
     }
-    
+
     // Vérifier que la durée des règles ne dépasse pas la durée du cycle
     if (periodLength >= cycleLength) {
       return false;
     }
-    
+
     return true;
   }
 
@@ -84,14 +91,13 @@ export class Cycle {
    */
   isFertileDay(date: Date): boolean {
     const daysSinceStart = Math.floor(
-      (date.getTime() - this.startDate.getTime()) /
-        (1000 * 60 * 60 * 24),
+      (date.getTime() - this.startDate.getTime()) / (1000 * 60 * 60 * 24),
     );
-    
+
     const cycleLength = this.cycleLength || 28;
     const dayInCycle = daysSinceStart + 1;
     const ovulationDay = this.getOvulationDay();
-    
+
     // Période fertile : 5 jours avant l'ovulation jusqu'à 2 jours après
     return dayInCycle >= ovulationDay - 5 && dayInCycle <= ovulationDay + 2;
   }
@@ -133,5 +139,3 @@ export class Cycle {
     return dayInCycle > ovulationDay + 2;
   }
 }
-
-

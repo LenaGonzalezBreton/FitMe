@@ -4,7 +4,11 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { CycleProfileConfig, CreateCycleProfileConfigData, UpdateCycleProfileConfigData } from '../../domain/cycle-profile-config.entity';
+import {
+  CycleProfileConfig,
+  CreateCycleProfileConfigData,
+  UpdateCycleProfileConfigData,
+} from '../../domain/cycle-profile-config.entity';
 import { Cycle } from '../../domain/cycle.entity';
 import { ICycleProfileConfigRepository } from '../../domain/cycle.repository';
 import { CYCLE_PROFILE_CONFIG_REPOSITORY_TOKEN } from '../../tokens';
@@ -54,7 +58,7 @@ export class UpdateCycleConfigUseCase {
     // Validation supplémentaire : vérifier que la durée des règles est inférieure à la durée du cycle
     const cycleLength = request.averageCycleLength ?? 28;
     const periodLength = request.averagePeriodLength ?? 5;
-    
+
     if (!Cycle.validateCycleParameters(cycleLength, periodLength)) {
       throw new BadRequestException(
         'Les paramètres du cycle sont invalides. Vérifiez les durées.',

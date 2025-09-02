@@ -7,10 +7,14 @@ import {
   Alert,
   ActivityIndicator,
   StatusBar,
+  ScrollView,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { usePeriods } from '../../hooks/usePeriods';
-import { useCycle } from '../../hooks/useCycle';
+import { useCycleContext } from '../../context/CycleContext';
 import { Ionicons } from '@expo/vector-icons';
 import { LogPeriodRequest } from '../../types';
 
@@ -20,20 +24,20 @@ interface PeriodLoggingScreenProps {
 
 const PeriodLoggingScreen = ({ onClose }: PeriodLoggingScreenProps) => {
   const { logPeriod, loading } = usePeriods();
-  const { refreshCycle } = useCycle();
+  const { refreshCycle } = useCycleContext();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [flowIntensity, setFlowIntensity] = useState<number>(3);
   const [notes, setNotes] = useState('');
+  const [isNewCycle, setIsNewCycle] = useState<boolean>(true);
 
   const handleLogPeriod = async () => {
     try {
-      const startDate = selectedDate.toISOString().split('T')[0];
-      
       const periodData: LogPeriodRequest = {
-        startDate,
+        startDate: isNewCycle ? selectedDate.toISOString().split('T')[0] : undefined,
         flowIntensity,
         notes: notes.trim() || undefined,
+        isNewCycle,
       };
 
       const success = await logPeriod(periodData);
@@ -41,7 +45,9 @@ const PeriodLoggingScreen = ({ onClose }: PeriodLoggingScreenProps) => {
       if (success) {
         Alert.alert(
           'Succès',
-          'Vos règles ont été enregistrées avec succès !',
+          isNewCycle 
+            ? 'Votre nouveau cycle a été enregistré avec succès !'
+            : 'Vos informations ont été mises à jour avec succès !',
           [
             {
               text: 'OK',
@@ -88,38 +94,106 @@ const PeriodLoggingScreen = ({ onClose }: PeriodLoggingScreenProps) => {
     <SafeAreaView className="flex-1 bg-brand-background">
       <StatusBar barStyle="dark-content" backgroundColor="#F5EFE6" />
       
-      {/* Header */}
-      <View className="px-4 pt-4 pb-4">
-        <View className="flex-row items-center justify-between mb-4">
-          <View className="flex-1">
-            <Text className="text-2xl font-bold text-brand-text mb-1">Enregistrer mes règles</Text>
-            <Text className="text-sm text-secondary-600">
-              Marquez le début de votre cycle menstruel
-            </Text>
+      <KeyboardAvoidingView 
+        className="flex-1"
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
+        {/* Header */}
+        <View className="px-4 pt-4 pb-4">
+          <View className="flex-row justify-between items-center mb-4">
+            <View className="flex-1">
+              <Text className="mb-1 text-2xl font-bold text-brand-text">
+                {isNewCycle ? 'Nouveau cycle' : 'Continuer mes règles'}
+              </Text>
+              <Text className="text-sm text-secondary-600">
+                {isNewCycle 
+                  ? 'Marquez le début de votre cycle menstruel'
+                  : 'Mettez à jour vos informations quotidiennes'
+                }
+              </Text>
+            </View>
+            {onClose && (
+              <TouchableOpacity
+                onPress={onClose}
+                className="justify-center items-center w-10 h-10 rounded-full border shadow-sm bg-surface border-border-light"
+              >
+                <Ionicons name="close" size={20} color="#8B5A3C" />
+              </TouchableOpacity>
+            )}
           </View>
-          {onClose && (
-            <TouchableOpacity
-              onPress={onClose}
-              className="bg-surface rounded-full w-10 h-10 items-center justify-center shadow-sm border border-border-light"
-            >
-              <Ionicons name="close" size={20} color="#8B5A3C" />
-            </TouchableOpacity>
-          )}
         </View>
-      </View>
  
-              <View className="flex-1 px-4">
-        {/* Date Selection */}
-        <View className="bg-surface rounded-xl p-4 shadow-sm border border-border-light mb-4">
-          <Text className="text-lg font-bold text-brand-text mb-4">Date de début</Text>
+        <ScrollView 
+          className="flex-1 px-4"
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 40 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* Cycle Type Selection */}
+          <View className="p-4 mb-4 rounded-xl border shadow-sm bg-surface border-border-light">
+            <Text className="mb-3 text-lg font-bold text-brand-text">Type d'enregistrement</Text>
+            <View className="space-y-3">
+              <TouchableOpacity
+                onPress={() => setIsNewCycle(true)}
+                className={`p-3 rounded-lg border flex-row items-center ${
+                  isNewCycle ? 'border-primary-500 bg-primary-50' : 'border-border-light bg-brand-background'
+                }`}
+              >
+                <View className={`w-4 h-4 rounded-full border-2 mr-3 ${
+                  isNewCycle ? 'border-primary-500 bg-primary-500' : 'border-secondary-400'
+                }`}>
+                  {isNewCycle && <View className="w-2 h-2 bg-white rounded-full m-0.5" />}
+                </View>
+                <View className="flex-1">
+                  <Text className={`font-medium ${
+                    isNewCycle ? 'text-primary-700' : 'text-brand-text'
+                  }`}>
+                    Nouveau cycle (jour 1)
+                  </Text>
+                  <Text className="text-sm text-secondary-600">
+                    Je commence un nouveau cycle menstruel
+                  </Text>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => setIsNewCycle(false)}
+                className={`p-3 rounded-lg border flex-row items-center ${
+                  !isNewCycle ? 'border-primary-500 bg-primary-50' : 'border-border-light bg-brand-background'
+                }`}
+              >
+                <View className={`w-4 h-4 rounded-full border-2 mr-3 ${
+                  !isNewCycle ? 'border-primary-500 bg-primary-500' : 'border-secondary-400'
+                }`}>
+                  {!isNewCycle && <View className="w-2 h-2 bg-white rounded-full m-0.5" />}
+                </View>
+                <View className="flex-1">
+                  <Text className={`font-medium ${
+                    !isNewCycle ? 'text-primary-700' : 'text-brand-text'
+                  }`}>
+                    Continuer mes règles
+                  </Text>
+                  <Text className="text-sm text-secondary-600">
+                    Je suis déjà dans mon cycle actuel
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Date Selection */}
+          {isNewCycle && (
+            <View className="p-4 mb-4 rounded-xl border shadow-sm bg-surface border-border-light">
+          <Text className="mb-4 text-lg font-bold text-brand-text">Date de début</Text>
           
           <TouchableOpacity
-            className="bg-primary-50 border border-primary-200 p-4 rounded-xl mb-4"
+            className="p-4 mb-4 rounded-xl border bg-primary-50 border-primary-200"
             onPress={() => setShowDatePicker(true)}
           >
-            <View className="flex-row items-center justify-between">
+            <View className="flex-row justify-between items-center">
               <View>
-                <Text className="text-primary-700 font-medium">
+                <Text className="font-medium text-primary-700">
                   {selectedDate.toLocaleDateString('fr-FR', {
                     weekday: 'long',
                     year: 'numeric',
@@ -127,7 +201,7 @@ const PeriodLoggingScreen = ({ onClose }: PeriodLoggingScreenProps) => {
                     day: 'numeric',
                   })}
                 </Text>
-                <Text className="text-primary-600 text-sm mt-1">
+                <Text className="mt-1 text-sm text-primary-600">
                   {selectedDate.getTime() === new Date().getTime() 
                     ? 'Aujourd\'hui' 
                     : selectedDate.getTime() === new Date().getTime() - 24 * 60 * 60 * 1000
@@ -141,7 +215,7 @@ const PeriodLoggingScreen = ({ onClose }: PeriodLoggingScreenProps) => {
           </TouchableOpacity>
 
           {showDatePicker && (
-            <View className="bg-primary-50 rounded-xl p-4">
+            <View className="p-4 rounded-xl bg-primary-50">
               <DateTimePicker
                 value={selectedDate}
                 mode="date"
@@ -158,10 +232,24 @@ const PeriodLoggingScreen = ({ onClose }: PeriodLoggingScreenProps) => {
             </View>
           )}
         </View>
+          )}
 
-        {/* Flow Intensity */}
-        <View className="bg-surface rounded-xl p-4 shadow-sm border border-border-light mb-4">
-          <Text className="text-lg font-bold text-brand-text mb-4">Intensité du flux</Text>
+          {/* Current Cycle Info */}
+          {!isNewCycle && (
+            <View className="p-4 mb-4 rounded-xl border bg-primary-50 border-primary-200">
+              <View className="flex-row items-center mb-2">
+                <Ionicons name="information-circle" size={20} color="#8B5A3C" />
+                <Text className="ml-2 font-medium text-primary-700">Cycle en cours</Text>
+              </View>
+              <Text className="text-sm text-primary-600">
+                Vous continuez l'enregistrement de vos règles actuelles. Les informations seront mises à jour automatiquement.
+              </Text>
+            </View>
+          )}
+
+          {/* Flow Intensity */}
+        <View className="p-4 mb-4 rounded-xl border shadow-sm bg-surface border-border-light">
+          <Text className="mb-4 text-lg font-bold text-brand-text">Intensité du flux</Text>
           
           <View className="space-y-3">
             {[1, 2, 3, 4, 5].map((intensity) => (
@@ -174,7 +262,7 @@ const PeriodLoggingScreen = ({ onClose }: PeriodLoggingScreenProps) => {
                     : 'border-border bg-surface'
                 }`}
               >
-                <View className="flex-row items-center justify-between">
+                <View className="flex-row justify-between items-center">
                   <View className="flex-1">
                     <Text className={`font-medium ${
                       flowIntensity === intensity ? 'text-primary-700' : 'text-brand-text'
@@ -207,52 +295,72 @@ const PeriodLoggingScreen = ({ onClose }: PeriodLoggingScreenProps) => {
         </View>
 
         {/* Notes */}
-        <View className="bg-surface rounded-xl p-4 shadow-sm border border-border-light mb-6">
-          <Text className="text-lg font-bold text-brand-text mb-4">Notes (optionnel)</Text>
-          <View className="bg-primary-50 border border-primary-200 p-4 rounded-xl">
-            <Text className="text-primary-600 text-sm">
-              Ajoutez des notes sur votre cycle : symptômes, humeur, douleurs, etc.
-            </Text>
-          </View>
+        <View className="p-4 mb-6 rounded-xl border shadow-sm bg-surface border-border-light">
+          <Text className="mb-4 text-lg font-bold text-brand-text">Notes (optionnel)</Text>
+          <TextInput
+            className="p-4 rounded-xl border bg-primary-50 border-primary-200 text-brand-text min-h-24"
+            placeholder="Ex: Crampes légères, fatigue, humeur irritable..."
+            placeholderTextColor="#A99985"
+            value={notes}
+            onChangeText={setNotes}
+            multiline={true}
+            numberOfLines={4}
+            textAlignVertical="top"
+            autoCorrect={true}
+            autoCapitalize="sentences"
+            returnKeyType="done"
+            blurOnSubmit={true}
+            style={{ 
+              fontSize: 16,
+              lineHeight: 22,
+              minHeight: 96
+            }}
+          />
+          <Text className="mt-2 text-xs text-secondary-500">
+            Ces informations vous aideront à mieux comprendre votre cycle
+          </Text>
         </View>
 
         {/* Action Buttons */}
-        <View className="flex-row space-x-3 mb-6">
+        <View className="flex-row mb-6 space-x-3">
           <TouchableOpacity
             onPress={onClose}
-            className="flex-1 bg-secondary-200 py-4 rounded-xl"
+            className="flex-1 py-4 rounded-xl bg-secondary-200"
             disabled={loading}
           >
-            <Text className="text-secondary-700 font-bold text-center text-lg">Annuler</Text>
+            <Text className="text-lg font-bold text-center text-secondary-700">Annuler</Text>
           </TouchableOpacity>
           
           <TouchableOpacity
             onPress={handleLogPeriod}
-            className="flex-1 bg-primary-500 py-4 rounded-xl"
+            className="flex-1 py-4 rounded-xl bg-primary-500"
             disabled={loading}
           >
             {loading ? (
               <ActivityIndicator color="white" />
             ) : (
-              <Text className="text-surface font-bold text-center text-lg">Enregistrer</Text>
+              <Text className="text-lg font-bold text-center text-surface">
+                {isNewCycle ? 'Commencer le cycle' : 'Mettre à jour'}
+              </Text>
             )}
           </TouchableOpacity>
         </View>
 
         {/* Info Card */}
-        <View className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+        <View className="p-4 mb-6 bg-blue-50 rounded-xl border border-blue-200">
           <View className="flex-row items-start">
             <Ionicons name="information-circle" size={20} color="#3B82F6" />
             <View className="flex-1 ml-3">
-              <Text className="text-blue-800 font-medium mb-1">Pourquoi enregistrer ?</Text>
-              <Text className="text-blue-700 text-sm">
+              <Text className="mb-1 font-medium text-blue-800">Pourquoi enregistrer ?</Text>
+              <Text className="text-sm text-blue-700">
                 Enregistrer vos règles nous aide à vous fournir des recommandations personnalisées 
                 et à suivre votre cycle pour une meilleure compréhension de votre corps.
               </Text>
             </View>
           </View>
         </View>
-              </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

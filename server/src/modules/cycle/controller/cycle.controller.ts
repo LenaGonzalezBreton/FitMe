@@ -26,6 +26,7 @@ import { LogPeriodUseCase } from '../application/use-cases/log-period.use-case';
 import { GetPeriodsHistoryUseCase } from '../application/use-cases/get-periods-history.use-case';
 import { GetCyclePredictionsUseCase } from '../application/use-cases/get-cycle-predictions.use-case';
 import { GetCycleCalendarUseCase } from '../application/use-cases/get-cycle-calendar.use-case';
+import { GetCycleComparisonUseCase } from '../application/use-cases/get-cycle-comparison.use-case';
 import { LogSymptomsUseCase } from '../application/use-cases/log-symptoms.use-case';
 import { GetSymptomsHistoryUseCase } from '../application/use-cases/get-symptoms-history.use-case';
 import {
@@ -37,6 +38,7 @@ import {
   PeriodsHistoryResponseDto,
   CyclePredictionsResponseDto,
   CycleCalendarResponseDto,
+  CycleComparisonResponseDto,
   LogSymptomsDto,
   LogSymptomsResponseDto,
   SymptomsHistoryResponseDto,
@@ -65,6 +67,7 @@ export class CycleController {
     private readonly getPeriodsHistoryUseCase: GetPeriodsHistoryUseCase,
     private readonly getCyclePredictionsUseCase: GetCyclePredictionsUseCase,
     private readonly getCycleCalendarUseCase: GetCycleCalendarUseCase,
+    private readonly getCycleComparisonUseCase: GetCycleComparisonUseCase,
     private readonly logSymptomsUseCase: LogSymptomsUseCase,
     private readonly getSymptomsHistoryUseCase: GetSymptomsHistoryUseCase,
   ) {}
@@ -267,14 +270,23 @@ export class CycleController {
     @Request() req: AuthenticatedRequest,
     @Body() logDto: LogPeriodDto,
   ): Promise<LogPeriodResponseDto> {
+    console.log('🎯 CycleController.logPeriod called with:', {
+      userId: req.user.id,
+      userEmail: req.user.email,
+      body: logDto
+    });
+
     try {
+      console.log('📞 Calling LogPeriodUseCase.execute...');
       const result = await this.logPeriodUseCase.execute({
         userId: req.user.id,
-        startDate: new Date(logDto.startDate),
+        startDate: logDto.startDate ? new Date(logDto.startDate) : undefined,
         endDate: logDto.endDate ? new Date(logDto.endDate) : undefined,
         flowIntensity: logDto.flowIntensity,
         notes: logDto.notes,
+        isNewCycle: logDto.isNewCycle,
       });
+      console.log('✅ LogPeriodUseCase.execute completed successfully');
 
       const periodDto = {
         id: result.period.id,
@@ -286,6 +298,7 @@ export class CycleController {
         notes: logDto.notes,
       };
 
+      console.log('🎉 CycleController.logPeriod returning success response');
       return {
         period: periodDto,
         message: result.isNewCycle
@@ -294,6 +307,12 @@ export class CycleController {
         isNewCycle: result.isNewCycle,
       };
     } catch (error) {
+      console.error('❌ CycleController.logPeriod error:', {
+        error: error,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      });
+      
       const message =
         error instanceof Error
           ? error.message
@@ -352,12 +371,14 @@ export class CycleController {
         toDate: toDate ? new Date(toDate) : undefined,
       });
 
-      const periodsDto = result.periods.map((period) => ({
-        id: period.id,
-        startDate: period.startDate.toISOString(),
-        periodLength: period.periodLength,
-        cycleLength: period.cycleLength,
-        isRegular: period.isRegular || true,
+      const periodsDto = result.periods.map((periodWithSymptoms) => ({
+        id: periodWithSymptoms.cycle.id,
+        startDate: periodWithSymptoms.cycle.startDate.toISOString(),
+        periodLength: periodWithSymptoms.cycle.periodLength,
+        cycleLength: periodWithSymptoms.cycle.cycleLength,
+        isRegular: periodWithSymptoms.cycle.isRegular || true,
+        flowIntensity: periodWithSymptoms.flowIntensity,
+        notes: periodWithSymptoms.notes,
       }));
 
       return {
@@ -488,6 +509,88 @@ export class CycleController {
     }
   }
 
+  @Get('comparison')
+  @ApiOperation({
+    summary: 'Comparer les cycles récents',
+    description:
+      'Analyse comparative des derniers cycles avec tendances et insights',
+  })
+  @ApiQuery({
+    name: 'lastNCycles',
+    required: false,
+    type: Number,
+    description: 'Nombre de cycles à comparer (défaut: 3)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Comparaison des cycles calculée avec succès',
+    type: CycleComparisonResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Pas assez de données pour la comparaison',
+  })
+  async getCycleComparison(
+    @Request() req: AuthenticatedRequest,
+    @Query('lastNCycles') lastNCycles?: number,
+  ): Promise<CycleComparisonResponseDto> {
+    try {
+      const result = await this.getCycleComparisonUseCase.execute({
+        userId: req.user.id,
+        lastNCycles,
+      });
+
+      const cyclesDto = result.cycles.map((cycle) => ({
+        cycleNumber: cycle.cycleNumber,
+        startDate: cycle.startDate.toISOString().split('T')[0],
+        cycleLength: cycle.cycleLength,
+        periodLength: cycle.periodLength,
+        isRegular: cycle.isRegular,
+        flowIntensity: cycle.flowIntensity,
+        notes: cycle.notes,
+      }));
+
+      const trendsDto = result.trends.map((trend) => ({
+        metric: trend.metric,
+        trend: trend.trend,
+        change: trend.change,
+        changePercentage: trend.changePercentage,
+        description: trend.description,
+      }));
+
+      const averagesDto = {
+        cycleLength: result.averages.cycleLength,
+        periodLength: result.averages.periodLength,
+        regularityRate: result.averages.regularityRate,
+      };
+
+      const comparedPeriodDto = {
+        startDate: result.comparedPeriod.startDate.toISOString().split('T')[0],
+        endDate: result.comparedPeriod.endDate.toISOString().split('T')[0],
+        totalCycles: result.comparedPeriod.totalCycles,
+      };
+
+      return {
+        cycles: cyclesDto,
+        trends: trendsDto,
+        insights: result.insights,
+        averages: averagesDto,
+        comparedPeriod: comparedPeriodDto,
+        message: `Comparaison de ${result.cycles.length} cycles récents avec tendances et insights`,
+      };
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Erreur lors de la comparaison des cycles';
+      const statusCode =
+        error instanceof Error && error.message.includes('trouvé')
+          ? HttpStatus.NOT_FOUND
+          : HttpStatus.BAD_REQUEST;
+      throw new HttpException(message, statusCode);
+    }
+  }
+
   // ============================================
   // Suivi des symptômes
   // ============================================
@@ -534,7 +637,7 @@ export class CycleController {
         }
 
         return {
-          id: symptom.id!,
+          id: symptom.id,
           type: symptom.symptomType,
           intensity,
           notes,

@@ -129,10 +129,11 @@ export interface UpdateCycleConfigRequest {
 
 // Period tracking types
 export interface LogPeriodRequest {
-  startDate: string;
+  startDate?: string; // Optionnel quand isNewCycle = false
   endDate?: string;
   flowIntensity?: number;
   notes?: string;
+  isNewCycle?: boolean; // true = nouveau cycle, false = continuer cycle actuel
 }
 
 export interface Period {
@@ -174,4 +175,78 @@ export interface PeriodsHistoryResponse {
   averageCycleLength: number;
   averagePeriodLength: number;
   regularityPercentage: number;
+}
+
+// Cycle Predictions types
+export interface CyclePredictions {
+  nextPeriodStart: string;
+  nextOvulation: string;
+  confidence: number;
+  currentCycleDay: number;
+  currentCycleCharacteristics: string;
+  daysUntilNextPeriod: number;
+  daysUntilOvulation: number;
+}
+
+export interface CyclePredictionsResponse {
+  predictions: CyclePredictions;
+  message: string;
+}
+
+// Cycle Comparison types
+export interface CycleComparisonData {
+  cycleNumber: number;
+  startDate: string;
+  cycleLength: number;
+  periodLength: number;
+  isRegular: boolean;
+  flowIntensity?: number;
+  notes?: string;
+}
+
+export interface CycleTrend {
+  metric: string;
+  trend: 'increasing' | 'decreasing' | 'stable';
+  change: number;
+  changePercentage: number;
+  description: string;
+}
+
+export interface CycleComparisonAverages {
+  cycleLength: number;
+  periodLength: number;
+  regularityRate: number;
+}
+
+export interface CycleComparisonPeriod {
+  startDate: string;
+  endDate: string;
+  totalCycles: number;
+}
+
+export interface CycleComparisonResponse {
+  cycles: CycleComparisonData[];
+  trends: CycleTrend[];
+  insights: string[];
+  averages: CycleComparisonAverages;
+  comparedPeriod: CycleComparisonPeriod;
+  message: string;
+}
+
+// Cycle Calendar types
+export interface CalendarDay {
+  date: string;
+  phase: string;
+  cycleDay: number;
+  dayType: string;
+  events: string[];
+  isPredicted: boolean;
+}
+
+export interface CycleCalendarResponse {
+  calendar: CalendarDay[];
+  startDate: string;
+  endDate: string;
+  monthsCount: number;
+  message: string;
 }

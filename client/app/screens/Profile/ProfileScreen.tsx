@@ -15,7 +15,7 @@ import {
 import { NavigationProp } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
 import { useProfile } from '../../hooks/useProfile';
-import { useCycle } from '../../hooks/useCycle';
+import { useCycleContext } from '../../context/CycleContext';
 import { useStreak } from '../../hooks/useStreak';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
@@ -47,7 +47,7 @@ interface ProfileData {
 
 const ProfileScreen = ({ navigation }: ProfileScreenProps) => {
   const { logout } = useAuth();
-  const { currentCycle, cycleConfig, getCycleCharacteristics, getCycleEmoji, getCycleColor } = useCycle();
+  const { currentCycle, cycleConfig, getCycleCharacteristics, getCycleEmoji, getCycleColor } = useCycleContext();
   const { streakData } = useStreak();
   const {
     profileData,
@@ -421,12 +421,12 @@ const ProfileScreen = ({ navigation }: ProfileScreenProps) => {
                   <View className="bg-primary-50 p-3 rounded-lg">
                     <View className="flex-row items-center justify-between mb-2">
                       <Text className="text-sm font-semibold text-primary-700">Cycle actuel</Text>
-                      <View className={`${getCycleColor(currentCycle.cycleDay, currentCycle.isPeriodDay, currentCycle.isOvulationPhase, currentCycle.isFertileDay)} rounded-full w-8 h-8 items-center justify-center`}>
-                        <Text className="text-brand-text text-sm">{getCycleEmoji(currentCycle.cycleDay, currentCycle.isPeriodDay, currentCycle.isOvulationPhase, currentCycle.isFertileDay)}</Text>
+                      <View className={`${getCycleColor(currentCycle.cycleDay, currentCycle.isPeriodDay, currentCycle.isOvulationPhase, currentCycle.isFertileDay, currentCycle.cycleLength)} rounded-full w-8 h-8 items-center justify-center`}>
+                        <Text className="text-brand-text text-sm">{getCycleEmoji(currentCycle.cycleDay, currentCycle.isPeriodDay, currentCycle.isOvulationPhase, currentCycle.isFertileDay, currentCycle.cycleLength)}</Text>
                       </View>
                     </View>
                     <Text className="text-sm text-primary-600 mb-1">
-                      {getCycleCharacteristics(currentCycle.cycleDay, currentCycle.isPeriodDay, currentCycle.isOvulationPhase, currentCycle.isFertileDay)} - Jour {currentCycle.cycleDay}
+                      {getCycleCharacteristics(currentCycle.cycleDay, currentCycle.isPeriodDay, currentCycle.isOvulationPhase, currentCycle.isFertileDay, currentCycle.cycleLength)} - Jour {currentCycle.cycleDay}
                     </Text>
                     <Text className="text-xs text-primary-500">
                       {currentCycle.daysUntilNextCycle > 0 

@@ -12,7 +12,7 @@ import {
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { usePrograms } from '../../hooks/usePrograms';
-import { useCycle } from '../../hooks/useCycle';
+import { useCycleContext } from '../../context/CycleContext';
 import { workoutApi } from '../../services/api';
 
 interface WorkoutExercise {
@@ -43,7 +43,7 @@ const WorkoutSessionScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { activeProgram } = usePrograms();
-  const { currentCycle } = useCycle();
+  const { currentCycle } = useCycleContext();
   
   const [workoutSession, setWorkoutSession] = useState<WorkoutSession | null>(null);
   const [loading, setLoading] = useState(true);
