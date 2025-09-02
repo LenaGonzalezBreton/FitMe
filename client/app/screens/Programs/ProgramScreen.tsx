@@ -30,7 +30,6 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
     refreshPrograms,
     loadMorePrograms,
     hasMorePrograms,
-    generateProgram,
     startProgram,
     deleteProgram 
   } = usePrograms({
@@ -51,37 +50,6 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
     }
   };
 
-  // Handle program generation
-  const handleGenerateProgram = async () => {
-    const randomSeed = Math.floor(Math.random() * 1_000_000);
-    const response = await generateProgram({
-      duration: 30,
-      sessionType: 'mixed',
-      randomSeed,
-    } as any);
-
-    if (!response) {
-      setShowPresets(true);
-      return;
-    }
-
-    Alert.alert(
-      'Programme généré !',
-      `${response.message}\n\nVoulez-vous commencer ce programme maintenant ?`,
-      [
-        { text: 'Plus tard', style: 'cancel' },
-        { 
-          text: 'Commencer', 
-          onPress: () => {
-            if (programs.length > 0) {
-              const latestProgram = programs[0];
-              startProgram(latestProgram.id);
-            }
-          }
-        }
-      ]
-    );
-  };
 
   // Helper functions
   const formatDuration = (startDate: string, endDate?: string): string => {
@@ -292,16 +260,7 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
         </View>
 
         {/* Action Buttons */}
-        <View className="mb-6 space-y-3">
-          <TouchableOpacity
-            onPress={handleGenerateProgram}
-            className="bg-primary-500 rounded-xl p-4 flex-row items-center justify-center shadow-sm active:bg-primary-600"
-            disabled={programsLoading}
-          >
-            <Text className="text-surface text-xl mr-2">✨</Text>
-            <Text className="text-surface font-bold text-lg">Générer un programme adapté</Text>
-          </TouchableOpacity>
-          
+        <View className="mb-6 space-y-3">          
           <TouchableOpacity
             onPress={() => navigation.navigate('CreateProgram')}
             className="bg-secondary-500 rounded-xl p-4 flex-row items-center justify-center shadow-sm active:bg-secondary-600"
@@ -350,21 +309,12 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
               </Text>
               <View className="bg-primary-50 rounded-lg p-3 mb-4 w-full">
                 <Text className="text-primary-700 text-center font-medium">
-                  Programme personnalisé disponible
+                  Programmes préconfigurés disponibles
                 </Text>
                 <Text className="text-primary-600 text-center text-sm">
-                  Générez un programme adapté à vos objectifs
+                  Choisissez un programme préconfiguré adapté à vos objectifs
                 </Text>
               </View>
-              <TouchableOpacity
-                onPress={handleGenerateProgram}
-                className="bg-primary-500 py-3 px-6 rounded-xl w-full active:bg-primary-600"
-                disabled={programsLoading}
-              >
-                <Text className="text-surface font-bold text-center">
-                  {programsLoading ? 'Génération...' : 'Générer mon premier programme'}
-                </Text>
-              </TouchableOpacity>
             </View>
           )}
 
@@ -375,6 +325,10 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
               <TouchableOpacity
                 key={program.id}
                 className="bg-surface rounded-xl p-4 mb-4 shadow-sm border border-border-light active:bg-surface-secondary"
+                onPress={() => {
+                  setSelectedProgram(program);
+                  setShowExercises(true);
+                }}
               >
                 {/* Program Header */}
                 <View className="flex-row items-start justify-between mb-3">
@@ -391,7 +345,7 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
                       {program.goal || 'Programme d\'entraînement personnalisé'}
                     </Text>
                   </View>
-                  <View className={`w-4 h-4 rounded-full ${program.isActive ? 'bg-success-500' : 'bg-secondary-300'}`} />
+                  <View className={`w-3 h-3 rounded-full ${program.isActive ? 'bg-success-500' : 'bg-secondary-300'}`} />
                 </View>
 
                 {/* Program Stats */}
@@ -443,7 +397,8 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
                 <View className="flex-row space-x-2">
                   <TouchableOpacity 
                     className="flex-1 bg-primary-500 py-3 rounded-lg active:bg-primary-600"
-                    onPress={() => {
+                    onPress={(e) => {
+                      e.stopPropagation(); // Prevent modal from opening
                       if (!program.isActive) {
                         startProgram(program.id);
                       } else {
@@ -457,7 +412,8 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
                   </TouchableOpacity>
                   <TouchableOpacity 
                     className="bg-error-100 py-3 px-4 rounded-lg active:bg-error-200"
-                    onPress={() => {
+                    onPress={(e) => {
+                      e.stopPropagation(); // Prevent modal from opening
                       Alert.alert(
                         'Supprimer',
                         'Voulez-vous supprimer ce programme ?',
@@ -469,15 +425,6 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
                     }}
                   >
                     <Text className="text-error-700 font-medium">Supprimer</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity 
-                    className="bg-secondary-200 py-3 px-4 rounded-lg active:bg-secondary-300"
-                    onPress={() => {
-                      setSelectedProgram(program);
-                      setShowExercises(true);
-                    }}
-                  >
-                    <Text className="text-secondary-700 font-medium">👀</Text>
                   </TouchableOpacity>
                 </View>
               </TouchableOpacity>

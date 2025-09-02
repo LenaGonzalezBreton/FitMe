@@ -187,6 +187,9 @@ export const programApi = {
     duration?: number;
     focusZone?: string;
     sessionType?: 'cardio' | 'strength' | 'flexibility' | 'mixed';
+    phase?: 'menstrual' | 'follicular' | 'ovulation' | 'luteal';
+    trainingType?: string;
+    randomSeed?: number;
   }) => {
     const response = await api.post('/programs/generate', params);
     return response.data;
@@ -501,9 +504,8 @@ export const exerciseApi = {
   createExercise: async (exerciseData: {
     title: string;
     description: string;
-    category: string;
     intensity: 'LOW' | 'MEDIUM' | 'HIGH';
-    muscleGroups: string[];
+    muscleZone: string;
     duration: number;
     instructions?: string;
     imageUrl?: string;
@@ -516,9 +518,8 @@ export const exerciseApi = {
   updateExercise: async (id: string, updates: Partial<{
     title: string;
     description: string;
-    category: string;
     intensity: 'LOW' | 'MEDIUM' | 'HIGH';
-    muscleGroups: string[];
+    muscleZone: string;
     duration: number;
     instructions: string;
     imageUrl: string;
@@ -537,12 +538,18 @@ export const exerciseApi = {
   searchExercises: async (query: string, params?: {
     category?: string;
     intensity?: string;
-    muscleGroup?: string;
+    muscleZone?: string;
     limit?: number;
     offset?: number;
   }) => {
-    const response = await api.get('/exercises/search', { 
-      params: { query, ...params } 
+    const response = await api.get('/exercises', { 
+      params: { 
+        search: query,
+        limit: params?.limit || 20,
+        offset: params?.offset || 0,
+        intensity: params?.intensity,
+        muscleZone: params?.muscleZone
+      } 
     });
     return response.data;
   },

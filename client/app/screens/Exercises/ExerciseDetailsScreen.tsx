@@ -12,9 +12,9 @@ interface Exercise {
   description: string;
   duration: number;
   intensity: 'LOW' | 'MEDIUM' | 'HIGH';
-  category: string;
-  muscleGroups: string[];
-  phaseRecommendations: string[];
+  category?: string;
+  muscleZone?: string;
+  phaseRecommendations?: string[];
   imageUrl?: string;
 }
 
@@ -55,6 +55,17 @@ export default function ExerciseDetailScreen() {
         case 'MEDIUM': return 'bg-warning-100 text-warning-700';
         case 'HIGH': return 'bg-error-100 text-error-700';
         default: return 'bg-secondary-100 text-secondary-700';
+      }
+    };
+
+    const getMuscleZoneLabel = (zone: string): string => {
+      switch (zone) {
+        case 'UPPER_BODY': return 'Haut du corps';
+        case 'LOWER_BODY': return 'Bas du corps';
+        case 'CORE': return 'Abdominaux';
+        case 'FULL_BODY': return 'Corps entier';
+        case 'CARDIO': return 'Cardio';
+        default: return zone;
       }
     };
 
@@ -158,26 +169,24 @@ export default function ExerciseDetailScreen() {
                     <Text className="text-brand-text leading-6">{exercise?.description || ''}</Text>
                 </View>
 
-                {/* Muscle Groups */}
-                {exercise && exercise.muscleGroups.length > 0 && (
+                {/* Muscle Zone */}
+                {exercise && exercise.muscleZone && (
                     <View className="bg-surface rounded-xl p-4 border border-border-light mb-6">
-                        <Text className="text-lg font-semibold text-brand-text mb-3">Groupes musculaires</Text>
+                        <Text className="text-lg font-semibold text-brand-text mb-3">Zone musculaire</Text>
                         <View className="flex-row flex-wrap gap-2">
-                            {exercise.muscleGroups.map((muscle, index) => (
-                                <View key={index} className="bg-accent-100 px-3 py-2 rounded-full">
-                                    <Text className="text-accent-700 font-medium text-sm">{muscle}</Text>
-                                </View>
-                            ))}
+                            <View className="bg-accent-100 px-3 py-2 rounded-full">
+                                <Text className="text-accent-700 font-medium text-sm">{getMuscleZoneLabel(exercise.muscleZone)}</Text>
+                            </View>
                         </View>
                     </View>
                 )}
 
                 {/* Phase Recommendations */}
-                {exercise && exercise.phaseRecommendations.length > 0 && (
+                {exercise && exercise.phaseRecommendations && exercise.phaseRecommendations.length > 0 && (
                     <View className="bg-surface rounded-xl p-4 border border-border-light mb-6">
                         <Text className="text-lg font-semibold text-brand-text mb-3">Recommandations par phase</Text>
                         <View className="space-y-2">
-                            {exercise.phaseRecommendations.map((recommendation, index) => (
+                            {exercise.phaseRecommendations?.map((recommendation, index) => (
                                 <View key={index} className="flex-row items-start">
                                     <View className="w-2 h-2 bg-primary-500 rounded-full mr-3 mt-2" />
                                     <Text className="text-brand-text flex-1">{recommendation}</Text>
@@ -235,6 +244,10 @@ export default function ExerciseDetailScreen() {
               onClose={() => {
                 setShowEdit(false);
               }}
+              onSave={(updatedExercise) => {
+                setExercise(updatedExercise);
+                setShowEdit(false);
+              }}
               initial={{
                 id: exercise?.id,
                 title: exercise?.title,
@@ -242,7 +255,7 @@ export default function ExerciseDetailScreen() {
                 duration: exercise?.duration,
                 intensity: exercise?.intensity,
                 category: exercise?.category,
-                muscleGroups: exercise?.muscleGroups,
+                muscleZone: exercise?.muscleZone,
                 imageUrl: exercise?.imageUrl,
               }}
             />

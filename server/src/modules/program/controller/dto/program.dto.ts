@@ -19,8 +19,8 @@ export class GenerateProgramDto {
   @ApiProperty({
     type: Number,
     required: false,
-    example: 30,
-    description: 'Durée souhaitée en minutes (défaut: 30)',
+    example: undefined,
+    description: 'Durée souhaitée en minutes (optionnel - la durée sera calculée automatiquement basée sur les exercices sélectionnés)',
   })
   @IsOptional()
   @Type(() => Number)

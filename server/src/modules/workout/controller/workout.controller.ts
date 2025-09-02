@@ -63,11 +63,11 @@ export class WorkoutController {
   })
   async startWorkoutSession(
     @Body() body: { programId?: string; title?: string },
-    @Request() req: { user: { sub: string } },
+    @Request() req: { user: { id: string } },
   ) {
     try {
       const result = await this.startWorkoutSessionUseCase.execute({
-        userId: req.user.sub,
+        userId: req.user.id,
         programId: body.programId,
         title: body.title,
       });
@@ -171,11 +171,11 @@ export class WorkoutController {
   })
   async getUserWorkoutSessions(
     @Query() query: { limit?: string; offset?: string; fromDate?: string; toDate?: string; status?: string },
-    @Request() req: { user: { sub: string } },
+    @Request() req: { user: { id: string } },
   ) {
     try {
       const result = await this.getUserWorkoutSessionsUseCase.execute({
-        userId: req.user.sub,
+        userId: req.user.id,
         limit: query.limit ? parseInt(query.limit) : undefined,
         offset: query.offset ? parseInt(query.offset) : undefined,
         fromDate: query.fromDate ? new Date(query.fromDate) : undefined,
@@ -205,11 +205,11 @@ export class WorkoutController {
   })
   async getWorkoutStats(
     @Query() query: { period?: string; fromDate?: string; toDate?: string },
-    @Request() req: { user: { sub: string } },
+    @Request() req: { user: { id: string } },
   ) {
     try {
       const result = await this.getWorkoutStatsUseCase.execute({
-        userId: req.user.sub,
+        userId: req.user.id,
         period: query.period as any,
         fromDate: query.fromDate ? new Date(query.fromDate) : undefined,
         toDate: query.toDate ? new Date(query.toDate) : undefined,

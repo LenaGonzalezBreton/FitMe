@@ -1,389 +1,544 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, SafeAreaView, TouchableOpacity, Image, ActivityIndicator, RefreshControl } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Alert, RefreshControl, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { AppStackParamList } from '../../types';
+import { useAuth } from '../../context/AuthContext';
 import { useCycle } from '../../hooks/useCycle';
 import { exerciseApi } from '../../services/api';
-import { Ionicons } from '@expo/vector-icons';
 import ExerciseFormModal from '../../components/ExerciseFormModal';
+import { INTENSITY_OPTIONS, MUSCLE_ZONE_OPTIONS, getIntensityLabel, getMuscleZoneLabel } from '../../utils/constants';
 
 interface Exercise {
   id: string;
   title: string;
-  description: string;
-  duration: number;
-  intensity: 'LOW' | 'MEDIUM' | 'HIGH';
-  category: string;
-  muscleGroups: string[];
-  phaseRecommendations: string[];
-  imageUrl?: string;
+  description?: string;
+  duration?: number;
+  intensity?: string;
+  muscleZone?: string;
+  createdBy?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
-interface ExerciseCategory {
-  id: string;
-  name: string;
-  icon: string;
-  color: string;
-}
-
-const ExercicesScreen = () => {
-  const [selectedCategory, setSelectedCategory] = useState('all');
+const ExercicesScreen: React.FC = () => {
+  const navigation = useNavigation();
+  const { user } = useAuth();
+  const { currentCycle } = useCycle();
+  
   const [exercises, setExercises] = useState<Exercise[]>([]);
-  const [categories, setCategories] = useState<ExerciseCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [intensityFilter, setIntensityFilter] = useState<'ALL' | 'LOW' | 'MEDIUM' | 'HIGH'>('ALL');
-  const [phaseFilter, setPhaseFilter] = useState<'ALL' | 'menstrual' | 'follicular' | 'ovulation' | 'luteal'>('ALL');
-  const [limit, setLimit] = useState(20);
-  const [offset, setOffset] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const [showExerciseForm, setShowExerciseForm] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [editingExercise, setEditingExercise] = useState<Exercise | null>(null);
   
-  const { currentCycle } = useCycle();
-  const navigation = useNavigation<NativeStackNavigationProp<AppStackParamList, 'Exercices'>>();
+  // Filters
+  const [showAllExercises, setShowAllExercises] = useState(false);
+  const [selectedPhase, setSelectedPhase] = useState<string>('follicular');
+  const [selectedIntensity, setSelectedIntensity] = useState<string>('');
+  const [selectedMuscleZone, setSelectedMuscleZone] = useState<string>('');
 
-  // Map current cycle to API phase key
-  const getPhaseKey = (): string | undefined => {
-    if (!currentCycle) return undefined;
-    if (currentCycle.isPeriodDay) return 'menstrual';
-    if (currentCycle.isOvulationPhase) return 'ovulation';
-    const midPoint = Math.ceil(currentCycle.cycleLength / 2);
-    return currentCycle.cycleDay <= midPoint ? 'follicular' : 'luteal';
-  };
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const itemsPerPage = 20;
 
-  // Fetch exercises from API (filtered by current phase when available)
-  const fetchExercises = async (opts?: { append?: boolean; reset?: boolean }) => {
+  const phases = [
+    { value: 'menstrual', label: 'Menstruelle' },
+    { value: 'follicular', label: 'Folliculaire' },
+    { value: 'ovulation', label: 'Ovulation' },
+    { value: 'luteal', label: 'Lutéale' }
+  ];
+
+  useEffect(() => {
+    if (currentCycle?.cycleDescription) {
+      // Extract phase from cycle description or use default
+      const phaseMap: { [key: string]: string } = {
+        'menstrual': 'menstrual',
+        'follicular': 'follicular', 
+        'ovulation': 'ovulation',
+        'luteal': 'luteal'
+      };
+      
+      for (const [key, value] of Object.entries(phaseMap)) {
+        if (currentCycle.cycleDescription.toLowerCase().includes(key)) {
+          setSelectedPhase(value);
+          break;
+        }
+      }
+    }
+  }, [currentCycle]);
+
+  useEffect(() => {
+    // Reset to first page and clear exercises when filters change
+    setCurrentPage(1);
+    setExercises([]);
+    fetchExercises(true);
+  }, [selectedPhase, selectedIntensity, selectedMuscleZone, showAllExercises]);
+
+  useEffect(() => {
+    // Debounce search to avoid too many API calls
+    const timeoutId = setTimeout(() => {
+      if (searchQuery !== undefined) {
+        setCurrentPage(1);
+        setExercises([]);
+        fetchExercises(true);
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    // Handle pagination
+    if (currentPage > 1) {
+      fetchExercises();
+    }
+  }, [currentPage]);
+
+  const fetchExercises = useCallback(async (isRefresh = false) => {
     try {
       setLoading(true);
-      setError(null);
-      const phaseParam = phaseFilter === 'ALL' ? getPhaseKey() : phaseFilter;
-      const intensityParam = intensityFilter === 'ALL' ? undefined : (intensityFilter === 'MEDIUM' ? 'MODERATE' : intensityFilter);
-      const response = await exerciseApi.getExercises({
-        phase: phaseParam as 'menstrual' | 'follicular' | 'ovulation' | 'luteal' | undefined,
-        intensity: intensityParam as any,
-        limit,
-        offset,
-      });
-      const list = response.exercises || [];
-      setHasMore(list.length === limit);
-      if (opts?.append) {
-        setExercises(prev => [...prev, ...list]);
-      } else {
-        setExercises(list);
+      
+      const params: any = {
+        limit: itemsPerPage,
+        offset: isRefresh ? 0 : (currentPage - 1) * itemsPerPage
+      };
+
+      if (!showAllExercises && selectedPhase) {
+        params.phase = selectedPhase;
       }
-    } catch (err: any) {
-      setError(err.message || 'Erreur lors du chargement des exercices');
-      console.error('Error fetching exercises:', err);
-      setExercises([]);
+      
+      if (selectedIntensity) {
+        params.intensity = selectedIntensity;
+      }
+      
+      if (selectedMuscleZone) {
+        params.muscleZone = selectedMuscleZone;
+      }
+
+      if (searchQuery) {
+        params.search = searchQuery;
+      }
+
+      const response = await exerciseApi.getExercises(params);
+      const exercisesData = response.data || response;
+      
+      // Ensure we have unique exercises by ID
+      const newExercises = exercisesData.exercises || [];
+      const uniqueExercises = newExercises.filter((exercise: Exercise, index: number, self: Exercise[]) => 
+        index === self.findIndex((e: Exercise) => e.id === exercise.id)
+      );
+      
+      if (isRefresh) {
+        setExercises(uniqueExercises);
+        setCurrentPage(1);
+      } else {
+        setExercises(prev => {
+          const combined = [...prev, ...uniqueExercises];
+          // Remove duplicates based on ID
+          return combined.filter((exercise, index, self) => 
+            index === self.findIndex(e => e.id === exercise.id)
+          );
+        });
+      }
+      
+      setHasMore(uniqueExercises.length === itemsPerPage);
+    } catch (error) {
+      console.error('Error fetching exercises:', error);
+      Alert.alert('Erreur', 'Impossible de charger les exercices');
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
-  };
+  }, [currentPage, showAllExercises, selectedPhase, selectedIntensity, selectedMuscleZone, searchQuery, itemsPerPage]);
 
-  // Fetch exercise categories from API
-  const fetchCategories = async () => {
-    try {
-      const response = await exerciseApi.getCategories();
-      setCategories(response.categories || []);
-    } catch (err: any) {
-      console.error('Error fetching categories:', err);
-      // Fallback to default categories if API fails
-      setCategories([
-        { id: 'cardio', name: 'Cardio', icon: '💓', color: 'bg-accent-100' },
-        { id: 'strength', name: 'Musculation', icon: '💪', color: 'bg-primary-100' },
-        { id: 'flexibility', name: 'Flexibilité', icon: '🧘‍♀️', color: 'bg-primary-200' },
-        { id: 'recovery', name: 'Récupération', icon: '🛁', color: 'bg-accent-200' },
-      ]);
-    }
-  };
-
-  const onRefresh = async () => {
+  const onRefresh = useCallback(() => {
     setRefreshing(true);
-    setOffset(0);
-    await Promise.all([fetchExercises({ reset: true }), fetchCategories()]);
-    setRefreshing(false);
-  };
+    fetchExercises(true);
+  }, [fetchExercises]);
 
-  useEffect(() => {
-    fetchExercises();
-    fetchCategories();
-    // Re-fetch when cycle day/phase changes
-  }, [currentCycle?.cycleDay, currentCycle?.isPeriodDay, currentCycle?.isOvulationPhase]);
+  const loadMore = useCallback(() => {
+    if (hasMore && !loading) {
+      setCurrentPage(prev => prev + 1);
+    }
+  }, [hasMore, loading]);
 
-  useEffect(() => {
-    // Refetch when filters or pagination change
-    fetchExercises();
-  }, [intensityFilter, phaseFilter, limit, offset]);
-
-  // Filter exercises based on selected category
-  const filteredExercises = selectedCategory === 'all'
-    ? exercises
-    : exercises.filter(exercise => exercise.category === selectedCategory);
-
-  const getIntensityColor = (intensity: string): string => {
-    switch (intensity) {
-      case 'LOW': return 'bg-success-100 text-success-700';
-      case 'MEDIUM': return 'bg-warning-100 text-warning-700';
-      case 'HIGH': return 'bg-error-100 text-error-700';
-      default: return 'bg-secondary-100 text-secondary-700';
+  const handleCreateExercise = async (exerciseData: any) => {
+    try {
+      const newExercise = await exerciseApi.createExercise(exerciseData);
+      setExercises(prev => [newExercise, ...prev]);
+      Alert.alert('Succès', 'Exercice créé avec succès');
+    } catch (error: any) {
+      Alert.alert('Erreur', error?.response?.data?.message || 'Impossible de créer l\'exercice');
     }
   };
 
-  const getIntensityLabel = (intensity: string): string => {
-    switch (intensity) {
-      case 'LOW': return 'Faible';
-      case 'MEDIUM': return 'Modérée';
-      case 'HIGH': return 'Élevée';
-      default: return 'Non définie';
+  const handleUpdateExercise = async (exerciseData: any) => {
+    if (!editingExercise) return;
+    
+    try {
+      const updatedExercise = await exerciseApi.updateExercise(editingExercise.id, exerciseData);
+      setExercises(prev => prev.map(ex => ex.id === editingExercise.id ? updatedExercise : ex));
+      setEditingExercise(null);
+      Alert.alert('Succès', 'Exercice mis à jour avec succès');
+    } catch (error: any) {
+      Alert.alert('Erreur', error?.response?.data?.message || 'Impossible de mettre à jour l\'exercice');
     }
   };
 
-  const formatDuration = (minutes: number): string => {
-    if (minutes < 60) return `${minutes} min`;
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return mins > 0 ? `${hours}h ${mins}min` : `${hours}h`;
-  };
-
-  if (loading) {
-    return (
-      <SafeAreaView className="flex-1 bg-brand-background">
-        <View className="flex-1 justify-center items-center">
-          <ActivityIndicator size="large" color="#8B5A3C" />
-          <Text className="text-brand-text mt-4">Chargement des exercices...</Text>
-        </View>
-      </SafeAreaView>
+  const handleDeleteExercise = async (exerciseId: string) => {
+    Alert.alert(
+      'Confirmer la suppression',
+      'Êtes-vous sûr de vouloir supprimer cet exercice ?',
+      [
+        { text: 'Annuler', style: 'cancel' },
+        {
+          text: 'Supprimer',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await exerciseApi.deleteExercise(exerciseId);
+              setExercises(prev => prev.filter(ex => ex.id !== exerciseId));
+              Alert.alert('Succès', 'Exercice supprimé avec succès');
+            } catch (error: any) {
+              Alert.alert('Erreur', error?.response?.data?.message || 'Impossible de supprimer l\'exercice');
+            }
+          }
+        }
+      ]
     );
-  }
+  };
 
-  if (error) {
-    return (
-      <SafeAreaView className="flex-1 bg-brand-background">
-        <ScrollView className="flex-1 px-6">
-          <View className="pt-16 pb-6">
-            <Text className="text-3xl font-bold text-brand-text mb-2">Exercices</Text>
+  const filteredExercises = exercises.filter(exercise => {
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      if (!exercise.title.toLowerCase().includes(query) && 
+          !exercise.description?.toLowerCase().includes(query)) {
+        return false;
+      }
+    }
+    return true;
+  });
+
+  const clearFilters = () => {
+    setSelectedIntensity('');
+    setSelectedMuscleZone('');
+    setSearchQuery('');
+    setCurrentPage(1);
+    // The useEffect will handle fetching exercises when these values change
+  };
+
+  const renderExerciseCard = useCallback((exercise: Exercise) => (
+    <TouchableOpacity 
+      className="bg-white rounded-lg p-4 mb-3 border border-gray-100"
+      onPress={() => {
+        const params = { exerciseId: exercise.id };
+        (navigation as any).navigate('ExerciseDetail', params);
+      }}
+    >
+      <View className="flex-row items-start justify-between">
+        <View className="flex-1">
+          <Text className="text-lg font-semibold text-brand-dark-bg mb-2">
+            {exercise.title}
+          </Text>
+          
+          {exercise.description && (
+            <Text className="text-sm text-gray-600 mb-2" numberOfLines={2}>
+              {exercise.description}
+            </Text>
+          )}
+          
+          <View className="flex-row items-center space-x-4 mb-2">
+            {exercise.duration && (
+              <View className="flex-row items-center">
+                <Text className="text-sm text-gray-600 mr-1">Durée:</Text>
+                <Text className="text-sm font-medium text-brand-dark-bg">
+                  {exercise.duration}min
+                </Text>
+              </View>
+            )}
+            
+            {exercise.intensity && (
+              <View className="flex-row items-center">
+                <Text className="text-sm text-gray-600 mr-1">Intensité:</Text>
+                <Text className="text-sm font-medium text-brand-dark-bg">
+                  {getIntensityLabel(exercise.intensity)}
+                </Text>
+              </View>
+            )}
+            
+            {exercise.muscleZone && (
+              <View className="flex-row items-center">
+                <Text className="text-sm text-gray-600 mr-1">Zone:</Text>
+                <Text className="text-sm font-medium text-brand-dark-bg">
+                  {getMuscleZoneLabel(exercise.muscleZone)}
+                </Text>
+              </View>
+            )}
           </View>
           
-          <View className="flex-1 justify-center items-center py-20">
-            <Text className="text-6xl mb-4">🏗️</Text>
-            <Text className="text-xl font-bold text-brand-text mb-2 text-center">
-              En cours de développement
-            </Text>
-            <Text className="text-secondary-600 text-center mb-6">
-              {error}
-            </Text>
-            <TouchableOpacity
-              onPress={onRefresh}
-              className="bg-primary-500 py-3 px-6 rounded-xl"
-            >
-              <Text className="text-surface font-bold">Réessayer</Text>
-            </TouchableOpacity>
+          <View className="flex-row items-center space-x-2">
+            {exercise.createdBy ? (
+              <View className="bg-blue-100 px-2 py-1 rounded">
+                <Text className="text-xs text-blue-700">Personnel</Text>
+              </View>
+            ) : (
+              <View className="bg-green-100 px-2 py-1 rounded">
+                <Text className="text-xs text-green-700">Système</Text>
+              </View>
+            )}
           </View>
-        </ScrollView>
-      </SafeAreaView>
-    );
-  }
+        </View>
+        
+        <View className="flex-row space-x-2">
+          {exercise.createdBy === user?.id && (
+            <>
+              <TouchableOpacity
+                onPress={(e) => {
+                  e.stopPropagation();
+                  setEditingExercise(exercise);
+                }}
+                className="bg-blue-100 p-2 rounded-lg"
+              >
+                <Text className="text-blue-600 font-bold">✏️</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={(e) => {
+                  e.stopPropagation();
+                  handleDeleteExercise(exercise.id);
+                }}
+                className="bg-red-100 p-2 rounded-lg"
+              >
+                <Text className="text-red-600 font-bold">🗑️</Text>
+              </TouchableOpacity>
+            </>
+          )}
+          <View className="bg-primary-100 p-2 rounded-lg">
+            <Text className="text-primary-600 font-bold">👁️</Text>
+          </View>
+        </View>
+      </View>
+    </TouchableOpacity>
+  ), [navigation]);
 
   return (
-    <SafeAreaView className="flex-1 bg-brand-background">
-      <ScrollView 
-        className="flex-1 px-6"
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-      >
-        {/* Header */}
-        <View className="pt-16 pb-6">
-          <View className="flex-row items-center justify-between">
-            <View className="flex-1">
-              <Text className="text-3xl font-bold text-brand-text mb-2">Exercices</Text>
-              {currentCycle && (
-                <Text className="text-sm text-secondary-600">
-                  Recommandations adaptées à votre cycle (jour {currentCycle.cycleDay})
-                </Text>
-              )}
-            </View>
-            <TouchableOpacity
-              onPress={() => setShowExerciseForm(true)}
-              className="bg-secondary-500 rounded-xl px-4 py-2 ml-4"
-            >
-              <Text className="text-surface font-bold">Créer</Text>
-            </TouchableOpacity>
+    <View className="flex-1 bg-brand-background">
+      {/* Header */}
+      <View className="bg-white border-b border-gray-200 px-6 py-4 pt-12">
+        <View className="flex-row items-center justify-between mb-4">
+          <Text className="text-2xl font-bold text-brand-dark-bg">
+            Exercices
+          </Text>
+          <TouchableOpacity
+            onPress={() => setShowCreateModal(true)}
+            className="bg-primary-500 px-4 py-2 rounded-lg"
+          >
+            <Text className="text-white font-medium">+ Créer</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Search Input */}
+        <View className="mb-4">
+          <Text className="text-xs text-gray-500 mb-1">Rechercher</Text>
+          <View className="bg-gray-100 rounded-lg px-3 py-2">
+            <TextInput
+              placeholder="Rechercher un exercice..."
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              className="text-sm text-gray-700"
+            />
           </View>
+        </View>
+
+        {/* Toggle Mode */}
+        <View className="flex-row bg-gray-100 rounded-lg p-1 mb-4">
+          <TouchableOpacity
+            onPress={() => setShowAllExercises(false)}
+            className={`flex-1 py-2 px-4 rounded-md ${
+              !showAllExercises ? 'bg-white shadow-sm' : ''
+            }`}
+          >
+            <Text className={`text-center font-medium ${
+              !showAllExercises ? 'text-primary-600' : 'text-gray-600'
+            }`}>
+              Adaptés au cycle
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => setShowAllExercises(true)}
+            className={`flex-1 py-2 px-4 rounded-md ${
+              showAllExercises ? 'bg-white shadow-sm' : ''
+            }`}
+          >
+            <Text className={`text-center font-medium ${
+              showAllExercises ? 'text-primary-600' : 'text-gray-600'
+            }`}>
+              Tous les exercices
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* Filters */}
-        <View className="mb-6">
-          <Text className="text-lg font-semibold text-brand-text mb-3">Catégories</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
-            <TouchableOpacity
-              onPress={() => setSelectedCategory('all')}
-              className={`mr-3 px-4 py-2 rounded-xl shadow-sm ${
-                selectedCategory === 'all' ? 'bg-primary-500' : 'bg-surface border border-border'
-              }`}
-            >
-              <Text className={`font-medium ${
-                selectedCategory === 'all' ? 'text-surface' : 'text-brand-text'
-              }`}>
-                Tous
-              </Text>
-            </TouchableOpacity>
-
-            {categories.map((category) => (
-              <TouchableOpacity
-                key={category.id}
-                onPress={() => setSelectedCategory(category.id)}
-                className={`mr-3 px-4 py-2 rounded-xl flex-row items-center shadow-sm ${
-                  selectedCategory === category.id ? 'bg-primary-500' : 'bg-surface border border-border'
-                }`}
-              >
-                <Text className="mr-2">{category.icon}</Text>
-                <Text className={`font-medium ${
-                  selectedCategory === category.id ? 'text-surface' : 'text-brand-text'
-                }`}>
-                  {category.name}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-          {/* Phase filter */}
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row mt-3">
-            {['ALL','menstrual','follicular','ovulation','luteal'].map((p) => (
-              <TouchableOpacity
-                key={p}
-                onPress={() => { setOffset(0); setPhaseFilter(p as any); }}
-                className={`mr-3 px-3 py-2 rounded-lg ${phaseFilter === p ? 'bg-primary-500' : 'bg-surface border border-border'}`}
-              >
-                <Text className={`${phaseFilter === p ? 'text-surface' : 'text-brand-text'}`}>
-                  {p === 'ALL' ? 'Toutes phases' : p === 'menstrual' ? 'Menstruelle' : p === 'follicular' ? 'Folliculaire' : p === 'ovulation' ? 'Ovulation' : 'Lutéale'}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-          {/* Intensity filter */}
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row mt-3">
-            {['ALL','LOW','MEDIUM','HIGH'].map((i) => (
-              <TouchableOpacity
-                key={i}
-                onPress={() => { setOffset(0); setIntensityFilter(i as any); }}
-                className={`mr-3 px-3 py-2 rounded-lg ${intensityFilter === i ? 'bg-accent-500' : 'bg-surface border border-border'}`}
-              >
-                <Text className={`${intensityFilter === i ? 'text-surface' : 'text-brand-text'}`}>
-                  {i === 'ALL' ? 'Toutes intensités' : i === 'LOW' ? 'Faible' : i === 'MEDIUM' ? 'Modérée' : 'Élevée'}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-
-        {/* Exercises List */}
-        <View className="mb-6">
-          <Text className="text-lg font-semibold text-brand-text mb-4">
-            {selectedCategory === 'all' ? 'Tous les exercices' : `Exercices ${categories.find(c => c.id === selectedCategory)?.name}`} 
-            ({filteredExercises.length})
-          </Text>
-          
-          {filteredExercises.length === 0 ? (
-            <View className="bg-surface rounded-xl p-8 items-center shadow-sm border border-border-light">
-              <Text className="text-4xl mb-3">📝</Text>
-              <Text className="text-lg font-bold text-brand-text mb-2 text-center">
-                Aucun exercice disponible
-              </Text>
-              <Text className="text-secondary-600 text-center">
-                {selectedCategory === 'all' 
-                  ? 'Les exercices seront bientôt disponibles via l\'API'
-                  : `Aucun exercice trouvé dans la catégorie ${categories.find(c => c.id === selectedCategory)?.name}`
-                }
-              </Text>
-            </View>
-          ) : (
-            <View className="flex-row flex-wrap justify-between">
-              {filteredExercises.map((exercise) => (
-                <TouchableOpacity
-                  key={exercise.id}
-                  className="bg-surface rounded-xl p-4 mb-4 w-[48%] shadow-sm border border-border-light active:bg-surface-secondary"
-                  onPress={() => navigation.navigate('ExerciseDetail', { exerciseId: exercise.id })}
-                >
-                  <View className="items-center mb-3">
-                    {exercise.imageUrl ? (
-                      <Image 
-                        source={{ uri: exercise.imageUrl }} 
-                        className="w-24 h-24 rounded-lg" 
-                        resizeMode="cover" 
-                      />
-                    ) : (
-                      <View className="w-24 h-24 bg-primary-100 rounded-lg items-center justify-center">
-                        <Ionicons name="fitness" size={32} color="#8B5A3C" />
-                      </View>
-                    )}
-                  </View>
-                  
-                  <Text className="text-brand-text font-bold text-center text-base mb-1">
-                    {exercise.title}
-                  </Text>
-                  
-                  <Text className="text-secondary-600 text-center text-sm mb-2">
-                    {formatDuration(exercise.duration)}
-                  </Text>
-                  
-                  <View className="flex-row justify-center mb-2">
-                    <View className={`px-2 py-1 rounded-full ${getIntensityColor(exercise.intensity)}`}>
-                      <Text className="text-xs font-medium">
-                        {getIntensityLabel(exercise.intensity)}
+        <View className="mb-4">
+                    {!showAllExercises && (
+            <View className="mb-3">
+              <Text className="text-xs text-gray-500 mb-1">Phase</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <View className="flex-row">
+                  {phases.map((phase) => (
+                    <TouchableOpacity
+                      key={phase.value}
+                      onPress={() => setSelectedPhase(phase.value)}
+                      className={`px-3 py-1 rounded-full mr-2 ${
+                        selectedPhase === phase.value
+                          ? 'bg-primary-500'
+                          : 'bg-gray-200'
+                      }`}
+                    >
+                      <Text
+                        className={`text-xs font-medium ${
+                          selectedPhase === phase.value ? 'text-white' : 'text-gray-700'
+                        }`}
+                      >
+                        {phase.label}
                       </Text>
-                    </View>
-                  </View>
-                  
-                  {exercise.muscleGroups.length > 0 && (
-                    <Text className="text-xs text-secondary-500 text-center">
-                      {exercise.muscleGroups.slice(0, 2).join(', ')}
-                      {exercise.muscleGroups.length > 2 && '...'}
-                    </Text>
-                  )}
-                </TouchableOpacity>
-              ))}
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </ScrollView>
             </View>
           )}
+
+          <View className="mb-3">
+            <Text className="text-xs text-gray-500 mb-1">Intensité</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              <View className="flex-row">
+                {INTENSITY_OPTIONS.map((intensity) => (
+                  <TouchableOpacity
+                    key={intensity.value}
+                    onPress={() => setSelectedIntensity(
+                      selectedIntensity === intensity.value ? '' : intensity.value
+                    )}
+                    className={`px-3 py-1 rounded-full mr-2 ${
+                          selectedIntensity === intensity.value
+                            ? 'bg-primary-500'
+                            : 'bg-gray-200'
+                        }`}
+                  >
+                    <Text
+                      className={`text-xs font-medium ${
+                        selectedIntensity === intensity.value ? 'text-white' : 'text-gray-700'
+                      }`}
+                    >
+                      {intensity.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </ScrollView>
+          </View>
+
+          <View className="mb-3">
+            <Text className="text-xs text-gray-500 mb-1">Zone musculaire</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              <View className="flex-row">
+                {MUSCLE_ZONE_OPTIONS.map((zone) => (
+                  <TouchableOpacity
+                    key={zone.value}
+                    onPress={() => setSelectedMuscleZone(
+                      selectedMuscleZone === zone.value ? '' : zone.value
+                    )}
+                    className={`px-3 py-1 rounded-full mr-2 ${
+                          selectedMuscleZone === zone.value
+                            ? 'bg-primary-500'
+                            : 'bg-gray-200'
+                        }`}
+                  >
+                    <Text
+                      className={`text-xs font-medium ${
+                        selectedMuscleZone === zone.value ? 'text-white' : 'text-gray-700'
+                      }`}
+                    >
+                      {zone.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </ScrollView>
+          </View>
         </View>
 
-        {/* Pagination */}
-        {hasMore && (
-          <View className="mb-8">
-            <TouchableOpacity
-              onPress={() => setOffset(prev => prev + limit)}
-              className="bg-secondary-200 py-3 rounded-xl"
-            >
-              <Text className="text-secondary-700 font-bold text-center">Charger plus</Text>
-            </TouchableOpacity>
-          </View>
+        {/* Clear Filters */}
+        {(selectedIntensity || selectedMuscleZone || searchQuery) && (
+          <TouchableOpacity
+            onPress={clearFilters}
+            className="self-start bg-gray-200 px-3 py-1 rounded-full mb-2"
+          >
+            <Text className="text-xs text-gray-600">Effacer les filtres</Text>
+          </TouchableOpacity>
         )}
+      </View>
 
-        {/* Coming Soon Section */}
-        <View className="bg-primary-50 border border-primary-200 rounded-xl p-4 mb-6">
-          <View className="flex-row items-start">
-            <Ionicons name="information-circle" size={20} color="#8B5A3C" />
-            <View className="flex-1 ml-3">
-              <Text className="text-primary-800 font-medium mb-1">Fonctionnalités à venir</Text>
-              <Text className="text-primary-700 text-sm">
-                • Recherche et filtres avancés{'\n'}
-                • Recommandations personnalisées selon votre cycle{'\n'}
-                • Vidéos et instructions détaillées{'\n'}
-                • Historique des exercices pratiqués
-              </Text>
-            </View>
+      {/* Exercise List */}
+      <ScrollView
+        className="flex-1 px-6 py-4"
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        onScroll={({ nativeEvent }) => {
+          const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
+          const paddingToBottom = 20;
+          if (layoutMeasurement.height + contentOffset.y >= 
+              contentSize.height - paddingToBottom) {
+            loadMore();
+          }
+        }}
+        scrollEventThrottle={400}
+      >
+        {loading && exercises.length === 0 ? (
+          <View className="flex-1 items-center justify-center py-20">
+            <Text className="text-lg text-gray-500">Chargement...</Text>
           </View>
-        </View>
+        ) : filteredExercises.length === 0 ? (
+          <View className="flex-1 items-center justify-center py-20">
+            <Text className="text-lg text-gray-500 text-center mb-4">
+              Aucun exercice trouvé
+            </Text>
+            <Text className="text-sm text-gray-400 text-center">
+              Essayez de modifier vos filtres ou créez un nouvel exercice
+            </Text>
+          </View>
+        ) : (
+          <>
+            {filteredExercises.map((exercise) => (
+              <View key={exercise.id}>
+                {renderExerciseCard(exercise)}
+              </View>
+            ))}
+            {hasMore && (
+              <View className="py-4">
+                <Text className="text-center text-gray-500">Chargement...</Text>
+              </View>
+            )}
+          </>
+        )}
       </ScrollView>
 
-      {/* Exercise Create/Edit Modal */}
+      {/* Modals */}
       <ExerciseFormModal
-        visible={showExerciseForm}
-        onClose={async () => {
-          setShowExerciseForm(false);
-          await fetchExercises();
-        }}
+        visible={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSave={handleCreateExercise}
       />
-    </SafeAreaView>
+
+      <ExerciseFormModal
+        visible={!!editingExercise}
+        onClose={() => setEditingExercise(null)}
+        onSave={handleUpdateExercise}
+        initial={editingExercise}
+      />
+    </View>
   );
 };
 

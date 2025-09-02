@@ -63,6 +63,10 @@ export class PrismaExerciseRepository implements IExerciseRepository {
   async findWithFilters(filters: ExerciseFilters): Promise<Exercise[]> {
     const where: any = {};
 
+    // Always include public exercises (createdBy is null)
+    // This ensures seeded exercises are available to all users
+    where.createdBy = null;
+
     if (filters.intensity) {
       where.intensity = filters.intensity;
     }
@@ -79,6 +83,24 @@ export class PrismaExerciseRepository implements IExerciseRepository {
       if (typeof filters.maxDuration !== 'undefined' && filters.maxDuration !== null) {
         where.duration.lte = Number(filters.maxDuration);
       }
+    }
+
+    // Add search functionality
+    if (filters.search) {
+      where.OR = [
+        {
+          title: {
+            contains: filters.search,
+            mode: 'insensitive', // Case-insensitive search
+          },
+        },
+        {
+          description: {
+            contains: filters.search,
+            mode: 'insensitive', // Case-insensitive search
+          },
+        },
+      ];
     }
 
     const prismaData = await this.prisma.exercise.findMany({

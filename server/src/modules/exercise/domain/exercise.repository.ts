@@ -83,6 +83,7 @@ export interface ExerciseFilters {
   muscleZone?: MuscleZone;
   minDuration?: number;
   maxDuration?: number;
+  search?: string;
   tags?: string[];
 }
 

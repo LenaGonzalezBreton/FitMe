@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useCycle } from '../../hooks/useCycle';
 import { usePrograms } from '../../hooks/usePrograms';
 import { programApi } from '../../services/api';
+import { INTENSITY_OPTIONS, MUSCLE_ZONE_OPTIONS } from '../../utils/constants';
 
 interface ProgramType {
   id: string;
@@ -30,7 +31,7 @@ const CreateProgramScreen = () => {
   const [selectedType, setSelectedType] = useState('');
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
   const [duration, setDuration] = useState<string>('4');
-  const [focusZone, setFocusZone] = useState<string>('');
+  const [focusZones, setFocusZones] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -132,15 +133,17 @@ const CreateProgramScreen = () => {
       setLoading(true);
       setError(null);
 
-      const response = await programApi.createProgram({
-        title: programTitle,
-        type: selectedType,
-        trainingDays: selectedDays,
-        startDate: new Date().toISOString(),
-        duration: parseInt(duration),
-        focusZone,
-        cyclePhase: currentCycle?.cycleDay || null
-      });
+              const response = await programApi.createProgram({
+          title: programTitle,
+          goal: `Programme ${selectedType} - ${focusZones.length > 0 ? `Zones: ${focusZones.map(zone => MUSCLE_ZONE_OPTIONS.find(z => z.value === zone)?.label).join(', ')}` : 'Toutes zones'} - ${duration} semaines`,
+          startDate: new Date().toISOString(),
+          // Note: Backend doesn't support these fields yet:
+          // type: selectedType,
+          // trainingDays: selectedDays,
+          // duration: parseInt(duration),
+          // focusZone: focusZones.join(','),
+          // cyclePhase: currentCycle?.cycleDay || null
+        });
 
       Alert.alert(
         'Programme créé !',
@@ -166,6 +169,7 @@ const CreateProgramScreen = () => {
       setLoading(true);
       setError(null);
 
+      // Get current phase from cycle
       const phase = currentCycle
         ? (currentCycle.isPeriodDay
             ? 'menstrual'
@@ -174,18 +178,18 @@ const CreateProgramScreen = () => {
               : currentCycle.cycleDay <= Math.ceil(currentCycle.cycleLength / 2)
                 ? 'follicular'
                 : 'luteal')
-        : undefined;
+        : 'follicular'; // Default fallback
 
-      const randomSeed = Math.floor(Math.random() * 1_000_000);
+      console.log('[Program Generation] Sending params:', {
+        focusZone: focusZones.length > 0 ? focusZones[0] : undefined, // Send only first zone
+        sessionType: selectedType
+      });
 
       const response = await generateProgram({
-        duration: parseInt(duration),
-        focusZone: focusZone || undefined,
+        focusZone: focusZones.length > 0 ? focusZones[0] : undefined, // Send only first zone
         sessionType: selectedType as 'cardio' | 'strength' | 'flexibility' | 'mixed',
-        // Extra params passed through; backend can ignore if unsupported
-        ...(phase ? { phase } : {}),
-        randomSeed,
-      } as any);
+        // Don't send duration - let backend use default (30 minutes)
+      });
 
       if (response) {
         Alert.alert(
@@ -317,27 +321,53 @@ const CreateProgramScreen = () => {
           <Text className="text-lg font-semibold text-brand-text mb-3">Paramètres</Text>
           
           <View className="space-y-4">
-            <View>
-              <Text className="text-sm font-medium text-secondary-600 mb-2">Durée (en semaines)</Text>
-              <TextInput
-                className="bg-surface border border-border p-3 rounded-xl text-brand-text"
-                placeholder="4"
-                placeholderTextColor="#A99985"
-                value={duration}
-                onChangeText={setDuration}
-                keyboardType="numeric"
-              />
-            </View>
+                         <View>
+               <Text className="text-sm font-medium text-secondary-600 mb-2">Durée du programme (en semaines)</Text>
+               <Text className="text-xs text-secondary-500 mb-2">
+                 Pour la planification - la durée des séances sera calculée automatiquement
+               </Text>
+               <TextInput
+                 className="bg-surface border border-border p-3 rounded-xl text-brand-text"
+                 placeholder="4"
+                 placeholderTextColor="#A99985"
+                 value={duration}
+                 onChangeText={setDuration}
+                 keyboardType="numeric"
+               />
+             </View>
             
             <View>
               <Text className="text-sm font-medium text-secondary-600 mb-2">Zone de focus (optionnel)</Text>
-              <TextInput
-                className="bg-surface border border-border p-3 rounded-xl text-brand-text"
-                placeholder="Ex: Jambes, Haut du corps, Core..."
-                placeholderTextColor="#A99985"
-                value={focusZone}
-                onChangeText={setFocusZone}
-              />
+              <View className="space-y-2">
+                {MUSCLE_ZONE_OPTIONS.map((zone) => (
+                  <TouchableOpacity
+                    key={zone.value}
+                    onPress={() => {
+                      setFocusZones(prev => 
+                        prev.includes(zone.value) 
+                          ? prev.filter(z => z !== zone.value)
+                          : [...prev, zone.value]
+                      );
+                    }}
+                    className={`border rounded-xl p-3 flex-row items-center justify-between ${
+                      focusZones.includes(zone.value) 
+                        ? 'bg-primary-50 border-primary-500' 
+                        : 'bg-surface border-border'
+                    }`}
+                  >
+                    <Text className={`text-lg font-semibold ${
+                      focusZones.includes(zone.value) ? 'text-primary-700' : 'text-brand-text'
+                    }`}>
+                      {zone.label}
+                    </Text>
+                    {focusZones.includes(zone.value) && (
+                      <View className="bg-primary-500 rounded-full w-6 h-6 items-center justify-center">
+                        <Ionicons name="checkmark" size={16} color="white" />
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
           </View>
         </View>
@@ -409,10 +439,12 @@ const CreateProgramScreen = () => {
                   {selectedDays.length} jour{selectedDays.length > 1 ? 's' : ''}/semaine
                 </Text>
               </View>
-              {focusZone && (
+              {focusZones.length > 0 && (
                 <View className="flex-row">
                   <Text className="text-secondary-600 w-20">Focus:</Text>
-                  <Text className="text-brand-text font-medium flex-1">{focusZone}</Text>
+                  <Text className="text-brand-text font-medium flex-1">
+                    {focusZones.map(zone => MUSCLE_ZONE_OPTIONS.find(z => z.value === zone)?.label).join(', ')}
+                  </Text>
                 </View>
               )}
             </View>
@@ -441,40 +473,28 @@ const CreateProgramScreen = () => {
             )}
           </TouchableOpacity>
           
-          <TouchableOpacity 
-            onPress={handleGenerateProgram}
-            disabled={!selectedType || loading}
-            className={`py-4 rounded-xl items-center ${
-              selectedType ? 'bg-accent-500 active:bg-accent-600' : 'bg-gray-300'
-            }`}
-          >
-            {loading ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              <Text className={`text-lg font-bold ${
-                selectedType ? 'text-surface' : 'text-gray-500'
-              }`}>
-                🎯 Générer un programme IA
-              </Text>
-            )}
+                     <TouchableOpacity 
+             onPress={handleGenerateProgram}
+             disabled={!programTitle || !selectedType || selectedDays.length === 0 || focusZones.length === 0 || loading}
+             className={`py-4 rounded-xl items-center ${
+               programTitle && selectedType && selectedDays.length > 0 && focusZones.length > 0
+                 ? 'bg-accent-500 active:bg-accent-600' 
+                 : 'bg-gray-300'
+             }`}
+           >
+                         {loading ? (
+               <ActivityIndicator color="white" />
+             ) : (
+               <Text className={`text-lg font-bold ${
+                 programTitle && selectedType && selectedDays.length > 0 && focusZones.length > 0 ? 'text-surface' : 'text-gray-500'
+               }`}>
+                 🎯 Générer un programme adapté
+               </Text>
+             )}
           </TouchableOpacity>
         </View>
 
-        {/* Coming Soon Section */}
-        <View className="bg-primary-50 border border-primary-200 rounded-xl p-4 mb-6">
-          <View className="flex-row items-start">
-            <Ionicons name="information-circle" size={20} color="#8B5A3C" />
-            <View className="flex-1 ml-3">
-              <Text className="text-primary-800 font-medium mb-1">Fonctionnalités à venir</Text>
-              <Text className="text-primary-700 text-sm">
-                • Création d'exercices personnalisés{'\n'}
-                • Modèles de programmes prédéfinis{'\n'}
-                • Suivi des performances{'\n'}
-                • Partage de programmes
-              </Text>
-            </View>
-          </View>
-        </View>
+
       </ScrollView>
     </SafeAreaView>
   );

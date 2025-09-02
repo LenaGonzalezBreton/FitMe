@@ -24,6 +24,16 @@ export class ExerciseQueryDto {
   phase?: string;
 
   @ApiProperty({
+    type: String,
+    required: false,
+    example: 'squats',
+    description: 'Terme de recherche pour filtrer les exercices par titre ou description',
+  })
+  @IsOptional()
+  @IsString()
+  search?: string;
+
+  @ApiProperty({
     enum: Intensity,
     required: false,
     example: Intensity.MODERATE,

@@ -927,16 +927,26 @@
     "/exercises": {
       "get": {
         "operationId": "ExerciseController_getExercises",
-        "summary": "Récupérer les exercices par phase de cycle",
-        "description": "Retourne une liste d'exercices adaptés à la phase de cycle spécifiée",
+        "summary": "Récupérer les exercices",
+        "description": "Retourne une liste d'exercices. Si une phase est spécifiée, retourne les exercices adaptés à cette phase. Sinon, retourne tous les exercices avec filtres optionnels.",
         "parameters": [
           {
             "name": "phase",
             "required": false,
             "in": "query",
-            "description": "Phase du cycle menstruel (menstrual, follicular, ovulation, luteal)",
+            "description": "Phase du cycle menstruel (menstrual, follicular, ovulation, luteal). Si non spécifiée, retourne tous les exercices.",
             "schema": {
               "example": "follicular",
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Terme de recherche pour filtrer les exercices par titre ou description",
+            "schema": {
+              "example": "squats",
               "type": "string"
             }
           },
@@ -995,6 +1005,17 @@
               "minimum": 1,
               "maximum": 50,
               "example": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "description": "Décalage de pagination (offset)",
+            "schema": {
+              "minimum": 0,
+              "example": 0,
               "type": "number"
             }
           }

@@ -22,6 +22,9 @@ export interface UseProgramsReturn {
     duration?: number;
     focusZone?: string;
     sessionType?: 'cardio' | 'strength' | 'flexibility' | 'mixed';
+    phase?: 'menstrual' | 'follicular' | 'ovulation' | 'luteal';
+    trainingType?: string;
+    randomSeed?: number;
   }) => Promise<GeneratedProgramResponse | null>;
   startProgram: (programId: string) => Promise<boolean>;
   deleteProgram: (programId: string) => Promise<boolean>;
