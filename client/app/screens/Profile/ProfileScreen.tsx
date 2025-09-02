@@ -400,7 +400,9 @@ const ProfileScreen = ({ navigation }: ProfileScreenProps) => {
                     </Text>
                     <Text className="text-sm text-secondary-600">
                       {cycleConfig.isCycleTrackingEnabled 
-                        ? `Cycle de ${cycleConfig.averageCycleLength} jours, règles de ${(currentCycle?.periodLength ?? cycleConfig.averagePeriodLength)} jours`
+                        ? currentCycle
+                          ? `Cycle de ${currentCycle.cycleLength} jours, règles de ${currentCycle.periodLength} jours`
+                          : `Cycle de ${cycleConfig.averageCycleLength} jours, règles de ${cycleConfig.averagePeriodLength} jours`
                         : 'Le suivi de votre cycle est désactivé'
                       }
                     </Text>

@@ -10,9 +10,9 @@ export interface UseCycleReturn {
   refreshCycle: () => Promise<void>;
   refreshConfig: () => Promise<void>;
   updateCycleConfig: (config: UpdateCycleConfigRequest) => Promise<boolean>;
-  getCycleCharacteristics: (cycleDay: number, isPeriodDay: boolean, isOvulationPhase: boolean, isFertileDay: boolean) => string;
-  getCycleEmoji: (cycleDay: number, isPeriodDay: boolean, isOvulationPhase: boolean, isFertileDay: boolean) => string;
-  getCycleColor: (cycleDay: number, isPeriodDay: boolean, isOvulationPhase: boolean, isFertileDay: boolean) => string;
+  getCycleCharacteristics: (cycleDay: number, isPeriodDay: boolean, isOvulationPhase: boolean, isFertileDay: boolean, cycleLength?: number) => string;
+  getCycleEmoji: (cycleDay: number, isPeriodDay: boolean, isOvulationPhase: boolean, isFertileDay: boolean, cycleLength?: number) => string;
+  getCycleColor: (cycleDay: number, isPeriodDay: boolean, isOvulationPhase: boolean, isFertileDay: boolean, cycleLength?: number) => string;
 }
 
 export const useCycle = (): UseCycleReturn => {
@@ -64,42 +64,45 @@ export const useCycle = (): UseCycleReturn => {
     }
   };
 
-  const getCycleCharacteristics = (cycleDay: number, isPeriodDay: boolean, isOvulationPhase: boolean, isFertileDay: boolean): string => {
+  const getCycleCharacteristics = (cycleDay: number, isPeriodDay: boolean, isOvulationPhase: boolean, isFertileDay: boolean, cycleLength: number = 28): string => {
+    const midPoint = Math.ceil(cycleLength / 2);
     if (isPeriodDay) {
       return 'Phase Menstruelle';
     } else if (isOvulationPhase) {
       return 'Phase d\'Ovulation';
     } else if (isFertileDay) {
       return 'Phase Fertile';
-    } else if (cycleDay <= 14) {
+    } else if (cycleDay <= midPoint) {
       return 'Phase Folliculaire';
     } else {
       return 'Phase Lutéale';
     }
   };
 
-  const getCycleEmoji = (cycleDay: number, isPeriodDay: boolean, isOvulationPhase: boolean, isFertileDay: boolean): string => {
+  const getCycleEmoji = (cycleDay: number, isPeriodDay: boolean, isOvulationPhase: boolean, isFertileDay: boolean, cycleLength: number = 28): string => {
+    const midPoint = Math.ceil(cycleLength / 2);
     if (isPeriodDay) {
       return '🌙';
     } else if (isOvulationPhase) {
       return '🌻';
     } else if (isFertileDay) {
       return '✨';
-    } else if (cycleDay <= 14) {
+    } else if (cycleDay <= midPoint) {
       return '🌱';
     } else {
       return '🍂';
     }
   };
 
-  const getCycleColor = (cycleDay: number, isPeriodDay: boolean, isOvulationPhase: boolean, isFertileDay: boolean): string => {
+  const getCycleColor = (cycleDay: number, isPeriodDay: boolean, isOvulationPhase: boolean, isFertileDay: boolean, cycleLength: number = 28): string => {
+    const midPoint = Math.ceil(cycleLength / 2);
     if (isPeriodDay) {
       return 'bg-phase-menstrual-100';
     } else if (isOvulationPhase) {
       return 'bg-phase-ovulation-100';
     } else if (isFertileDay) {
       return 'bg-phase-follicular-100';
-    } else if (cycleDay <= 14) {
+    } else if (cycleDay <= midPoint) {
       return 'bg-phase-follicular-100';
     } else {
       return 'bg-phase-luteal-100';

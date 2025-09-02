@@ -227,7 +227,7 @@ const CreateProgramScreen = () => {
               <View className="bg-primary-100 rounded-full w-10 h-10 items-center justify-center mr-3">
                 <Text className="text-primary-700 text-lg">
                   {currentCycle.isPeriodDay ? '🩸' : 
-                   currentCycle.cycleDay <= 14 ? '💪' :
+                   currentCycle.cycleDay <= Math.ceil(currentCycle.cycleLength / 2) ? '💪' :
                    currentCycle.isOvulationPhase ? '⚡' : '🧘'}
                 </Text>
               </View>
@@ -235,7 +235,7 @@ const CreateProgramScreen = () => {
                 <Text className="text-sm text-secondary-600 mb-1">Phase actuelle</Text>
                 <Text className="text-lg font-bold text-brand-text">
                   {currentCycle.isPeriodDay ? 'Menstruelle' : 
-                   currentCycle.cycleDay <= 14 ? 'Folliculaire' :
+                   currentCycle.cycleDay <= Math.ceil(currentCycle.cycleLength / 2) ? 'Folliculaire' :
                    currentCycle.isOvulationPhase ? 'Ovulatoire' : 'Lutéale'}
                 </Text>
                 <Text className="text-xs text-secondary-500">

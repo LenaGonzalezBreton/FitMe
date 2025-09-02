@@ -57,18 +57,19 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
       let progesterone = 0;
       let testosterone = 0;
       
-      // Estrogen curve - peaks around day 12-14 (ovulation)
-      if (day <= 14) {
-        estrogen = Math.sin((day / 14) * Math.PI) * 100;
+      // Estrogen curve - approximate peak near ovulation using cycle midpoint
+      const midPoint = Math.ceil(cycleLength / 2);
+      if (day <= midPoint) {
+        estrogen = Math.sin((day / midPoint) * Math.PI) * 100;
       } else {
-        estrogen = Math.sin(((day - 14) / 14) * Math.PI) * 30;
+        estrogen = Math.sin(((day - midPoint) / midPoint) * Math.PI) * 30;
       }
       
       // Progesterone curve - low until ovulation, then rises
-      if (day <= 14) {
+      if (day <= midPoint) {
         progesterone = 10 + Math.random() * 10;
       } else {
-        progesterone = 20 + Math.sin(((day - 14) / 14) * Math.PI) * 80;
+        progesterone = 20 + Math.sin(((day - midPoint) / midPoint) * Math.PI) * 80;
       }
       
       // Testosterone curve - peaks around day 8-10 and day 20-22
@@ -91,7 +92,7 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
     return data;
   };
 
-  const hormoneData = generateHormoneData(cycleConfig?.averageCycleLength || 28);
+  const hormoneData = generateHormoneData(cycleConfig?.averageCycleLength);
 
   // Cycle-based recommendations
   const getCycleRecommendations = (cycleDay: number, isPeriodDay: boolean, isOvulationPhase: boolean, isFertileDay: boolean): CycleRecommendation => {
@@ -121,7 +122,7 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
         energy: 'low',
         intensity: 'low'
       };
-    } else if (cycleDay <= 14) {
+    } else if (cycleDay <= Math.ceil((cycleConfig?.averageCycleLength || 28) / 2)) {
       return {
         cycleDay,
         title: 'Phase Folliculaire',
@@ -300,7 +301,13 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
             <View className="flex-row items-center justify-between mb-4">
               <View className="flex-1">
                 <Text className="text-2xl font-bold text-brand-text mb-1">
-                  {getCycleCharacteristics(currentCycle.cycleDay, currentCycle.isPeriodDay, currentCycle.isOvulationPhase, currentCycle.isFertileDay)}
+                  {getCycleCharacteristics(
+                    currentCycle.cycleDay,
+                    currentCycle.isPeriodDay,
+                    currentCycle.isOvulationPhase,
+                    currentCycle.isFertileDay,
+                    currentCycle.cycleLength
+                  )}
                 </Text>
                 <Text className="text-sm text-secondary-600 mb-2">
                   Jour {currentCycle.cycleDay} de votre cycle ({cycleConfig.averageCycleLength} jours)
@@ -311,8 +318,20 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
                   </Text>
                 )}
               </View>
-              <View className={`${getCycleColor(currentCycle.cycleDay, currentCycle.isPeriodDay, currentCycle.isOvulationPhase, currentCycle.isFertileDay)} rounded-full w-16 h-16 items-center justify-center`}>
-                <Text className="text-brand-text text-2xl">{getCycleEmoji(currentCycle.cycleDay, currentCycle.isPeriodDay, currentCycle.isOvulationPhase, currentCycle.isFertileDay)}</Text>
+              <View className={`${getCycleColor(
+                currentCycle.cycleDay,
+                currentCycle.isPeriodDay,
+                currentCycle.isOvulationPhase,
+                currentCycle.isFertileDay,
+                currentCycle.cycleLength
+              )} rounded-full w-16 h-16 items-center justify-center`}>
+                <Text className="text-brand-text text-2xl">{getCycleEmoji(
+                  currentCycle.cycleDay,
+                  currentCycle.isPeriodDay,
+                  currentCycle.isOvulationPhase,
+                  currentCycle.isFertileDay,
+                  currentCycle.cycleLength
+                )}</Text>
               </View>
             </View>
             
@@ -396,14 +415,19 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
               
               {/* Simple cycle visualization */}
               <View className="flex-row justify-between items-center mb-4">
-                {[1, 7, 14, 21, 28].map((day) => (
+                {(() => {
+                  const len = currentCycle.cycleLength;
+                  const quarter = Math.max(1, Math.round(len / 4));
+                  const ticks = [1, quarter, 2 * quarter, 3 * quarter, len];
+                  return ticks.map((day, idx) => (
                   <View key={day} className="items-center">
                     <View className={`w-4 h-4 rounded-full mb-2 ${
                       currentCycle.cycleDay >= day ? 'bg-primary-500' : 'bg-border'
                     }`} />
                     <Text className="text-xs text-secondary-600">J{day}</Text>
                   </View>
-                ))}
+                  ));
+                })()}
               </View>
               
               {/* Phase markers */}
