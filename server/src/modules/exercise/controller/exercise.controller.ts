@@ -42,6 +42,7 @@ import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 
 @ApiTags('Exercises')
 @ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('exercises')
 export class ExerciseController {
   constructor(
@@ -53,6 +54,26 @@ export class ExerciseController {
     private readonly rateExerciseUseCase: RateExerciseUseCase,
     private readonly createExerciseUseCase: CreateExerciseUseCase,
   ) {}
+
+  @Get('categories')
+  @ApiOperation({
+    summary: 'Récupérer les catégories d\'exercices disponibles',
+    description: 'Retourne la liste des catégories d\'exercices',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Catégories récupérées avec succès',
+  })
+  async getCategories() {
+    return {
+      categories: [
+        { id: 'cardio', name: 'Cardio', icon: '💓', color: 'bg-accent-100' },
+        { id: 'strength', name: 'Musculation', icon: '💪', color: 'bg-primary-100' },
+        { id: 'flexibility', name: 'Flexibilité', icon: '🧘‍♀️', color: 'bg-primary-200' },
+        { id: 'recovery', name: 'Récupération', icon: '🛁', color: 'bg-accent-200' },
+      ],
+    };
+  }
 
   @Get()
   @ApiOperation({
@@ -133,7 +154,6 @@ export class ExerciseController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Créer un nouvel exercice',
@@ -163,7 +183,7 @@ export class ExerciseController {
         title: createExerciseDto.title,
         description: createExerciseDto.description,
         imageUrl: createExerciseDto.imageUrl,
-        durationMinutes: createExerciseDto.durationMinutes,
+        duration: createExerciseDto.duration,
         intensity: createExerciseDto.intensity,
         muscleZone: createExerciseDto.muscleZone,
       });
@@ -174,9 +194,9 @@ export class ExerciseController {
         title: exercise.title,
         description: exercise.description,
         imageUrl: exercise.imageUrl,
-        duration: exercise.durationMinutes,
-        formattedDuration: exercise.durationMinutes
-          ? `${exercise.durationMinutes} min`
+        duration: exercise.duration,
+        formattedDuration: exercise.duration
+          ? `${exercise.duration} min`
           : 'Variable',
         intensity: exercise.intensity,
         intensityLabel: this.getIntensityLabel(exercise.intensity),
@@ -206,7 +226,6 @@ export class ExerciseController {
   }
 
   @Get('favorites')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Récupérer la liste des exercices favoris',
@@ -237,9 +256,9 @@ export class ExerciseController {
           title: favorite.exercise.title,
           description: favorite.exercise.description,
           imageUrl: favorite.exercise.imageUrl,
-          duration: favorite.exercise.durationMinutes,
-          formattedDuration: favorite.exercise.durationMinutes
-            ? `${favorite.exercise.durationMinutes} min`
+          duration: favorite.exercise.duration,
+          formattedDuration: favorite.exercise.duration
+            ? `${favorite.exercise.duration} min`
             : 'Variable',
           intensity: favorite.exercise.intensity,
           intensityLabel: this.getIntensityLabel(favorite.exercise.intensity),
@@ -310,9 +329,9 @@ export class ExerciseController {
         title: result.exercise.title,
         description: result.exercise.description,
         imageUrl: result.exercise.imageUrl,
-        duration: result.exercise.durationMinutes,
-        formattedDuration: result.exercise.durationMinutes
-          ? `${result.exercise.durationMinutes} min`
+        duration: result.exercise.duration,
+        formattedDuration: result.exercise.duration
+          ? `${result.exercise.duration} min`
           : 'Variable',
         intensity: result.exercise.intensity,
         intensityLabel: this.getIntensityLabel(result.exercise.intensity),
@@ -345,7 +364,6 @@ export class ExerciseController {
   }
 
   @Post(':id/favorite')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Ajouter un exercice aux favoris',
@@ -408,7 +426,6 @@ export class ExerciseController {
   }
 
   @Delete(':id/favorite')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Retirer un exercice des favoris',
@@ -459,7 +476,6 @@ export class ExerciseController {
   }
 
   @Post(':id/rate')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Noter un exercice',

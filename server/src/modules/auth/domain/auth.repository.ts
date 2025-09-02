@@ -95,8 +95,18 @@ export interface UserSettingsData {
   theme: 'LIGHT' | 'DARK' | 'AUTO';
   language: 'FRENCH' | 'ENGLISH';
   units: 'METRIC' | 'IMPERIAL';
-  notifications: any;
-  privacy: any;
+  notifications: {
+    email: boolean;
+    push: boolean;
+    workout: boolean;
+    cycle: boolean;
+    achievements: boolean;
+  };
+  privacy: {
+    shareProgress: boolean;
+    shareCycle: boolean;
+    allowAnalytics: boolean;
+  };
   createdAt: Date;
   updatedAt: Date;
 }

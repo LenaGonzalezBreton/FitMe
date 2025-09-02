@@ -400,7 +400,7 @@ const ProfileScreen = ({ navigation }: ProfileScreenProps) => {
                     </Text>
                     <Text className="text-sm text-secondary-600">
                       {cycleConfig.isCycleTrackingEnabled 
-                        ? `Cycle de ${cycleConfig.averageCycleLength} jours, règles de ${cycleConfig.averagePeriodLength} jours`
+                        ? `Cycle de ${cycleConfig.averageCycleLength} jours, règles de ${(currentCycle?.periodLength ?? cycleConfig.averagePeriodLength)} jours`
                         : 'Le suivi de votre cycle est désactivé'
                       }
                     </Text>
@@ -580,7 +580,7 @@ const ProfileScreen = ({ navigation }: ProfileScreenProps) => {
               <Ionicons name="chevron-forward-outline" size={20} color="#A99985" />
             </TouchableOpacity>
             
-            <TouchableOpacity className="flex-row items-center justify-between p-4 border-b border-border-light active:bg-surface-secondary">
+            <TouchableOpacity className="flex-row items-center justify-between p-4 border-b border-border-light active:bg-surface-secondary" onPress={() => navigation.navigate('CycleTracking' as never)}>
               <View className="flex-row items-center">
                 <Ionicons name="moon-outline" size={20} color="#8B5A3C" />
                 <Text className="text-brand-text ml-3">Suivi du cycle</Text>
@@ -588,7 +588,7 @@ const ProfileScreen = ({ navigation }: ProfileScreenProps) => {
               <Ionicons name="chevron-forward-outline" size={20} color="#A99985" />
             </TouchableOpacity>
             
-            <TouchableOpacity className="flex-row items-center justify-between p-4 active:bg-surface-secondary">
+            <TouchableOpacity className="flex-row items-center justify-between p-4 active:bg-surface-secondary" onPress={() => Alert.alert('Support', 'Envoyez un email à support@fitme.app')}>
               <View className="flex-row items-center">
                 <Ionicons name="help-circle-outline" size={20} color="#8B5A3C" />
                 <Text className="text-brand-text ml-3">Aide & Support</Text>

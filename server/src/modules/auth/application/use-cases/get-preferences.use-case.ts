@@ -2,6 +2,7 @@ import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import {
   IUserRepository,
   IUserSettingsRepository,
+  UserSettingsData,
 } from '../../domain/auth.repository';
 import {
   USER_REPOSITORY_TOKEN,
@@ -10,11 +11,11 @@ import {
 
 export interface GetPreferencesResponse {
   general: {
-    theme: string;
-    language: string;
-    units: string;
-    notifications: any;
-    privacy: any;
+    theme: UserSettingsData['theme'];
+    language: UserSettingsData['language'];
+    units: UserSettingsData['units'];
+    notifications: UserSettingsData['notifications'];
+    privacy: UserSettingsData['privacy'];
   };
   workouts: {
     objectives: Array<{
@@ -89,8 +90,18 @@ export class GetPreferencesUseCase {
         theme: settings?.theme || 'LIGHT',
         language: settings?.language || 'FRENCH',
         units: settings?.units || 'METRIC',
-        notifications: settings?.notifications || {},
-        privacy: settings?.privacy || {},
+        notifications: settings?.notifications || {
+          email: true,
+          push: true,
+          workout: true,
+          cycle: true,
+          achievements: true,
+        },
+        privacy: settings?.privacy || {
+          shareProgress: false,
+          shareCycle: false,
+          allowAnalytics: true,
+        },
       },
       workouts: {
         objectives: objectives.map((objective) => ({
@@ -112,8 +123,8 @@ export class GetPreferencesUseCase {
           enabled: reminder.enabled,
           time: reminder.time?.toTimeString().slice(0, 8),
         })),
-        generalEnabled: true, // Default value since notificationEnabled no longer exists
-        defaultTime: undefined, // Default value since notificationTime no longer exists
+        generalEnabled: true,
+        defaultTime: undefined,
       },
     };
   }

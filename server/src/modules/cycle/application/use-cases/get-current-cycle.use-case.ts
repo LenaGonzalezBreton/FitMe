@@ -116,15 +116,15 @@ export class GetCurrentCycleUseCase {
     isFertileDay: boolean,
   ): string {
     if (isPeriodDay) {
-      return 'Jour de règles - Période de repos et de récupération';
+      return 'Phase Menstruelle - Période de repos et de récupération';
     } else if (isOvulationPhase) {
-      return "Phase d'ovulation - Pic d'énergie, parfaite pour les entraînements intenses";
+      return "Phase d'Ovulation - Pic d'énergie, parfaite pour les entraînements intenses";
     } else if (isFertileDay) {
-      return 'Période fertile - Énergie élevée, idéale pour les entraînements modérés à intenses';
+      return 'Phase Fertile - Énergie élevée, idéale pour les entraînements modérés à intenses';
     } else if (cycleDay <= 14) {
-      return 'Phase post-règles - Énergie croissante, idéale pour commencer de nouveaux défis';
+      return 'Phase Folliculaire - Énergie croissante, idéale pour commencer de nouveaux défis';
     } else {
-      return 'Phase post-ovulation - Focus sur la force et l\'endurance modérée';
+      return 'Phase Lutéale - Focus sur la force et l\'endurance modérée';
     }
   }
 
@@ -157,17 +157,17 @@ export class GetCurrentCycleUseCase {
       ];
     } else if (cycleDay <= 14) {
       return [
-        "Commencer à augmenter l'intensité progressivement",
-        'Exercices cardiovasculaires modérés',
-        'Renforcement musculaire avec poids légers',
-        'Planifier de nouveaux objectifs',
+        "Phase Folliculaire - Commencer à augmenter l'intensité progressivement",
+        'Phase Folliculaire - Exercices cardiovasculaires modérés',
+        'Phase Folliculaire - Renforcement musculaire avec poids légers',
+        'Phase Folliculaire - Planifier de nouveaux objectifs',
       ];
     } else {
       return [
-        'Entraînement en force et musculation',
-        'Exercices de stabilité et équilibre',
-        'Activités anti-stress (méditation, yoga)',
-        'Maintenir la régularité sans forcer',
+        'Phase Lutéale - Entraînement en force et musculation',
+        'Phase Lutéale - Exercices de stabilité et équilibre',
+        'Phase Lutéale - Activités anti-stress (méditation, yoga)',
+        'Phase Lutéale - Maintenir la régularité sans forcer',
       ];
     }
   }

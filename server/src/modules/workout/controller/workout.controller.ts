@@ -18,6 +18,8 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { StartWorkoutSessionUseCase } from '../application/use-cases/start-workout-session.use-case';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { UseGuards } from '@nestjs/common';
 import { CompleteWorkoutSessionUseCase } from '../application/use-cases/complete-workout-session.use-case';
 import { GetWorkoutSessionUseCase } from '../application/use-cases/get-workout-session.use-case';
 import { GetUserWorkoutSessionsUseCase } from '../application/use-cases/get-user-workout-sessions.use-case';
@@ -28,6 +30,7 @@ import { GetWorkoutStatsUseCase } from '../application/use-cases/get-workout-sta
 
 @ApiTags('Workouts')
 @ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('workouts')
 export class WorkoutController {
   constructor(
@@ -158,7 +161,6 @@ export class WorkoutController {
   }
 
   @Get('sessions')
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: 'Get user workout sessions',
     description: 'Retrieves workout sessions for the authenticated user',
@@ -193,7 +195,6 @@ export class WorkoutController {
   }
 
   @Get('stats')
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: 'Get workout statistics',
     description: 'Retrieves workout statistics for the authenticated user',
@@ -226,7 +227,6 @@ export class WorkoutController {
   }
 
   @Post('sessions/:id/exercises')
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: 'Log exercise completion',
     description: 'Logs an exercise completion within a workout session',
@@ -261,7 +261,6 @@ export class WorkoutController {
   }
 
   @Put('sessions/:id/pause')
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: 'Pause workout session',
     description: 'Pauses an active workout session',
@@ -290,7 +289,6 @@ export class WorkoutController {
   }
 
   @Put('sessions/:id/resume')
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: 'Resume workout session',
     description: 'Resumes a paused workout session',

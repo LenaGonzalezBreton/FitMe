@@ -1,4 +1,4 @@
-const { PrismaClient } = require('../generated/prisma');
+const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 
@@ -183,11 +183,21 @@ async function seedPrograms() {
   try {
     // Nettoyer les données existantes
     await prisma.programExercise.deleteMany({});
-    await prisma.program.deleteMany({
-      where: { isTemplate: true }
-    });
+    await prisma.program.deleteMany({});
     
     console.log('✅ Données existantes supprimées');
+
+    // S'assurer qu'un utilisateur "system" existe
+    const systemEmail = 'system@fitme.local';
+    const systemUser = await prisma.user.upsert({
+      where: { email: systemEmail },
+      update: {},
+      create: {
+        email: systemEmail,
+        passwordHash: 'seed-system-user',
+        firstName: 'System',
+      },
+    });
 
     // Créer les programmes
     for (const programData of programs) {
@@ -197,7 +207,7 @@ async function seedPrograms() {
       const program = await prisma.program.create({
         data: {
           ...programProps,
-          userId: 'system', // System-generated programs
+          userId: systemUser.id, // Program owner
           startDate: new Date(),
           isActive: false
         }

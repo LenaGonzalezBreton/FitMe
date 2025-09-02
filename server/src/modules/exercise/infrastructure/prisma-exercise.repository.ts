@@ -72,12 +72,12 @@ export class PrismaExerciseRepository implements IExerciseRepository {
     }
 
     if (filters.minDuration || filters.maxDuration) {
-      where.durationMinutes = {};
+      where.duration = {};
       if (filters.minDuration) {
-        where.durationMinutes.gte = filters.minDuration;
+        where.duration.gte = filters.minDuration;
       }
       if (filters.maxDuration) {
-        where.durationMinutes.lte = filters.maxDuration;
+        where.duration.lte = filters.maxDuration;
       }
     }
 
@@ -95,7 +95,7 @@ export class PrismaExerciseRepository implements IExerciseRepository {
         title: createData.title,
         description: createData.description,
         imageUrl: createData.imageUrl,
-        durationMinutes: createData.durationMinutes,
+        duration: createData.duration,
         intensity: createData.intensity,
         muscleZone: createData.muscleZone,
         createdBy: createData.createdBy,
@@ -112,7 +112,7 @@ export class PrismaExerciseRepository implements IExerciseRepository {
         title: updateData.title,
         description: updateData.description,
         imageUrl: updateData.imageUrl,
-        durationMinutes: updateData.durationMinutes,
+        duration: updateData.duration,
         intensity: updateData.intensity,
         muscleZone: updateData.muscleZone,
       },
@@ -147,7 +147,7 @@ export class PrismaExerciseRepository implements IExerciseRepository {
       prismaData.title,
       prismaData.description,
       prismaData.imageUrl,
-      prismaData.durationMinutes,
+      prismaData.duration,
       prismaData.intensity,
       prismaData.muscleZone,
       prismaData.createdBy,

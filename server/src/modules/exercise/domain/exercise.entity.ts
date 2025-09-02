@@ -31,7 +31,7 @@ export class Exercise {
     public readonly title: string,
     public readonly description?: string,
     public readonly imageUrl?: string,
-    public readonly durationMinutes?: number,
+    public readonly duration?: number,
     public readonly intensity?: Intensity,
     public readonly muscleZone?: MuscleZone,
     public readonly createdBy?: string,
@@ -64,10 +64,10 @@ export class Exercise {
    * Retourne la durée formatée
    */
   getFormattedDuration(): string {
-    if (!this.durationMinutes) return 'Durée non spécifiée';
+    if (!this.duration) return 'Durée non spécifiée';
 
-    const hours = Math.floor(this.durationMinutes / 60);
-    const minutes = this.durationMinutes % 60;
+    const hours = Math.floor(this.duration / 60);
+    const minutes = this.duration % 60;
 
     if (hours > 0) {
       return `${hours}h${minutes > 0 ? ` ${minutes}min` : ''}`;

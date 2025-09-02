@@ -903,6 +903,27 @@
         ]
       }
     },
+    "/exercises/categories": {
+      "get": {
+        "operationId": "ExerciseController_getCategories",
+        "summary": "Récupérer les catégories d'exercices disponibles",
+        "description": "Retourne la liste des catégories d'exercices",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Catégories récupérées avec succès"
+          }
+        },
+        "tags": [
+          "Exercises"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
     "/exercises": {
       "get": {
         "operationId": "ExerciseController_getExercises",
@@ -1272,6 +1293,48 @@
           {
             "bearer": []
           },
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/programs/types": {
+      "get": {
+        "operationId": "ProgramController_getProgramTypes",
+        "summary": "Récupérer les types de programmes disponibles",
+        "description": "Retourne la liste des types de programmes",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Types de programmes récupérés avec succès"
+          }
+        },
+        "tags": [
+          "Programs"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/programs/training-days": {
+      "get": {
+        "operationId": "ProgramController_getTrainingDays",
+        "summary": "Récupérer les jours d'entraînement disponibles",
+        "description": "Retourne la liste des jours d'entraînement",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Jours d'entraînement récupérés avec succès"
+          }
+        },
+        "tags": [
+          "Programs"
+        ],
+        "security": [
           {
             "bearer": []
           }
@@ -2108,11 +2171,11 @@
         ]
       }
     },
-    "/streaks": {
+    "/streak": {
       "get": {
         "operationId": "StreakController_getStreakData",
-        "summary": "Get streak data",
-        "description": "Retrieves streak data for the authenticated user",
+        "summary": "Get user streak data",
+        "description": "Retrieves the current streak and workout statistics for the authenticated user",
         "parameters": [],
         "responses": {
           "200": {
@@ -2123,7 +2186,7 @@
           }
         },
         "tags": [
-          "Streaks"
+          "Streak"
         ],
         "security": [
           {
@@ -2132,11 +2195,11 @@
         ]
       }
     },
-    "/streaks/log-workout": {
+    "/streak/log-workout": {
       "post": {
         "operationId": "StreakController_logWorkout",
-        "summary": "Log a workout",
-        "description": "Logs a workout for streak tracking",
+        "summary": "Log a workout completion",
+        "description": "Logs a workout completion to update streak data",
         "parameters": [],
         "responses": {
           "201": {
@@ -2150,7 +2213,7 @@
           }
         },
         "tags": [
-          "Streaks"
+          "Streak"
         ],
         "security": [
           {
@@ -3929,7 +3992,7 @@
             "example": "https://fitme-app.com/images/exercises/squats.jpg",
             "description": "URL de l'image ou vidéo démonstrative de l'exercice"
           },
-          "durationMinutes": {
+          "duration": {
             "type": "number",
             "example": 15,
             "description": "Durée recommandée en minutes"
@@ -4104,7 +4167,7 @@
             "description": "URL de l'image de démonstration",
             "example": "https://example.com/images/pompes-modifiees.jpg"
           },
-          "durationMinutes": {
+          "duration": {
             "type": "number",
             "description": "Durée de l'exercice en minutes",
             "example": 15
@@ -4163,7 +4226,7 @@
             "description": "URL de l'image de l'exercice",
             "example": "https://fitme-app.com/images/exercises/squats.jpg"
           },
-          "durationMinutes": {
+          "duration": {
             "type": "number",
             "description": "Durée recommandée en minutes",
             "example": 15

@@ -435,8 +435,9 @@ export const exerciseApi = {
   // Get all exercises
   getExercises: async (params?: {
     category?: string;
-    intensity?: string;
-    muscleGroup?: string;
+    intensity?: 'LOW' | 'MODERATE' | 'HIGH';
+    muscleZone?: string;
+    phase?: 'menstrual' | 'follicular' | 'ovulation' | 'luteal';
     limit?: number;
     offset?: number;
   }) => {

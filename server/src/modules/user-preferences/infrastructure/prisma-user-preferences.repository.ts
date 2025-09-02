@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../core/prisma.service';
 import { IUserPreferencesRepository } from '../domain/user-preferences.repository';
-import { UserPreferencesData } from '../application/use-cases';
+import { UserSettingsData } from 'src/modules/auth/domain/auth.repository';
 
 @Injectable()
 export class PrismaUserPreferencesRepository implements IUserPreferencesRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getUserPreferences(userId: string): Promise<UserPreferencesData> {
+  async getUserPreferences(userId: string): Promise<UserSettingsData> {
     const preferences = await this.prisma.userPreferences.findUnique({
       where: { userId },
     });
@@ -15,9 +15,11 @@ export class PrismaUserPreferencesRepository implements IUserPreferencesReposito
     if (!preferences) {
       // Return default preferences if none exist
       return {
+        id: `default-${userId}`,
         userId,
         theme: 'AUTO',
         language: 'FRENCH',
+        units: 'METRIC',
         notifications: {
           email: true,
           push: true,
@@ -30,13 +32,17 @@ export class PrismaUserPreferencesRepository implements IUserPreferencesReposito
           shareCycle: false,
           allowAnalytics: true,
         },
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
     }
 
     return {
+      id: preferences.id,
       userId: preferences.userId,
-      theme: preferences.theme as 'LIGHT' | 'DARK' | 'AUTO',
+      theme: preferences.theme as UserSettingsData['theme'],
       language: preferences.language || 'FRENCH',
+      units: preferences.units || 'METRIC',
       notifications: {
         email: (preferences.notifications as any)?.email ?? true,
         push: (preferences.notifications as any)?.push ?? true,
@@ -49,10 +55,12 @@ export class PrismaUserPreferencesRepository implements IUserPreferencesReposito
         shareCycle: (preferences.privacy as any)?.shareCycle ?? false,
         allowAnalytics: (preferences.privacy as any)?.allowAnalytics ?? true,
       },
+      createdAt: preferences.createdAt,
+      updatedAt: preferences.updatedAt,
     };
   }
 
-  async updateUserPreferences(userId: string, preferences: Partial<UserPreferencesData>): Promise<void> {
+  async updateUserPreferences(userId: string, preferences: Partial<UserSettingsData>): Promise<void> {
     const updateData: any = {};
 
     if (preferences.theme !== undefined) {

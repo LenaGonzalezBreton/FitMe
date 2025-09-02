@@ -106,7 +106,7 @@ export class ExerciseDto {
     required: false,
     description: 'Durée recommandée en minutes',
   })
-  durationMinutes?: number;
+  duration?: number;
 
   @ApiProperty({
     example: '15min',
@@ -274,7 +274,7 @@ export class ExerciseDetailsDto {
     description: 'Durée recommandée en minutes',
     example: 15,
   })
-  durationMinutes?: number;
+  duration?: number;
 
   @ApiProperty({
     description: 'Durée formatée',
@@ -498,7 +498,7 @@ export class CreateExerciseDto {
   @IsNumber()
   @Min(1)
   @Type(() => Number)
-  durationMinutes?: number;
+  duration?: number;
 
   @ApiPropertyOptional({
     description: "Niveau d'intensité de l'exercice",

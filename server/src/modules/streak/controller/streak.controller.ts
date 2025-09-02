@@ -3,11 +3,9 @@ import {
   Get,
   Post,
   Body,
-  Query,
+  Request,
   HttpException,
   HttpStatus,
-  UseGuards,
-  Request,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -18,10 +16,12 @@ import {
 import { GetStreakDataUseCase } from '../application/use-cases/get-streak-data.use-case';
 import { LogWorkoutUseCase } from '../application/use-cases/log-workout.use-case';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { UseGuards } from '@nestjs/common';
 
-@ApiTags('Streaks')
+@ApiTags('Streak')
 @ApiBearerAuth()
-@Controller('streaks')
+@UseGuards(JwtAuthGuard)
+@Controller('streak')
 export class StreakController {
   constructor(
     private readonly getStreakDataUseCase: GetStreakDataUseCase,
@@ -29,10 +29,9 @@ export class StreakController {
   ) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: 'Get streak data',
-    description: 'Retrieves streak data for the authenticated user',
+    summary: 'Get user streak data',
+    description: 'Retrieves the current streak and workout statistics for the authenticated user',
   })
   @ApiResponse({
     status: 200,
@@ -42,12 +41,9 @@ export class StreakController {
     status: 401,
     description: 'Unauthorized - JWT token required',
   })
-  async getStreakData(@Request() req: { user: { sub: string } }) {
+  async getStreakData(@Request() req: { user: { id: string } }) {
     try {
-      const result = await this.getStreakDataUseCase.execute({
-        userId: req.user.sub,
-      });
-
+      const result = await this.getStreakDataUseCase.execute({ userId: req.user.id });
       return {
         success: true,
         data: result,
@@ -60,10 +56,9 @@ export class StreakController {
   }
 
   @Post('log-workout')
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: 'Log a workout',
-    description: 'Logs a workout for streak tracking',
+    summary: 'Log a workout completion',
+    description: 'Logs a workout completion to update streak data',
   })
   @ApiResponse({
     status: 201,
@@ -77,18 +72,9 @@ export class StreakController {
     status: 401,
     description: 'Unauthorized - JWT token required',
   })
-  async logWorkout(
-    @Body() body: { duration?: number; intensity?: string; notes?: string },
-    @Request() req: { user: { sub: string } },
-  ) {
+  async logWorkout(@Request() req: { user: { id: string } }) {
     try {
-      const result = await this.logWorkoutUseCase.execute({
-        userId: req.user.sub,
-        duration: body.duration,
-        intensity: body.intensity as any,
-        notes: body.notes,
-      });
-
+      const result = await this.logWorkoutUseCase.execute({ userId: req.user.id });
       return {
         success: true,
         data: result,

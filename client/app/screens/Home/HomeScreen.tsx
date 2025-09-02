@@ -22,6 +22,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
   const [showPeriodLogging, setShowPeriodLogging] = useState(false);
 
   // Dynamic cycle characteristics based on current cycle
+  const midPoint = currentCycle ? Math.ceil(currentCycle.cycleLength / 2) : 14;
   const cycleCharacteristics = [
     { 
       name: 'Menstruelle', 
@@ -32,8 +33,8 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
     { 
       name: 'Post-règles', 
       characteristics: 'post_period_phase',
-      current: currentCycle && !currentCycle.isPeriodDay && currentCycle.cycleDay <= 14,
-      color: currentCycle && !currentCycle.isPeriodDay && currentCycle.cycleDay <= 14 ? 'bg-phase-follicular-500' : 'bg-border'
+      current: currentCycle && !currentCycle.isPeriodDay && currentCycle.cycleDay <= midPoint,
+      color: currentCycle && !currentCycle.isPeriodDay && currentCycle.cycleDay <= midPoint ? 'bg-phase-follicular-500' : 'bg-border'
     },
     { 
       name: 'Ovulatoire', 
@@ -44,8 +45,8 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
     { 
       name: 'Post-ovulation', 
       characteristics: 'post_ovulation_phase',
-      current: currentCycle && !currentCycle.isPeriodDay && !currentCycle.isOvulationPhase && currentCycle.cycleDay > 14,
-      color: currentCycle && !currentCycle.isPeriodDay && !currentCycle.isOvulationPhase && currentCycle.cycleDay > 14 ? 'bg-phase-luteal-500' : 'bg-border'
+      current: currentCycle && !currentCycle.isPeriodDay && !currentCycle.isOvulationPhase && currentCycle.cycleDay > midPoint,
+      color: currentCycle && !currentCycle.isPeriodDay && !currentCycle.isOvulationPhase && currentCycle.cycleDay > midPoint ? 'bg-phase-luteal-500' : 'bg-border'
     },
   ];
 
@@ -57,7 +58,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
 
   return (
     <SafeAreaView className="flex-1 bg-brand-background">
-      <ScrollView className="flex-1 px-6">
+      <ScrollView className="flex-1 px-6" contentContainerStyle={{ paddingBottom: 24 }}>
         {/* Header with proper spacing */}
         <View className="pt-16 pb-6">
           <Text className="text-lg text-secondary-600 mb-1">Bonjour !</Text>
@@ -131,8 +132,8 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
                     </Text>
                   </View>
                   
-                  {/* Progress bar with cycle colors */}
-                  <View className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                  {/* Progress bar with cycle colors (thicker for better touch targets) */}
+                  <View className="h-4 bg-gray-200 rounded-full overflow-hidden">
                     <View 
                       className={`h-full ${getCycleColor(currentCycle.cycleDay, currentCycle.isPeriodDay, currentCycle.isOvulationPhase, currentCycle.isFertileDay)}`}
                       style={{ width: `${(currentCycle.cycleDay / currentCycle.cycleLength) * 100}%` }}

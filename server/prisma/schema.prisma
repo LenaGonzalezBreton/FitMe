@@ -413,7 +413,7 @@ model Exercise {
   title           String
   description     String?   @db.Text
   imageUrl        String?   @map("image_url")
-  durationMinutes Int?      @map("duration_minutes")
+  duration Int?      @map("duration")
   intensity       Intensity?
   muscleZone      MuscleZone? @map("muscle_zone")
   createdBy       String?   @map("created_by") // null = system exercise, value = user ID

@@ -7,13 +7,8 @@ export interface GetUserPreferencesRequest {
   userId: string;
 }
 
-export interface UserPreferencesData {
-  userId: string;
-  theme: UserSettingsData['theme'];
-  language: UserSettingsData['language'];
-  notifications: UserSettingsData['notifications'];
-  privacy: UserSettingsData['privacy'];
-}
+// Use the consolidated interface from auth module
+export type UserPreferencesData = Pick<UserSettingsData, 'userId' | 'theme' | 'language' | 'units' | 'notifications' | 'privacy'>;
 
 export interface GetUserPreferencesResponse {
   success: boolean;
@@ -45,6 +40,7 @@ export class GetUserPreferencesUseCase {
           userId: request.userId,
           theme: 'AUTO',
           language: 'FRENCH',
+          units: 'METRIC',
           notifications: {
             email: true,
             push: true,

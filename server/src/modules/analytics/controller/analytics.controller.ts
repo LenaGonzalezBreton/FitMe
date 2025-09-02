@@ -1,9 +1,11 @@
-import { Controller, Get, Query, Request } from '@nestjs/common';
+import { Controller, Get, Query, Request, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { GetUserAnalyticsUseCase } from '../application/use-cases/get-user-analytics.use-case';
 import { GetWorkoutAnalyticsUseCase } from '../application/use-cases/get-workout-analytics.use-case';
 import { GetCycleAnalyticsUseCase } from '../application/use-cases/get-cycle-analytics.use-case';
 import { GetProgressInsightsUseCase } from '../application/use-cases/get-progress-insights.use-case';
 
+@UseGuards(JwtAuthGuard)
 @Controller('analytics')
 export class AnalyticsController {
   constructor(

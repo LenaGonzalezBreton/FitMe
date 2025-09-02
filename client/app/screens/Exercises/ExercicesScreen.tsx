@@ -37,13 +37,24 @@ const ExercicesScreen = () => {
   const { currentCycle } = useCycle();
   const navigation = useNavigation<NativeStackNavigationProp<AppStackParamList, 'Exercices'>>();
 
-  // Fetch exercises from API
+  // Map current cycle to API phase key
+  const getPhaseKey = (): string | undefined => {
+    if (!currentCycle) return undefined;
+    if (currentCycle.isPeriodDay) return 'menstrual';
+    if (currentCycle.isOvulationPhase) return 'ovulation';
+    const midPoint = Math.ceil(currentCycle.cycleLength / 2);
+    return currentCycle.cycleDay <= midPoint ? 'follicular' : 'luteal';
+  };
+
+  // Fetch exercises from API (filtered by current phase when available)
   const fetchExercises = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      const response = await exerciseApi.getExercises();
+      const response = await exerciseApi.getExercises({
+        phase: getPhaseKey(),
+      });
       setExercises(response.exercises || []);
     } catch (err: any) {
       setError(err.message || 'Erreur lors du chargement des exercices');
@@ -80,7 +91,8 @@ const ExercicesScreen = () => {
   useEffect(() => {
     fetchExercises();
     fetchCategories();
-  }, []);
+    // Re-fetch when cycle day/phase changes
+  }, [currentCycle?.cycleDay, currentCycle?.isPeriodDay, currentCycle?.isOvulationPhase]);
 
   // Filter exercises based on selected category
   const filteredExercises = selectedCategory === 'all'

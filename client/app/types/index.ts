@@ -42,7 +42,7 @@ export interface GeneratedProgramExercise {
   title: string;
   description?: string;
   imageUrl?: string;
-  durationMinutes?: number;
+  duration?: number;
   formattedDuration: string;
   intensity?: string;
   intensityLabel: string;
@@ -80,19 +80,6 @@ export interface GeneratedProgramResponse {
   message: string;
 }
 
-// Cycle types
-export interface CurrentCycleData {
-  cycleDay: number;
-  cycleLength: number;
-  periodLength: number;
-  isPeriodDay: boolean;
-  isOvulationPhase: boolean;
-  isFertileDay: boolean;
-  daysUntilNextCycle: number;
-  cycleDescription: string;
-  recommendations: string[];
-}
-
 export interface CurrentCycleResponse {
   success: boolean;
   data: CurrentCycleData;
@@ -111,6 +98,20 @@ export interface CycleConfig {
   createdAt: string;
   updatedAt: string;
 }
+
+// Cycle types
+export interface CurrentCycleData {
+  cycleDay: number;
+  cycleLength: number;
+  periodLength: number;
+  isPeriodDay: boolean;
+  isOvulationPhase: boolean;
+  isFertileDay: boolean;
+  daysUntilNextCycle: number;
+  cycleDescription: string;
+  recommendations: string[];
+}
+
 
 export interface CycleConfigResponse {
   config: CycleConfig;

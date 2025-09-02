@@ -66,15 +66,15 @@ export const useCycle = (): UseCycleReturn => {
 
   const getCycleCharacteristics = (cycleDay: number, isPeriodDay: boolean, isOvulationPhase: boolean, isFertileDay: boolean): string => {
     if (isPeriodDay) {
-      return 'Menstruelle';
+      return 'Phase Menstruelle';
     } else if (isOvulationPhase) {
-      return 'Ovulatoire';
+      return 'Phase d\'Ovulation';
     } else if (isFertileDay) {
-      return 'Fertile';
+      return 'Phase Fertile';
     } else if (cycleDay <= 14) {
-      return 'Post-règles';
+      return 'Phase Folliculaire';
     } else {
-      return 'Post-ovulation';
+      return 'Phase Lutéale';
     }
   };
 

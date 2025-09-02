@@ -1,23 +1,15 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { IUserPreferencesRepository } from '../../domain/user-preferences.repository';
 import { USER_PREFERENCES_REPOSITORY_TOKEN } from '../../tokens';
+import { UserSettingsData } from 'src/modules/auth/domain/auth.repository';
 
 export interface UpdateUserPreferencesRequest {
   userId: string;
-  theme?: 'LIGHT' | 'DARK' | 'AUTO';
-  language?: 'FRENCH' | 'ENGLISH';
-  notifications?: {
-    email: boolean;
-    push: boolean;
-    workout: boolean;
-    cycle: boolean;
-    achievements: boolean;
-  };
-  privacy?: {
-    shareProgress: boolean;
-    shareCycle: boolean;
-    allowAnalytics: boolean;
-  };
+  theme?: UserSettingsData['theme'];
+  language?: UserSettingsData['language'];
+  units?: UserSettingsData['units'];
+  notifications?: UserSettingsData['notifications'];
+  privacy?: UserSettingsData['privacy'];
 }
 
 export interface UpdateUserPreferencesResponse {

@@ -90,7 +90,7 @@ export interface CreateExerciseData {
   title: string;
   description?: string;
   imageUrl?: string;
-  durationMinutes?: number;
+  duration?: number;
   intensity?: Intensity;
   muscleZone?: MuscleZone;
   createdBy?: string; // User ID for user-created exercises, null for system exercises
@@ -100,7 +100,7 @@ export interface UpdateExerciseData {
   title?: string;
   description?: string;
   imageUrl?: string;
-  durationMinutes?: number;
+  duration?: number;
   intensity?: Intensity;
   muscleZone?: MuscleZone;
 }

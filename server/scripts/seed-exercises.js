@@ -1,4 +1,4 @@
-const { PrismaClient } = require('../generated/prisma');
+const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 
@@ -7,7 +7,7 @@ const exercises = [
   {
     title: 'Yoga doux - Étirements en douceur',
     description: 'Séance de yoga douce avec des postures relaxantes pour apaiser les tensions.',
-    durationMinutes: 20,
+    duration: 20,
     intensity: 'LOW',
     muscleZone: 'FLEXIBILITY',
     tags: ['MENSTRUAL_PHASE', 'RELAXATION', 'YOGA']
@@ -15,7 +15,7 @@ const exercises = [
   {
     title: 'Marche méditative',
     description: 'Marche lente et consciente pour maintenir l\'activité sans effort intense.',
-    durationMinutes: 15,
+    duration: 15,
     intensity: 'VERY_LOW',
     muscleZone: 'CARDIO',
     tags: ['MENSTRUAL_PHASE', 'MINDFULNESS', 'WALKING']
@@ -23,7 +23,7 @@ const exercises = [
   {
     title: 'Respiration profonde et relaxation',
     description: 'Exercices de respiration et techniques de relaxation.',
-    durationMinutes: 10,
+    duration: 10,
     intensity: 'VERY_LOW',
     muscleZone: 'CORE',
     tags: ['MENSTRUAL_PHASE', 'BREATHING', 'RELAXATION']
@@ -33,7 +33,7 @@ const exercises = [
   {
     title: 'Cardio léger - Vélo d\'appartement',
     description: 'Session de vélo à intensité modérée pour reprendre l\'activité.',
-    durationMinutes: 25,
+    duration: 25,
     intensity: 'MODERATE',
     muscleZone: 'CARDIO',
     tags: ['FOLLICULAR_PHASE', 'CARDIO', 'CYCLING']
@@ -41,7 +41,7 @@ const exercises = [
   {
     title: 'Renforcement bas du corps - Squats',
     description: 'Exercices de squats au poids du corps pour renforcer les jambes.',
-    durationMinutes: 15,
+    duration: 15,
     intensity: 'MODERATE',
     muscleZone: 'LOWER_BODY',
     tags: ['FOLLICULAR_PHASE', 'STRENGTH', 'BODYWEIGHT']
@@ -49,7 +49,7 @@ const exercises = [
   {
     title: 'Pilates - Core et stabilité',
     description: 'Exercices de Pilates pour renforcer le centre et améliorer la posture.',
-    durationMinutes: 20,
+    duration: 20,
     intensity: 'LOW',
     muscleZone: 'CORE',
     tags: ['FOLLICULAR_PHASE', 'CORE', 'PILATES']
@@ -59,7 +59,7 @@ const exercises = [
   {
     title: 'HIIT - Entraînement haute intensité',
     description: 'Circuit HIIT combinant cardio et renforcement pour un maximum d\'efficacité.',
-    durationMinutes: 30,
+    duration: 30,
     intensity: 'HIGH',
     muscleZone: 'FULL_BODY',
     tags: ['OVULATION_PHASE', 'HIIT', 'HIGH_INTENSITY']
@@ -67,7 +67,7 @@ const exercises = [
   {
     title: 'Musculation - Haut du corps',
     description: 'Entraînement intensif pour les bras, épaules et dos avec charges.',
-    durationMinutes: 35,
+    duration: 35,
     intensity: 'HIGH',
     muscleZone: 'UPPER_BODY',
     tags: ['OVULATION_PHASE', 'STRENGTH', 'WEIGHT_TRAINING']
@@ -75,7 +75,7 @@ const exercises = [
   {
     title: 'Course à pied - Tempo',
     description: 'Course à rythme soutenu pour travailler l\'endurance cardiovasculaire.',
-    durationMinutes: 40,
+    duration: 40,
     intensity: 'VERY_HIGH',
     muscleZone: 'CARDIO',
     tags: ['OVULATION_PHASE', 'CARDIO', 'RUNNING']
@@ -85,7 +85,7 @@ const exercises = [
   {
     title: 'Musculation - Technique et contrôle',
     description: 'Entraînement de musculation avec focus sur la technique et le contrôle.',
-    durationMinutes: 30,
+    duration: 30,
     intensity: 'MODERATE',
     muscleZone: 'FULL_BODY',
     tags: ['LUTEAL_PHASE', 'STRENGTH', 'TECHNIQUE']
@@ -93,7 +93,7 @@ const exercises = [
   {
     title: 'Yoga Power - Force et équilibre',
     description: 'Yoga dynamique alliant force, équilibre et concentration.',
-    durationMinutes: 25,
+    duration: 25,
     intensity: 'MODERATE',
     muscleZone: 'BALANCE',
     tags: ['LUTEAL_PHASE', 'YOGA', 'BALANCE']
@@ -101,7 +101,7 @@ const exercises = [
   {
     title: 'Natation - Endurance douce',
     description: 'Session de natation pour travailler l\'endurance en douceur.',
-    durationMinutes: 35,
+    duration: 35,
     intensity: 'MODERATE',
     muscleZone: 'CARDIO',
     tags: ['LUTEAL_PHASE', 'CARDIO', 'SWIMMING']
@@ -111,7 +111,7 @@ const exercises = [
   {
     title: 'Étirements complets',
     description: 'Routine d\'étirements pour tout le corps, adaptable à toute phase.',
-    durationMinutes: 15,
+    duration: 15,
     intensity: 'LOW',
     muscleZone: 'FLEXIBILITY',
     tags: ['ALL_PHASES', 'STRETCHING', 'FLEXIBILITY']
@@ -119,7 +119,7 @@ const exercises = [
   {
     title: 'Méditation et mindfulness',
     description: 'Session de méditation pour réduire le stress et améliorer la concentration.',
-    durationMinutes: 10,
+    duration: 10,
     intensity: 'VERY_LOW',
     muscleZone: 'CORE',
     tags: ['ALL_PHASES', 'MEDITATION', 'MINDFULNESS']
@@ -158,7 +158,13 @@ async function seedExercises() {
       
       // Créer l'exercice
       const exercise = await prisma.exercise.create({
-        data: exerciseProps
+        data: {
+          title: exerciseProps.title,
+          description: exerciseProps.description,
+          duration: exerciseProps.duration,
+          intensity: exerciseProps.intensity,
+          muscleZone: exerciseProps.muscleZone,
+        }
       });
       
       console.log(`✅ Exercice créé: ${exercise.title}`);

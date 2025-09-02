@@ -21,7 +21,7 @@ export interface ExerciseResponse {
   title: string;
   description?: string;
   imageUrl?: string;
-  durationMinutes?: number;
+  duration?: number;
   formattedDuration: string;
   intensity?: Intensity;
   intensityLabel: string;
@@ -80,8 +80,8 @@ export class GetExercisesByPhaseUseCase {
       title: exercise.title,
       description: exercise.description,
       imageUrl: exercise.imageUrl,
-      durationMinutes: exercise.durationMinutes,
-      formattedDuration: this.formatDuration(exercise.durationMinutes),
+      duration: exercise.duration,
+      formattedDuration: this.formatDuration(exercise.duration),
       intensity: exercise.intensity,
       intensityLabel: this.getIntensityLabel(exercise.intensity),
       muscleZone: exercise.muscleZone,

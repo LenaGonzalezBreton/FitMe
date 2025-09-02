@@ -52,26 +52,31 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
       duration: 30,
       sessionType: 'mixed'
     });
-    
-    if (response) {
+
+    if (!response) {
       Alert.alert(
-        'Programme généré !',
-        `${response.message}\n\nVoulez-vous commencer ce programme maintenant ?`,
-        [
-          { text: 'Plus tard', style: 'cancel' },
-          { 
-            text: 'Commencer', 
-            onPress: () => {
-              // The program should be in the list now, find the most recent one
-              if (programs.length > 0) {
-                const latestProgram = programs[0]; // Assuming API returns newest first
-                startProgram(latestProgram.id);
-              }
+        'Génération impossible',
+        'Vérifiez que vous êtes connecté(e) et que le suivi du cycle est activé (ou réessayez plus tard).'
+      );
+      return;
+    }
+
+    Alert.alert(
+      'Programme généré !',
+      `${response.message}\n\nVoulez-vous commencer ce programme maintenant ?`,
+      [
+        { text: 'Plus tard', style: 'cancel' },
+        { 
+          text: 'Commencer', 
+          onPress: () => {
+            if (programs.length > 0) {
+              const latestProgram = programs[0];
+              startProgram(latestProgram.id);
             }
           }
-        ]
-      );
-    }
+        }
+      ]
+    );
   };
 
   // Helper functions

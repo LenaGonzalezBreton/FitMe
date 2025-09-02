@@ -610,7 +610,7 @@ export class UpdateNotificationPreferencesDto {
   })
   @IsOptional()
   @IsBoolean()
-  generalEnabled?: boolean;
+  generalEnabled: boolean;
 
   @ApiProperty({
     example: '08:00:00',

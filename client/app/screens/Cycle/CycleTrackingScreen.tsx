@@ -303,7 +303,7 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
                   {getCycleCharacteristics(currentCycle.cycleDay, currentCycle.isPeriodDay, currentCycle.isOvulationPhase, currentCycle.isFertileDay)}
                 </Text>
                 <Text className="text-sm text-secondary-600 mb-2">
-                  Jour {currentCycle.cycleDay} de votre cycle ({currentCycle.cycleLength} jours)
+                  Jour {currentCycle.cycleDay} de votre cycle ({cycleConfig.averageCycleLength} jours)
                 </Text>
                 {currentCycle.daysUntilNextCycle > 0 && (
                   <Text className="text-xs text-secondary-500">
@@ -316,10 +316,12 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
               </View>
             </View>
             
-            {/* Cycle Description */}
-            <Text className="text-sm text-secondary-600 mb-4">
-              {currentCycle.cycleDescription}
-            </Text>
+            {/* Cycle Description (more prominent) */}
+            <View className="bg-primary-50 border border-primary-200 rounded-lg p-3 mb-4">
+              <Text className="text-primary-700 text-sm">
+                {currentCycle.cycleDescription}
+              </Text>
+            </View>
 
             {/* Energy and Intensity Indicators */}
             {currentRecommendations && (
