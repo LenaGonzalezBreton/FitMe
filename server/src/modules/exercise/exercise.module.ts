@@ -12,7 +12,6 @@ import { CreateExerciseUseCase } from './application/use-cases/create-exercise.u
 
 // Infrastructure Repositories
 import { PrismaExerciseRepository } from './infrastructure/prisma-exercise.repository';
-import { PrismaPhaseExerciseRepository } from './infrastructure/prisma-phase-exercise.repository';
 import { PrismaFavoriteExerciseRepository } from './infrastructure/prisma-favorite-exercise.repository';
 import { PrismaExerciseRatingRepository } from './infrastructure/prisma-exercise-rating.repository';
 
@@ -22,7 +21,6 @@ import { ExerciseController } from './controller/exercise.controller';
 // Tokens for DI
 import {
   EXERCISE_REPOSITORY_TOKEN,
-  PHASE_EXERCISE_REPOSITORY_TOKEN,
   FAVORITE_EXERCISE_REPOSITORY_TOKEN,
   EXERCISE_RATING_REPOSITORY_TOKEN,
 } from './tokens';
@@ -46,10 +44,6 @@ import {
       useClass: PrismaExerciseRepository,
     },
     {
-      provide: PHASE_EXERCISE_REPOSITORY_TOKEN,
-      useClass: PrismaPhaseExerciseRepository,
-    },
-    {
       provide: FAVORITE_EXERCISE_REPOSITORY_TOKEN,
       useClass: PrismaFavoriteExerciseRepository,
     },
@@ -67,7 +61,6 @@ import {
     RateExerciseUseCase,
     CreateExerciseUseCase,
     EXERCISE_REPOSITORY_TOKEN,
-    PHASE_EXERCISE_REPOSITORY_TOKEN,
     FAVORITE_EXERCISE_REPOSITORY_TOKEN,
     EXERCISE_RATING_REPOSITORY_TOKEN,
   ],

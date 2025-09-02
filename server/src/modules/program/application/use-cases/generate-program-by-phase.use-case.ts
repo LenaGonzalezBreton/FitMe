@@ -1,10 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { GetCurrentPhaseUseCase } from '../../../cycle/application/use-cases/get-current-phase.use-case';
+import { Injectable, Inject } from '@nestjs/common';
+import { GetCurrentCycleUseCase } from '../../../cycle/application/use-cases/get-current-cycle.use-case';
 import { GetExercisesByPhaseUseCase } from '../../../exercise/application/use-cases/get-exercises-by-phase.use-case';
 import {
   Intensity,
   MuscleZone,
 } from '../../../exercise/domain/exercise.entity';
+import { IProgramRepository } from '../../domain/program.repository';
+import { PROGRAM_REPOSITORY_TOKEN } from '../../tokens';
+import { Program, ProgramExercise } from '../../domain/program.entity';
 
 export interface GenerateProgramRequest {
   userId: string;
@@ -13,34 +16,30 @@ export interface GenerateProgramRequest {
   sessionType?: 'cardio' | 'strength' | 'flexibility' | 'mixed'; // Type de séance
 }
 
-export interface ProgramExercise {
-  id: string;
-  title: string;
-  description?: string;
-  imageUrl?: string;
-  durationMinutes?: number;
-  formattedDuration: string;
-  intensity?: Intensity;
-  intensityLabel: string;
-  muscleZone?: MuscleZone;
-  muscleZoneLabel: string;
-  order: number;
-  restTimeSeconds?: number;
-}
-
-export interface GeneratedProgram {
-  id: string;
-  title: string;
-  description: string;
-  totalDuration: number;
-  formattedTotalDuration: string;
-  exercises: ProgramExercise[];
-  phaseRecommendations: string[];
-  tips: string[];
-}
-
 export interface GenerateProgramResponse {
-  program: GeneratedProgram;
+  program: {
+    id: string;
+    title: string;
+    description: string;
+    totalDuration: number;
+    formattedTotalDuration: string;
+    exercises: Array<{
+      id: string;
+      title: string;
+      description?: string;
+      imageUrl?: string;
+      duration?: number;
+      formattedDuration: string;
+      intensity?: Intensity;
+      intensityLabel: string;
+      muscleZone?: MuscleZone;
+      muscleZoneLabel: string;
+      order: number;
+      restTime?: number;
+    }>;
+    phaseRecommendations: string[];
+    tips: string[];
+  };
   userPhase: {
     phase: string;
     phaseLabel: string;
@@ -65,7 +64,7 @@ interface ExerciseData {
   title: string;
   description?: string;
   imageUrl?: string;
-  durationMinutes?: number;
+  duration?: number;
   formattedDuration: string;
   intensity?: Intensity;
   intensityLabel: string;
@@ -84,8 +83,10 @@ interface CurrentPhaseData {
 @Injectable()
 export class GenerateProgramByPhaseUseCase {
   constructor(
-    private readonly getCurrentPhaseUseCase: GetCurrentPhaseUseCase,
+    private readonly getCurrentCycleUseCase: GetCurrentCycleUseCase,
     private readonly getExercisesByPhaseUseCase: GetExercisesByPhaseUseCase,
+    @Inject(PROGRAM_REPOSITORY_TOKEN)
+    private readonly programRepository: IProgramRepository,
   ) {}
 
   async execute(
@@ -93,16 +94,22 @@ export class GenerateProgramByPhaseUseCase {
   ): Promise<GenerateProgramResponse> {
     const { userId, duration = 30, focusZone, sessionType = 'mixed' } = request;
 
-    // 1. Récupérer la phase actuelle de l'utilisatrice
-    const currentPhase = await this.getCurrentPhaseUseCase.execute({ userId });
+    // 1. Récupérer le cycle actuel de l'utilisatrice
+    const currentCycle = await this.getCurrentCycleUseCase.execute({ 
+      userId,
+      date: new Date(),
+    });
 
-    // 2. Déterminer les paramètres optimaux pour cette phase
+    // 2. Déterminer la phase basée sur les caractéristiques du cycle
+    const currentPhase = this.mapCycleToPhase(currentCycle);
+
+    // 3. Déterminer les paramètres optimaux pour cette phase
     const phaseConfig = this.getPhaseConfiguration(
       currentPhase.phase,
       sessionType,
     );
 
-    // 3. Récupérer les exercices adaptés
+    // 4. Récupérer les exercices adaptés
     const exercisesResult = await this.getExercisesByPhaseUseCase.execute({
       phase: currentPhase.phase,
       intensity: phaseConfig.intensity,
@@ -111,7 +118,7 @@ export class GenerateProgramByPhaseUseCase {
       limit: 15,
     });
 
-    // 4. Sélectionner et organiser les exercices
+    // 5. Sélectionner et organiser les exercices
     const selectedExercises = this.selectAndOrganizeExercises(
       exercisesResult.exercises,
       duration,
@@ -119,19 +126,33 @@ export class GenerateProgramByPhaseUseCase {
       focusZone,
     );
 
-    // 5. Créer le programme final
-    const program = this.createProgram(
+    // 6. Créer le programme final
+    const programData = this.createProgramData(
       selectedExercises,
+      
       currentPhase,
       sessionType,
       duration,
+      userId,
     );
 
-    // 6. Générer les adaptations et conseils
+    // 7. Sauvegarder le programme dans la base de données
+    const savedProgram = await this.programRepository.create(programData);
+
+    // 8. Générer les adaptations et conseils
     const adaptations = this.generateAdaptations(currentPhase.phase);
 
     return {
-      program,
+      program: {
+        id: savedProgram.id!,
+        title: savedProgram.title,
+        description: savedProgram.goal || '',
+        totalDuration: duration,
+        formattedTotalDuration: this.formatDuration(duration),
+        exercises: selectedExercises,
+        phaseRecommendations: currentPhase.recommendations,
+        tips: this.generateTips(currentPhase.phase),
+      },
       userPhase: {
         phase: currentPhase.phase,
         phaseLabel: currentPhase.phaseDescription,
@@ -139,6 +160,25 @@ export class GenerateProgramByPhaseUseCase {
         recommendations: currentPhase.recommendations,
       },
       adaptations,
+    };
+  }
+
+  private mapCycleToPhase(cycleData: any): CurrentPhaseData {
+    let phase = 'follicular';
+    
+    if (cycleData.isPeriodDay) {
+      phase = 'menstrual';
+    } else if (cycleData.isOvulationPhase) {
+      phase = 'ovulation';
+    } else if (cycleData.cycleDay > 14) {
+      phase = 'luteal';
+    }
+
+    return {
+      phase,
+      phaseDescription: cycleData.cycleDescription,
+      cycleDay: cycleData.cycleDay,
+      recommendations: cycleData.recommendations,
     };
   }
 
@@ -180,7 +220,20 @@ export class GenerateProgramByPhaseUseCase {
     targetDuration: number,
     sessionType: string,
     focusZone?: MuscleZone,
-  ): ProgramExercise[] {
+  ): Array<{
+    id: string;
+    title: string;
+    description?: string;
+    imageUrl?: string;
+    duration?: number;
+    formattedDuration: string;
+    intensity?: Intensity;
+    intensityLabel: string;
+    muscleZone?: MuscleZone;
+    muscleZoneLabel: string;
+    order: number;
+    restTime?: number;
+  }> {
     let selectedExercises = [...exercises];
 
     // Filtrer par type de séance si spécifié
@@ -197,19 +250,32 @@ export class GenerateProgramByPhaseUseCase {
     }
 
     // Sélectionner les exercices pour remplir la durée cible
-    const finalExercises: ProgramExercise[] = [];
+    const finalExercises: Array<{
+      id: string;
+      title: string;
+      description?: string;
+      imageUrl?: string;
+      duration?: number;
+      formattedDuration: string;
+      intensity?: Intensity;
+      intensityLabel: string;
+      muscleZone?: MuscleZone;
+      muscleZoneLabel: string;
+      order: number;
+      restTime?: number;
+    }> = [];
     let currentDuration = 0;
     let order = 1;
 
     for (const exercise of selectedExercises) {
-      const exerciseDuration = exercise.durationMinutes || 10;
+      const exerciseDuration = exercise.duration || 10;
       const restTime = this.calculateRestTime(exercise.intensity, sessionType);
 
       if (currentDuration + exerciseDuration <= targetDuration) {
         finalExercises.push({
           ...exercise,
           order,
-          restTimeSeconds: restTime,
+          restTime,
         });
         currentDuration += exerciseDuration;
         order++;
@@ -284,36 +350,52 @@ export class GenerateProgramByPhaseUseCase {
     return rest;
   }
 
-  private createProgram(
-    exercises: ProgramExercise[],
+  private createProgramData(
+    exercises: Array<{
+      id: string;
+      title: string;
+      description?: string;
+      imageUrl?: string;
+      duration?: number;
+      formattedDuration: string;
+      intensity?: Intensity;
+      intensityLabel: string;
+      muscleZone?: MuscleZone;
+      muscleZoneLabel: string;
+      order: number;
+      restTime?: number;
+    }>,
     currentPhase: CurrentPhaseData,
     sessionType: string,
-    targetDuration: number,
-  ): GeneratedProgram {
-    const totalDuration = exercises.reduce(
-      (sum, ex) => sum + (ex.durationMinutes || 10),
-      0,
+    duration: number,
+    userId: string,
+  ) {
+    const startDate = new Date();
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() + 30);
+
+    const programExercises = exercises.map((exercise, index) => 
+      ProgramExercise.create({
+        exerciseId: exercise.id!,
+        order: index + 1,
+        sets: 3,
+        reps: '10-12',
+        duration: exercise.duration!,
+        restTime: exercise.restTime!,
+        notes: `Exercice adapté à la phase ${currentPhase.phase}`,
+      })
     );
 
-    const programId = `prog_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
-    const title = this.generateProgramTitle(
-      currentPhase.phase,
-      sessionType,
-      targetDuration,
-    );
-    const description = this.generateProgramDescription(currentPhase.phase);
-
-    return {
-      id: programId,
-      title,
-      description,
-      totalDuration,
-      formattedTotalDuration: this.formatDuration(totalDuration),
-      exercises,
-      phaseRecommendations: currentPhase.recommendations,
-      tips: this.generateTips(currentPhase.phase),
-    };
+    return Program.create({
+      title: this.generateProgramTitle(currentPhase.phase, sessionType, duration),
+      goal: this.generateProgramDescription(currentPhase.phase),
+      startDate,
+      endDate,
+      isActive: false,
+      isTemplate: false,
+      userId,
+      exercises: programExercises,
+    });
   }
 
   private generateProgramTitle(

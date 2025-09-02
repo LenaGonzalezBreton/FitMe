@@ -16,7 +16,6 @@ model Cycle {
   // Relations
   user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   provider          CycleProvider? @relation(fields: [providerId], references: [id])
-  phases            Phase[]
   
   @@index([userId])
   @@index([startDate])
@@ -54,21 +53,4 @@ model CycleProvider {
   cycles      Cycle[]
 
   @@map("cycle_provider")
-}
-
-model Phase {
-  id        String     @id @default(cuid())
-  cycleId   String     @map("cycle_id")
-  name      CyclePhase
-  startDate DateTime   @map("start_date")
-  endDate   DateTime   @map("end_date")
-  
-  createdAt DateTime   @default(now()) @map("created_at")
-  updatedAt DateTime   @updatedAt @map("updated_at")
-
-  // Relations
-  cycle     Cycle      @relation(fields: [cycleId], references: [id], onDelete: Cascade)
-
-  @@index([cycleId])
-  @@map("phase")
 } 

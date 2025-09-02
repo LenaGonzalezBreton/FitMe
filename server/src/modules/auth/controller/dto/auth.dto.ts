@@ -12,7 +12,7 @@ import {
 } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
-import { ObjectiveType, ExperienceLevel } from '../../domain/auth.repository';
+import { ObjectiveType, ExperienceLevel, UserSettingsData } from '../../domain/auth.repository';
 
 export class RegisterDto {
   @ApiProperty({
@@ -267,20 +267,32 @@ export class ProfileResponseDto {
 export class SettingsResponseDto {
   @ApiProperty({
     type: () => ({
-      unitPreference: {
+      theme: {
+        type: 'string',
+        example: 'LIGHT',
+        enum: ['LIGHT', 'DARK', 'AUTO'],
+      },
+      language: {
+        type: 'string',
+        example: 'FRENCH',
+        enum: ['FRENCH', 'ENGLISH'],
+      },
+      units: {
         type: 'string',
         example: 'METRIC',
         enum: ['METRIC', 'IMPERIAL'],
       },
-      notificationEnabled: { type: 'boolean', example: true },
-      notificationTime: { type: 'string', example: '08:00:00' },
+      notifications: { type: 'object', example: {} },
+      privacy: { type: 'object', example: {} },
     }),
     description: "Paramètres généraux de l'utilisateur",
   })
   settings: {
-    unitPreference: string;
-    notificationEnabled: boolean;
-    notificationTime?: string;
+    theme: string;
+    language: string;
+    units: string;
+    notifications: any;
+    privacy: any;
   };
 
   @ApiProperty({
@@ -337,22 +349,34 @@ export class SettingsResponseDto {
 export class UpdateSettingsDto {
   @ApiProperty({
     type: () => ({
-      unitPreference: {
+      theme: {
+        type: 'string',
+        example: 'LIGHT',
+        enum: ['LIGHT', 'DARK', 'AUTO'],
+      },
+      language: {
+        type: 'string',
+        example: 'FRENCH',
+        enum: ['FRENCH', 'ENGLISH'],
+      },
+      units: {
         type: 'string',
         example: 'METRIC',
         enum: ['METRIC', 'IMPERIAL'],
       },
-      notificationEnabled: { type: 'boolean', example: true },
-      notificationTime: { type: 'string', example: '08:00:00' },
+      notifications: { type: 'object', example: {} },
+      privacy: { type: 'object', example: {} },
     }),
     required: false,
     description: 'Paramètres généraux à mettre à jour',
   })
   @IsOptional()
   settings?: {
-    unitPreference?: string;
-    notificationEnabled?: boolean;
-    notificationTime?: string;
+    theme?: UserSettingsData['theme'];
+    language?: UserSettingsData['language'];
+    units?: UserSettingsData['units'];
+    notifications?: UserSettingsData['notifications'];
+    privacy?: UserSettingsData['privacy'];
   };
 
   @ApiProperty({
@@ -415,16 +439,20 @@ export class UpdateSettingsResponseDto {
 
   @ApiProperty({
     type: () => ({
-      unitPreference: { type: 'string', example: 'METRIC' },
-      notificationEnabled: { type: 'boolean', example: true },
-      notificationTime: { type: 'string', example: '08:00:00' },
+      theme: { type: 'string', example: 'LIGHT' },
+      language: { type: 'string', example: 'FRENCH' },
+      units: { type: 'string', example: 'METRIC' },
+      notifications: { type: 'object', example: {} },
+      privacy: { type: 'object', example: {} },
     }),
     description: 'Paramètres généraux mis à jour',
   })
   settings: {
-    unitPreference: string;
-    notificationEnabled: boolean;
-    notificationTime?: string;
+    theme: string;
+    language: string;
+    units: string;
+    notifications: any;
+    privacy: any;
   };
 
   @ApiProperty({
@@ -449,20 +477,32 @@ export class UpdateSettingsResponseDto {
 export class PreferencesResponseDto {
   @ApiProperty({
     type: () => ({
-      unitPreference: {
+      theme: {
+        type: 'string',
+        example: 'LIGHT',
+        enum: ['LIGHT', 'DARK', 'AUTO'],
+      },
+      language: {
+        type: 'string',
+        example: 'FRENCH',
+        enum: ['FRENCH', 'ENGLISH'],
+      },
+      units: {
         type: 'string',
         example: 'METRIC',
         enum: ['METRIC', 'IMPERIAL'],
       },
-      notificationEnabled: { type: 'boolean', example: true },
-      notificationTime: { type: 'string', example: '08:00:00' },
+      notifications: { type: 'object', example: {} },
+      privacy: { type: 'object', example: {} },
     }),
     description: 'Préférences générales',
   })
   general: {
-    unitPreference: string;
-    notificationEnabled: boolean;
-    notificationTime?: string;
+    theme: string;
+    language: string;
+    units: string;
+    notifications: any;
+    privacy: any;
   };
 
   @ApiProperty({
@@ -570,7 +610,7 @@ export class UpdateNotificationPreferencesDto {
   })
   @IsOptional()
   @IsBoolean()
-  generalEnabled?: boolean;
+  generalEnabled: boolean;
 
   @ApiProperty({
     example: '08:00:00',

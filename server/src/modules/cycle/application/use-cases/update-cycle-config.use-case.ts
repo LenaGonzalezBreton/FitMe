@@ -4,12 +4,9 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { CycleProfileConfig, Cycle } from '../../domain/cycle.entity';
-import {
-  ICycleProfileConfigRepository,
-  UpdateCycleProfileConfigData,
-  CreateCycleProfileConfigData,
-} from '../../domain/cycle.repository';
+import { CycleProfileConfig, CreateCycleProfileConfigData, UpdateCycleProfileConfigData } from '../../domain/cycle-profile-config.entity';
+import { Cycle } from '../../domain/cycle.entity';
+import { ICycleProfileConfigRepository } from '../../domain/cycle.repository';
 import { CYCLE_PROFILE_CONFIG_REPOSITORY_TOKEN } from '../../tokens';
 
 export interface UpdateCycleConfigRequest {

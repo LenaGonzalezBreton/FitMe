@@ -17,6 +17,15 @@ export default function AppNavigator() {
     );
   }
 
+  // Debug logging
+  if (__DEV__) {
+    console.log('AppNavigator - User:', user ? {
+      id: user.id,
+      email: user.email,
+      onboardingCompleted: user.onboardingCompleted
+    } : 'No user');
+  }
+
   return (
     <NavigationContainer>
       {!user ? (

@@ -45,6 +45,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         setToken(storedToken);
 
+        // First try to get user from stored data
+        const storedUser = await SecureStore.getItemAsync('user');
+        if (storedUser) {
+          const parsedUser = JSON.parse(storedUser);
+          if (__DEV__) {
+            console.log('AuthContext - Loaded user from storage:', {
+              id: parsedUser.id,
+              email: parsedUser.email,
+              onboardingCompleted: parsedUser.onboardingCompleted
+            });
+          }
+          setUser(parsedUser);
+        }
+
+        // Then validate with server and update if needed
         const { data } = await api.get('/auth/profile');
         const raw = data.user;
         const profile: User = {
@@ -61,12 +76,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           isMenopausal: raw.isMenopausal,
         };
         
+        if (__DEV__) {
+          console.log('AuthContext - Server profile data:', {
+            id: profile.id,
+            email: profile.email,
+            onboardingCompleted: profile.onboardingCompleted
+          });
+        }
+        
+        setUser(profile);
         await SecureStore.setItemAsync('user', JSON.stringify(profile));
-      } catch (err) {
+      } catch (err: any) {
+        console.log('Session validation failed, clearing stored data');
         await SecureStore.deleteItemAsync('accessToken');
+        await SecureStore.deleteItemAsync('refreshToken');
         await SecureStore.deleteItemAsync('user');
         setUser(null);
         setToken(null);
+        
+        // Don't show error to user for session expiration - they'll be redirected to login
+        if (err?.name === 'SessionExpired') {
+          console.log('Session expired - user will be redirected to login');
+        } else {
+          console.error('Session validation error:', err);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -76,11 +109,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = async (user: User, accessToken: string, refreshToken: string) => {
+    if (__DEV__) {
+      console.log('AuthContext login - User onboarding status:', {
+        id: user.id,
+        email: user.email,
+        onboardingCompleted: user.onboardingCompleted
+      });
+    }
+    
     setUser(user);
     setToken(accessToken);
     await SecureStore.setItemAsync('accessToken', accessToken);
     await SecureStore.setItemAsync('refreshToken', refreshToken);
     await SecureStore.setItemAsync('user', JSON.stringify(user));
+    
+    if (__DEV__) {
+      console.log('AuthContext login - User data saved to SecureStore');
+    }
   };
 
   const logout = async () => {

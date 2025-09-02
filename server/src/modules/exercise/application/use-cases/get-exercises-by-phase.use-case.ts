@@ -1,18 +1,15 @@
 import { Injectable, Inject, BadRequestException } from '@nestjs/common';
 import {
   IExerciseRepository,
-  IPhaseExerciseRepository,
   ExerciseFilters,
 } from '../../domain/exercise.repository';
 import { Intensity, MuscleZone } from '../../domain/exercise.entity';
-import { CyclePhase } from '../../../cycle/domain/cycle.entity';
 import {
   EXERCISE_REPOSITORY_TOKEN,
-  PHASE_EXERCISE_REPOSITORY_TOKEN,
 } from '../../tokens';
 
 export interface GetExercisesByPhaseRequest {
-  phase: CyclePhase | string;
+  phase: string;
   intensity?: Intensity;
   muscleZone?: MuscleZone;
   maxDuration?: number;
@@ -24,7 +21,7 @@ export interface ExerciseResponse {
   title: string;
   description?: string;
   imageUrl?: string;
-  durationMinutes?: number;
+  duration?: number;
   formattedDuration: string;
   intensity?: Intensity;
   intensityLabel: string;
@@ -36,7 +33,7 @@ export interface ExerciseResponse {
 export interface GetExercisesByPhaseResponse {
   exercises: ExerciseResponse[];
   phaseInfo: {
-    phase: CyclePhase | string;
+    phase: string;
     phaseLabel: string;
     recommendedIntensity: Intensity;
     description: string;
@@ -49,8 +46,6 @@ export class GetExercisesByPhaseUseCase {
   constructor(
     @Inject(EXERCISE_REPOSITORY_TOKEN)
     private readonly exerciseRepository: IExerciseRepository,
-    @Inject(PHASE_EXERCISE_REPOSITORY_TOKEN)
-    private readonly phaseExerciseRepository: IPhaseExerciseRepository,
   ) {}
 
   async execute(
@@ -63,18 +58,11 @@ export class GetExercisesByPhaseUseCase {
       throw new BadRequestException('Phase de cycle invalide');
     }
 
-    // Obtenir les exercices spécifiquement associés à cette phase
-    const phaseExercises = await this.phaseExerciseRepository.findByPhaseName(
-      phase.toString(),
-    );
-    const phaseExerciseIds = phaseExercises.map((pe) => pe.exerciseId);
-
     // Obtenir l'intensité recommandée pour cette phase
     const recommendedIntensity = this.getRecommendedIntensityForPhase(phase);
 
     // Construire les filtres
     const filters: ExerciseFilters = {
-      phaseName: phase.toString(),
       intensity: intensity || recommendedIntensity,
       muscleZone,
       maxDuration,
@@ -83,41 +71,22 @@ export class GetExercisesByPhaseUseCase {
     // Récupérer les exercices avec filtres
     let exercises = await this.exerciseRepository.findWithFilters(filters);
 
-    // Si pas assez d'exercices spécifiques à la phase, ajouter des exercices généraux
-    if (exercises.length < limit) {
-      const generalFilters: ExerciseFilters = {
-        intensity: intensity || recommendedIntensity,
-        muscleZone,
-        maxDuration,
-      };
-      const generalExercises =
-        await this.exerciseRepository.findWithFilters(generalFilters);
-
-      // Ajouter les exercices généraux qui ne sont pas déjà dans la liste
-      const existingIds = new Set(exercises.map((e) => e.id));
-      const additionalExercises = generalExercises.filter(
-        (e) => !existingIds.has(e.id),
-      );
-
-      exercises = [...exercises, ...additionalExercises];
-    }
-
-    // Limiter le nombre d'exercices
+    // Limiter le nombre total d'exercices
     exercises = exercises.slice(0, limit);
 
-    // Mapper les exercices vers la réponse
+    // Convertir en format de réponse
     const exerciseResponses: ExerciseResponse[] = exercises.map((exercise) => ({
       id: exercise.id,
       title: exercise.title,
       description: exercise.description,
       imageUrl: exercise.imageUrl,
-      durationMinutes: exercise.durationMinutes,
-      formattedDuration: exercise.getFormattedDuration(),
+      duration: exercise.duration,
+      formattedDuration: this.formatDuration(exercise.duration),
       intensity: exercise.intensity,
       intensityLabel: this.getIntensityLabel(exercise.intensity),
       muscleZone: exercise.muscleZone,
       muscleZoneLabel: this.getMuscleZoneLabel(exercise.muscleZone),
-      isRecommendedForPhase: phaseExerciseIds.includes(exercise.id),
+      isRecommendedForPhase: true, // Tous les exercices sont maintenant recommandés pour la phase
     }));
 
     return {
@@ -132,55 +101,53 @@ export class GetExercisesByPhaseUseCase {
     };
   }
 
-  private isValidPhase(phase: CyclePhase | string): boolean {
-    const validPhases = Object.values(CyclePhase);
-    return validPhases.includes(phase as CyclePhase);
+  private isValidPhase(phase: string): boolean {
+    const validPhases = ['menstrual', 'follicular', 'ovulation', 'luteal'];
+    return validPhases.includes(phase.toLowerCase());
   }
 
-  private getRecommendedIntensityForPhase(
-    phase: CyclePhase | string,
-  ): Intensity {
-    const phaseStr = phase.toString();
+  private getRecommendedIntensityForPhase(phase: string): Intensity {
+    const phaseStr = phase.toLowerCase();
     switch (phaseStr) {
-      case 'MENSTRUAL':
+      case 'menstrual':
         return Intensity.LOW;
-      case 'FOLLICULAR':
+      case 'follicular':
         return Intensity.MODERATE;
-      case 'OVULATION':
+      case 'ovulation':
         return Intensity.HIGH;
-      case 'LUTEAL':
+      case 'luteal':
         return Intensity.MODERATE;
       default:
         return Intensity.MODERATE;
     }
   }
 
-  private getPhaseLabel(phase: CyclePhase | string): string {
-    const phaseStr = phase.toString();
+  private getPhaseLabel(phase: string): string {
+    const phaseStr = phase.toLowerCase();
     switch (phaseStr) {
-      case 'MENSTRUAL':
+      case 'menstrual':
         return 'Phase Menstruelle';
-      case 'FOLLICULAR':
+      case 'follicular':
         return 'Phase Folliculaire';
-      case 'OVULATION':
+      case 'ovulation':
         return "Phase d'Ovulation";
-      case 'LUTEAL':
+      case 'luteal':
         return 'Phase Lutéale';
       default:
         return 'Phase Inconnue';
     }
   }
 
-  private getPhaseDescription(phase: CyclePhase | string): string {
-    const phaseStr = phase.toString();
+  private getPhaseDescription(phase: string): string {
+    const phaseStr = phase.toLowerCase();
     switch (phaseStr) {
-      case 'MENSTRUAL':
+      case 'menstrual':
         return 'Période de repos et de récupération. Privilégiez les exercices doux.';
-      case 'FOLLICULAR':
+      case 'follicular':
         return "Énergie croissante. Moment idéal pour augmenter progressivement l'intensité.";
-      case 'OVULATION':
+      case 'ovulation':
         return "Pic d'énergie. Parfait pour les entraînements intenses et les défis.";
-      case 'LUTEAL':
+      case 'luteal':
         return "Focus sur la force et l'endurance modérée. Maintenez la régularité.";
       default:
         return 'Phase non définie.';
@@ -227,5 +194,22 @@ export class GetExercisesByPhaseUseCase {
       default:
         return 'Non spécifiée';
     }
+  }
+
+  private formatDuration(minutes?: number): string {
+    if (!minutes) return 'Non spécifiée';
+
+    if (minutes < 60) {
+      return `${minutes} min`;
+    }
+
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+
+    if (remainingMinutes === 0) {
+      return `${hours}h`;
+    }
+
+    return `${hours}h${remainingMinutes}min`;
   }
 }

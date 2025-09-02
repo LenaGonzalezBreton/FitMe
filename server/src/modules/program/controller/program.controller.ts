@@ -67,6 +67,49 @@ export class ProgramController {
     private readonly getProgramStatusUseCase: GetProgramStatusUseCase,
   ) {}
 
+  @Get('types')
+  @ApiOperation({
+    summary: 'Récupérer les types de programmes disponibles',
+    description: 'Retourne la liste des types de programmes',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Types de programmes récupérés avec succès',
+  })
+  async getProgramTypes() {
+    return {
+      types: [
+        { id: 'strength', name: 'Force', icon: '💪', color: 'bg-primary-100', description: 'Programme axé sur la musculation' },
+        { id: 'cardio', name: 'Cardio', icon: '💓', color: 'bg-accent-100', description: 'Programme axé sur l\'endurance' },
+        { id: 'flexibility', name: 'Flexibilité', icon: '🧘‍♀️', color: 'bg-primary-200', description: 'Programme axé sur la mobilité' },
+        { id: 'mixed', name: 'Mixte', icon: '⚡', color: 'bg-accent-200', description: 'Programme équilibré' },
+      ],
+    };
+  }
+
+  @Get('training-days')
+  @ApiOperation({
+    summary: 'Récupérer les jours d\'entraînement disponibles',
+    description: 'Retourne la liste des jours d\'entraînement',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Jours d\'entraînement récupérés avec succès',
+  })
+  async getTrainingDays() {
+    return {
+      days: [
+        { id: 'monday', name: 'Lundi', shortName: 'Lun', value: 1 },
+        { id: 'tuesday', name: 'Mardi', shortName: 'Mar', value: 2 },
+        { id: 'wednesday', name: 'Mercredi', shortName: 'Mer', value: 3 },
+        { id: 'thursday', name: 'Jeudi', shortName: 'Jeu', value: 4 },
+        { id: 'friday', name: 'Vendredi', shortName: 'Ven', value: 5 },
+        { id: 'saturday', name: 'Samedi', shortName: 'Sam', value: 6 },
+        { id: 'sunday', name: 'Dimanche', shortName: 'Dim', value: 0 },
+      ],
+    };
+  }
+
   @Post('generate')
   @ApiOperation({
     summary: "Générer un programme d'entraînement adapté à la phase de cycle",

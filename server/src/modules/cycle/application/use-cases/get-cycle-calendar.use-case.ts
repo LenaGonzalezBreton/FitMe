@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { Cycle, CyclePhase } from '../../domain/cycle.entity';
+import { Cycle } from '../../domain/cycle.entity';
 import { ICycleRepository } from '../../domain/cycle.repository';
 import { CYCLE_REPOSITORY_TOKEN } from '../../tokens';
 import { GetCyclePredictionsUseCase } from './get-cycle-predictions.use-case';
@@ -12,7 +12,7 @@ export interface GetCycleCalendarRequest {
 
 export interface CalendarDay {
   date: Date;
-  phase?: CyclePhase;
+  phase?: string;
   cycleDay?: number;
   dayType:
     | 'period_start'
@@ -115,24 +115,22 @@ export class GetCycleCalendarUseCase {
     predictions: any,
   ): CalendarDay {
     const dayInfo = this.analyzeDayInCycles(date, cycles);
-
-    // Déterminer le type de jour
     let dayType: CalendarDay['dayType'] = 'normal';
-    let isPredicted = false;
     const events: string[] = [];
+    let isPredicted = false;
 
-    if (dayInfo.cycle) {
-      // Jour basé sur un cycle confirmé
-      const cycleDay = dayInfo.cycleDay!;
-      const phase = dayInfo.phase!;
+    if (dayInfo.cycle && dayInfo.cycleDay) {
+      const cycleDay = dayInfo.cycleDay;
+      const phase = dayInfo.phase;
 
+      // Jours avec données réelles
       if (cycleDay === 1) {
         dayType = 'period_start';
         events.push('début_règles');
       } else if (cycleDay <= (dayInfo.cycle.periodLength || 5)) {
         dayType = 'period_day';
         events.push('règles');
-      } else if (phase === CyclePhase.OVULATION) {
+      } else if (phase === 'ovulation') {
         dayType = 'ovulation';
         events.push('ovulation');
       } else if (this.isFertileDay(cycleDay, dayInfo.cycle.cycleLength || 28)) {
@@ -170,7 +168,7 @@ export class GetCycleCalendarUseCase {
     cycles: Cycle[],
   ): {
     cycle?: Cycle;
-    phase?: CyclePhase;
+    phase?: string;
     cycleDay?: number;
   } {
     // Trouver le cycle qui contient cette date
@@ -208,10 +206,10 @@ export class GetCycleCalendarUseCase {
     cycleDay: number,
     cycleLength: number,
     periodLength: number = 5,
-  ): CyclePhase {
+  ): string {
     // Phase menstruelle : jours 1 à periodLength
     if (cycleDay <= periodLength) {
-      return CyclePhase.MENSTRUAL;
+      return 'menstrual';
     }
 
     // Calculer le jour d'ovulation (14 jours avant la fin du cycle)
@@ -219,23 +217,23 @@ export class GetCycleCalendarUseCase {
 
     // Phase folliculaire : de la fin des règles jusqu'à 3 jours avant l'ovulation
     if (cycleDay > periodLength && cycleDay < ovulationDay - 2) {
-      return CyclePhase.FOLLICULAR;
+      return 'follicular';
     }
 
     // Phase d'ovulation : période fertile (ovulation ± 2 jours)
     if (cycleDay >= ovulationDay - 2 && cycleDay <= ovulationDay + 2) {
-      return CyclePhase.OVULATION;
+      return 'ovulation';
     }
 
     // Phase lutéale : après l'ovulation jusqu'à la fin du cycle
-    return CyclePhase.LUTEAL;
+    // Cette phase dure toujours environ 14 jours
+    return 'luteal';
   }
 
   private isFertileDay(cycleDay: number, cycleLength: number): boolean {
-    // Période fertile : 5 jours avant l'ovulation jusqu'à 2 jours après
-    // Les spermatozoïdes peuvent survivre 5 jours, l'ovule 24-48h
+    // La période fertile est généralement de 5 jours avant l'ovulation à 1 jour après
     const ovulationDay = cycleLength - 14;
-    return cycleDay >= ovulationDay - 5 && cycleDay <= ovulationDay + 2;
+    return cycleDay >= ovulationDay - 5 && cycleDay <= ovulationDay + 1;
   }
 
   private isSameDay(date1: Date, date2: Date): boolean {
@@ -246,13 +244,9 @@ export class GetCycleCalendarUseCase {
     );
   }
 
-  private isNearDate(
-    date: Date,
-    targetDate: Date,
-    daysDifference: number,
-  ): boolean {
+  private isNearDate(date: Date, targetDate: Date, days: number): boolean {
     const diffTime = Math.abs(date.getTime() - targetDate.getTime());
-    const diffDays = diffTime / (1000 * 60 * 60 * 24);
-    return diffDays <= daysDifference;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays <= days;
   }
 }

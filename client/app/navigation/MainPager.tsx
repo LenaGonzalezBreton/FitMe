@@ -30,8 +30,8 @@ const MainPager = () => {
       <Tab.Screen name="Accueil" component={HomeScreen} />
       <Tab.Screen name="Programmes" component={ProgramScreen} />
       <Tab.Screen name="Exercices" component={ExercicesScreen} />
-      <Tab.Screen name="Chrono" component={ChronometerScreen} />
       <Tab.Screen name="Profil" component={ProfileScreen} />
+      <Tab.Screen name="Chrono" component={ChronometerScreen} />
     </Tab.Navigator>
   );
 };

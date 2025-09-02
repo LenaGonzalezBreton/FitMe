@@ -1,123 +1,188 @@
 import { useState, useEffect } from 'react';
 import { cycleApi } from '../services/api';
-import { CurrentPhaseData, CurrentPhaseResponse, CyclePhase } from '../types';
+import { CurrentCycleData, CurrentCycleResponse, CycleConfig, CycleConfigResponse, UpdateCycleConfigRequest } from '../types';
 
 export interface UseCycleReturn {
-  currentPhase: CurrentPhaseData | null;
+  currentCycle: CurrentCycleData | null;
+  cycleConfig: CycleConfig | null;
   loading: boolean;
   error: string | null;
-  refreshPhase: () => Promise<void>;
-  getPhaseLabel: (phase: CyclePhase) => string;
-  getPhaseEmoji: (phase: CyclePhase) => string;
-  getPhaseColor: (phase: CyclePhase) => string;
+  refreshCycle: () => Promise<void>;
+  refreshConfig: () => Promise<void>;
+  updateCycleConfig: (config: UpdateCycleConfigRequest) => Promise<boolean>;
+  getCycleCharacteristics: (cycleDay: number, isPeriodDay: boolean, isOvulationPhase: boolean, isFertileDay: boolean) => string;
+  getCycleEmoji: (cycleDay: number, isPeriodDay: boolean, isOvulationPhase: boolean, isFertileDay: boolean) => string;
+  getCycleColor: (cycleDay: number, isPeriodDay: boolean, isOvulationPhase: boolean, isFertileDay: boolean) => string;
 }
 
 export const useCycle = (): UseCycleReturn => {
-  const [currentPhase, setCurrentPhase] = useState<CurrentPhaseData | null>(null);
+  const [currentCycle, setCurrentCycle] = useState<CurrentCycleData | null>(null);
+  const [cycleConfig, setCycleConfig] = useState<CycleConfig | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchCurrentPhase = async () => {
+  const fetchCurrentCycle = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const response: CurrentPhaseResponse = await cycleApi.getCurrentPhase();
+      const response: CurrentCycleResponse = await cycleApi.getCurrentCycle();
       
       if (response.success) {
-        setCurrentPhase(response.data);
+        setCurrentCycle(response.data);
       } else {
         throw new Error('Réponse invalide du serveur');
       }
     } catch (err: any) {
-      const errorMessage = err.response?.data?.message || err.message || 'Erreur lors du chargement de la phase du cycle';
-      setError(errorMessage);
-      console.error('Error fetching current phase:', err);
-      
-      // If it's a 404, the user probably doesn't have cycle tracking enabled
-      if (err.response?.status === 404) {
-        console.log('Cycle tracking not enabled or no cycle data found');
-        setError(null); // Ne pas afficher d'erreur pour ce cas normal
-        // Définir une phase par défaut pour les nouveaux utilisateurs
-        setCurrentPhase({
-          phase: 'FOLLICULAR' as any,
-          cycleDay: 8,
-          cycleLength: 28,
-          periodLength: 5,
-          daysUntilNextPhase: 6,
-          phaseDescription: 'Phase folliculaire - Période idéale pour commencer votre parcours fitness',
-          recommendations: [
-            'Commencez par des exercices modérés',
-            'Établissez une routine d\'entraînement',
-            'Enregistrez vos règles pour un suivi personnalisé'
-          ]
-        });
-        return; // Ne pas traiter comme une erreur
+      // Don't show error alert for session expiration - user will be redirected to login
+      if (err?.name === 'SessionExpired') {
+        console.log('Session expired during cycle fetch - user will be redirected to login');
+        setError(null); // Clear any previous errors
+        setCurrentCycle(null);
+        return;
       }
       
-      // Set a fallback phase if API fails
-      setCurrentPhase(null);
+      const errorMessage = err.response?.data?.message || err.message || 'Erreur lors du chargement des informations du cycle';
+      console.error('Error fetching current cycle:', err);
+      
+      // If it's a 400 or 404, the user probably doesn't have cycle tracking enabled
+      if (err.response?.status === 400 || err.response?.status === 404) {
+        console.log('Cycle tracking not enabled or no cycle data found');
+        setError(null); // Don't show error for this normal case
+        
+        // Check if user is menopausal - if so, don't set any cycle data
+        // This will be handled by the components that use this hook
+        setCurrentCycle(null);
+        return; // Don't treat as an error
+      }
+      
+      // For other errors, set the error message
+      setError(errorMessage);
+      setCurrentCycle(null);
     } finally {
       setLoading(false);
     }
   };
 
-  const getPhaseLabel = (phase: CyclePhase): string => {
-    switch (phase) {
-      case CyclePhase.MENSTRUAL:
-        return 'Menstruelle';
-      case CyclePhase.FOLLICULAR:
-        return 'Folliculaire';
-      case CyclePhase.OVULATION:
-        return 'Ovulatoire';
-      case CyclePhase.LUTEAL:
-        return 'Lutéale';
-      default:
-        return 'Inconnue';
+  const getCycleCharacteristics = (cycleDay: number, isPeriodDay: boolean, isOvulationPhase: boolean, isFertileDay: boolean): string => {
+    if (isPeriodDay) {
+      return 'Phase Menstruelle';
+    } else if (isOvulationPhase) {
+      return 'Phase d\'Ovulation';
+    } else if (isFertileDay) {
+      return 'Phase Fertile';
+    } else if (cycleDay <= 14) {
+      return 'Phase Folliculaire';
+    } else {
+      return 'Phase Lutéale';
     }
   };
 
-  const getPhaseEmoji = (phase: CyclePhase): string => {
-    switch (phase) {
-      case CyclePhase.MENSTRUAL:
-        return '🌙';
-      case CyclePhase.FOLLICULAR:
-        return '🌱';
-      case CyclePhase.OVULATION:
-        return '🌻';
-      case CyclePhase.LUTEAL:
-        return '🍂';
-      default:
-        return '💪';
+  const getCycleEmoji = (cycleDay: number, isPeriodDay: boolean, isOvulationPhase: boolean, isFertileDay: boolean): string => {
+    if (isPeriodDay) {
+      return '🌙';
+    } else if (isOvulationPhase) {
+      return '🌻';
+    } else if (isFertileDay) {
+      return '✨';
+    } else if (cycleDay <= 14) {
+      return '🌱';
+    } else {
+      return '🍂';
     }
   };
 
-  const getPhaseColor = (phase: CyclePhase): string => {
-    switch (phase) {
-      case CyclePhase.MENSTRUAL:
-        return 'bg-phase-menstrual-100';
-      case CyclePhase.FOLLICULAR:
-        return 'bg-phase-follicular-100';
-      case CyclePhase.OVULATION:
-        return 'bg-phase-ovulation-100';
-      case CyclePhase.LUTEAL:
-        return 'bg-phase-luteal-100';
-      default:
-        return 'bg-primary-100';
+  const getCycleColor = (cycleDay: number, isPeriodDay: boolean, isOvulationPhase: boolean, isFertileDay: boolean): string => {
+    if (isPeriodDay) {
+      return 'bg-phase-menstrual-100';
+    } else if (isOvulationPhase) {
+      return 'bg-phase-ovulation-100';
+    } else if (isFertileDay) {
+      return 'bg-phase-follicular-100';
+    } else if (cycleDay <= 14) {
+      return 'bg-phase-follicular-100';
+    } else {
+      return 'bg-phase-luteal-100';
+    }
+  };
+
+  const fetchCycleConfig = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response: CycleConfigResponse = await cycleApi.getCycleConfig();
+      setCycleConfig(response.config);
+    } catch (err: any) {
+      // Don't show error alert for session expiration - user will be redirected to login
+      if (err?.name === 'SessionExpired') {
+        console.log('Session expired during cycle config fetch - user will be redirected to login');
+        setError(null);
+        setCycleConfig(null);
+        return;
+      }
+      
+      const errorMessage = err.response?.data?.message || err.message || 'Erreur lors du chargement de la configuration du cycle';
+      console.error('Error fetching cycle config:', err);
+      
+      // If it's a 404, the user probably doesn't have cycle config yet
+      if (err.response?.status === 404) {
+        console.log('Cycle config not found - user may need to set it up');
+        setError(null);
+        setCycleConfig(null);
+        return;
+      }
+      
+      setError(errorMessage);
+      setCycleConfig(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateCycleConfig = async (config: UpdateCycleConfigRequest): Promise<boolean> => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response: CycleConfigResponse = await cycleApi.updateCycleConfig(config);
+      setCycleConfig(response.config);
+      
+      // Refresh current cycle data after config update
+      await fetchCurrentCycle();
+      
+      return true;
+    } catch (err: any) {
+      // Don't show error alert for session expiration - user will be redirected to login
+      if (err?.name === 'SessionExpired') {
+        console.log('Session expired during cycle config update - user will be redirected to login');
+        return false;
+      }
+      
+      const errorMessage = err.response?.data?.message || err.message || 'Erreur lors de la mise à jour de la configuration du cycle';
+      setError(errorMessage);
+      console.error('Error updating cycle config:', err);
+      return false;
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchCurrentPhase();
+    fetchCurrentCycle();
+    fetchCycleConfig();
   }, []);
 
   return {
-    currentPhase,
+    currentCycle,
+    cycleConfig,
     loading,
     error,
-    refreshPhase: fetchCurrentPhase,
-    getPhaseLabel,
-    getPhaseEmoji,
-    getPhaseColor,
+    refreshCycle: fetchCurrentCycle,
+    refreshConfig: fetchCycleConfig,
+    updateCycleConfig,
+    getCycleCharacteristics,
+    getCycleEmoji,
+    getCycleColor,
   };
 };

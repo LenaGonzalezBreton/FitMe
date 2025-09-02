@@ -92,9 +92,21 @@ export interface UpdateProfileData {
 export interface UserSettingsData {
   id: string;
   userId: string;
-  unitPreference: string;
-  notificationEnabled: boolean;
-  notificationTime?: Date;
+  theme: 'LIGHT' | 'DARK' | 'AUTO';
+  language: 'FRENCH' | 'ENGLISH';
+  units: 'METRIC' | 'IMPERIAL';
+  notifications: {
+    email: boolean;
+    push: boolean;
+    workout: boolean;
+    cycle: boolean;
+    achievements: boolean;
+  };
+  privacy: {
+    shareProgress: boolean;
+    shareCycle: boolean;
+    allowAnalytics: boolean;
+  };
   createdAt: Date;
   updatedAt: Date;
 }

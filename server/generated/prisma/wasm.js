@@ -169,7 +169,7 @@ exports.Prisma.ExerciseScalarFieldEnum = {
   title: 'title',
   description: 'description',
   imageUrl: 'imageUrl',
-  durationMinutes: 'durationMinutes',
+  duration: 'duration',
   intensity: 'intensity',
   muscleZone: 'muscleZone',
   createdAt: 'createdAt',

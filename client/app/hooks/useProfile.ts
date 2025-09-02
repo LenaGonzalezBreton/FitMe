@@ -65,6 +65,13 @@ export const useProfile = (): UseProfileReturn => {
         isMenopausal: response.user.isMenopausal,
       });
     } catch (err: any) {
+      // Don't show error alert for session expiration - user will be redirected to login
+      if (err?.name === 'SessionExpired') {
+        console.log('Session expired during profile fetch - user will be redirected to login');
+        setError(null); // Clear any previous errors
+        return;
+      }
+      
       const errorMessage = err.response?.data?.message || err.message || 'Erreur lors du chargement du profil';
       setError(errorMessage);
       console.error('Error fetching profile:', err);
@@ -75,50 +82,15 @@ export const useProfile = (): UseProfileReturn => {
 
   const fetchWorkoutHistory = async () => {
     try {
-      // For now, use mock data since the API doesn't exist yet
-      const mockSessions: WorkoutSession[] = [
-        {
-          id: '1',
-          date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
-          programTitle: 'Programme Folliculaire',
-          phase: 'FOLLICULAR',
-          phaseLabel: 'Folliculaire',
-          duration: 45,
-          exerciseCount: 8,
-          completed: true,
-        },
-        {
-          id: '2',
-          date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), // 4 days ago
-          programTitle: 'Récupération Douce',
-          phase: 'MENSTRUAL',
-          phaseLabel: 'Menstruelle',
-          duration: 30,
-          exerciseCount: 5,
-          completed: true,
-        },
-        {
-          id: '3',
-          date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 1 week ago
-          programTitle: 'HIIT Intensif',
-          phase: 'OVULATION',
-          phaseLabel: 'Ovulatoire',
-          duration: 35,
-          exerciseCount: 6,
-          completed: false,
-        },
-      ];
-      setWorkoutHistory(mockSessions);
-
-      // Future implementation with real API:
-      // const response = await workoutHistoryApi.getWorkoutSessions({
-      //   limit: 10,
-      //   offset: 0,
-      // });
-      // setWorkoutHistory(response.sessions);
+      const response = await workoutHistoryApi.getWorkoutSessions({
+        limit: 10,
+        offset: 0,
+      });
+      setWorkoutHistory(response.sessions || []);
     } catch (err: any) {
       console.error('Error fetching workout history:', err);
       // Don't set error for workout history as it's not critical
+      setWorkoutHistory([]);
     }
   };
 
@@ -136,8 +108,17 @@ export const useProfile = (): UseProfileReturn => {
       // Update local state
       setProfileData(prev => ({ ...prev, ...data }));
       
+      // Refresh profile data to ensure consistency
+      await fetchProfileData();
+      
       return true;
     } catch (err: any) {
+      // Don't show error alert for session expiration - user will be redirected to login
+      if (err?.name === 'SessionExpired') {
+        console.log('Session expired during profile update - user will be redirected to login');
+        return false;
+      }
+      
       const errorMessage = err.response?.data?.message || err.message || 'Erreur lors de la mise à jour du profil';
       setError(errorMessage);
       Alert.alert('Erreur', errorMessage);
@@ -159,6 +140,12 @@ export const useProfile = (): UseProfileReturn => {
 
       return true;
     } catch (err: any) {
+      // Don't show error alert for session expiration - user will be redirected to login
+      if (err?.name === 'SessionExpired') {
+        console.log('Session expired during password change - user will be redirected to login');
+        return false;
+      }
+      
       const errorMessage = err.response?.data?.message || err.message || 'Erreur lors du changement de mot de passe';
       setError(errorMessage);
       Alert.alert('Erreur', errorMessage);
@@ -185,6 +172,12 @@ export const useProfile = (): UseProfileReturn => {
 
       return true;
     } catch (err: any) {
+      // Don't show error alert for session expiration - user will be redirected to login
+      if (err?.name === 'SessionExpired') {
+        console.log('Session expired during image upload - user will be redirected to login');
+        return false;
+      }
+      
       const errorMessage = err.response?.data?.message || err.message || 'Erreur lors du téléchargement de l\'image';
       setError(errorMessage);
       Alert.alert('Erreur', errorMessage);

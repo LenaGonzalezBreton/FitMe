@@ -42,7 +42,7 @@ export interface GeneratedProgramExercise {
   title: string;
   description?: string;
   imageUrl?: string;
-  durationMinutes?: number;
+  duration?: number;
   formattedDuration: string;
   intensity?: string;
   intensityLabel: string;
@@ -80,26 +80,98 @@ export interface GeneratedProgramResponse {
   message: string;
 }
 
-// Cycle types
-export enum CyclePhase {
-  MENSTRUAL = 'MENSTRUAL',
-  FOLLICULAR = 'FOLLICULAR',
-  OVULATION = 'OVULATION',
-  LUTEAL = 'LUTEAL',
+export interface CurrentCycleResponse {
+  success: boolean;
+  data: CurrentCycleData;
+  message: string;
 }
 
-export interface CurrentPhaseData {
-  phase: CyclePhase;
+// Cycle Configuration types
+export interface CycleConfig {
+  userId: string;
+  isCycleTrackingEnabled: boolean;
+  usesExternalProvider: boolean;
+  useMenopauseMode: boolean;
+  averageCycleLength: number;
+  averagePeriodLength: number;
+  prefersManualInput: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Cycle types
+export interface CurrentCycleData {
   cycleDay: number;
   cycleLength: number;
   periodLength: number;
-  daysUntilNextPhase: number;
-  phaseDescription: string;
+  isPeriodDay: boolean;
+  isOvulationPhase: boolean;
+  isFertileDay: boolean;
+  daysUntilNextCycle: number;
+  cycleDescription: string;
   recommendations: string[];
 }
 
-export interface CurrentPhaseResponse {
-  success: boolean;
-  data: CurrentPhaseData;
+
+export interface CycleConfigResponse {
+  config: CycleConfig;
   message: string;
+}
+
+export interface UpdateCycleConfigRequest {
+  isCycleTrackingEnabled?: boolean;
+  usesExternalProvider?: boolean;
+  useMenopauseMode?: boolean;
+  averageCycleLength?: number;
+  averagePeriodLength?: number;
+  prefersManualInput?: boolean;
+}
+
+// Period tracking types
+export interface LogPeriodRequest {
+  startDate: string;
+  endDate?: string;
+  flowIntensity?: number;
+  notes?: string;
+}
+
+export interface Period {
+  id: string;
+  startDate: string;
+  endDate?: string;
+  flowIntensity?: number;
+  notes?: string;
+  cycleId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LogPeriodResponse {
+  period: {
+    id: string;
+    startDate: string;
+    periodLength?: number;
+    cycleLength?: number;
+    isRegular: boolean;
+    flowIntensity?: number;
+    notes?: string;
+  };
+  message: string;
+  isNewCycle: boolean;
+}
+
+export interface PeriodsHistoryResponse {
+  periods: {
+    id: string;
+    startDate: string;
+    periodLength?: number;
+    cycleLength?: number;
+    isRegular: boolean;
+    flowIntensity?: number;
+    notes?: string;
+  }[];
+  total: number;
+  averageCycleLength: number;
+  averagePeriodLength: number;
+  regularityPercentage: number;
 }

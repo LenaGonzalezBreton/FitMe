@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { NavigationProp } from '@react-navigation/native';
+import * as SecureStore from 'expo-secure-store';
 import api from '../../services/api';
 
 interface RegisterScreenProps {
@@ -38,8 +39,18 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
             password,
             firstName,
         });
+        
+        // Store registration data for onboarding completion
         const { user, tokens } = response.data;
-        await login(user, tokens.accessToken);
+        
+        // Store tokens and user data temporarily for onboarding
+        await SecureStore.setItemAsync('tempAccessToken', tokens.accessToken);
+        await SecureStore.setItemAsync('tempRefreshToken', tokens.refreshToken);
+        await SecureStore.setItemAsync('tempUser', JSON.stringify(user));
+        
+        // Navigate to onboarding with the user data
+        await login(user, tokens.accessToken, tokens.refreshToken);
+        
     } catch (error: any) {
         const message = error.response?.data?.message || 'Une erreur est survenue.';
         Alert.alert("Erreur d'inscription", message);

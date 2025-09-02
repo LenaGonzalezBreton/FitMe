@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { CoreModule } from '../../core/core.module';
 
 // Application Use Cases
-import { GetCurrentPhaseUseCase } from './application/use-cases/get-current-phase.use-case';
+import { GetCurrentCycleUseCase } from './application/use-cases/get-current-cycle.use-case';
 import { GetCycleConfigUseCase } from './application/use-cases/get-cycle-config.use-case';
 import { UpdateCycleConfigUseCase } from './application/use-cases/update-cycle-config.use-case';
 import { LogPeriodUseCase } from './application/use-cases/log-period.use-case';
@@ -32,7 +32,7 @@ import {
   controllers: [CycleController],
   providers: [
     // Use Cases
-    GetCurrentPhaseUseCase,
+    GetCurrentCycleUseCase,
     GetCycleConfigUseCase,
     UpdateCycleConfigUseCase,
     LogPeriodUseCase,
@@ -57,7 +57,7 @@ import {
     },
   ],
   exports: [
-    GetCurrentPhaseUseCase,
+    GetCurrentCycleUseCase,
     GetCycleConfigUseCase,
     UpdateCycleConfigUseCase,
     LogPeriodUseCase,

@@ -7,6 +7,9 @@ export type AppStackParamList = {
   CreateProgram:  undefined;
   Exercices:      undefined;
   ExerciseDetail: { exercise: Exercise };
+  CycleTracking:  undefined;
+  PeriodLogging:  undefined;
+  PeriodHistory:  undefined;
 };
 
 export type AuthStackParamList = {

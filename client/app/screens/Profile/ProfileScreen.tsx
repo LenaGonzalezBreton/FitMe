@@ -16,6 +16,7 @@ import { NavigationProp } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
 import { useProfile } from '../../hooks/useProfile';
 import { useCycle } from '../../hooks/useCycle';
+import { useStreak } from '../../hooks/useStreak';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import ProfileAvatar from '../../components/ProfileAvatar';
@@ -46,7 +47,8 @@ interface ProfileData {
 
 const ProfileScreen = ({ navigation }: ProfileScreenProps) => {
   const { logout } = useAuth();
-  const { getPhaseLabel, getPhaseEmoji } = useCycle();
+  const { currentCycle, cycleConfig, getCycleCharacteristics, getCycleEmoji, getCycleColor } = useCycle();
+  const { streakData } = useStreak();
   const {
     profileData,
     workoutHistory,
@@ -240,7 +242,7 @@ const ProfileScreen = ({ navigation }: ProfileScreenProps) => {
     return mins > 0 ? `${hours}h ${mins}min` : `${hours}h`;
   };
 
-  const getPhaseColor = (phase: string): string => {
+  const getWorkoutPhaseColor = (phase: string): string => {
     switch (phase) {
       case 'MENSTRUAL':
         return 'bg-phase-menstrual-100';
@@ -384,6 +386,127 @@ const ProfileScreen = ({ navigation }: ProfileScreenProps) => {
           </View>
         </View>
 
+        {/* Cycle Information Section */}
+        <View className="px-6 mb-6">
+          <Text className="text-xl font-bold text-brand-text mb-4">Informations du cycle</Text>
+          <View className="bg-surface rounded-xl p-4 shadow-sm border border-border-light">
+            {cycleConfig ? (
+              <View className="space-y-4">
+                {/* Cycle Status */}
+                <View className="flex-row items-center justify-between">
+                  <View className="flex-1">
+                    <Text className="text-lg font-bold text-brand-text mb-1">
+                      {cycleConfig.isCycleTrackingEnabled ? 'Suivi activé' : 'Suivi désactivé'}
+                    </Text>
+                    <Text className="text-sm text-secondary-600">
+                      {cycleConfig.isCycleTrackingEnabled 
+                        ? `Cycle de ${cycleConfig.averageCycleLength} jours, règles de ${(currentCycle?.periodLength ?? cycleConfig.averagePeriodLength)} jours`
+                        : 'Le suivi de votre cycle est désactivé'
+                      }
+                    </Text>
+                  </View>
+                  <View className={`${cycleConfig.isCycleTrackingEnabled ? 'bg-success-500' : 'bg-secondary-300'} rounded-full w-12 h-12 items-center justify-center`}>
+                    <Text className="text-surface text-xl">
+                      {cycleConfig.isCycleTrackingEnabled ? '📅' : '⏸️'}
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Current Cycle */}
+                {currentCycle && (
+                  <View className="bg-primary-50 p-3 rounded-lg">
+                    <View className="flex-row items-center justify-between mb-2">
+                      <Text className="text-sm font-semibold text-primary-700">Cycle actuel</Text>
+                      <View className={`${getCycleColor(currentCycle.cycleDay, currentCycle.isPeriodDay, currentCycle.isOvulationPhase, currentCycle.isFertileDay)} rounded-full w-8 h-8 items-center justify-center`}>
+                        <Text className="text-brand-text text-sm">{getCycleEmoji(currentCycle.cycleDay, currentCycle.isPeriodDay, currentCycle.isOvulationPhase, currentCycle.isFertileDay)}</Text>
+                      </View>
+                    </View>
+                    <Text className="text-sm text-primary-600 mb-1">
+                      {getCycleCharacteristics(currentCycle.cycleDay, currentCycle.isPeriodDay, currentCycle.isOvulationPhase, currentCycle.isFertileDay)} - Jour {currentCycle.cycleDay}
+                    </Text>
+                    <Text className="text-xs text-primary-500">
+                      {currentCycle.daysUntilNextCycle > 0 
+                        ? `${currentCycle.daysUntilNextCycle} jour${currentCycle.daysUntilNextCycle > 1 ? 's' : ''} avant le prochain cycle`
+                        : 'Fin de cycle aujourd\'hui'
+                      }
+                    </Text>
+                  </View>
+                )}
+
+                {/* Cycle Settings */}
+                <View className="space-y-2">
+                  <View className="flex-row justify-between">
+                    <Text className="text-sm text-secondary-600">Mode ménopause</Text>
+                    <Text className="text-sm text-brand-text">
+                      {cycleConfig.useMenopauseMode ? 'Activé' : 'Désactivé'}
+                    </Text>
+                  </View>
+                  <View className="flex-row justify-between">
+                    <Text className="text-sm text-secondary-600">Saisie manuelle</Text>
+                    <Text className="text-sm text-brand-text">
+                      {cycleConfig.prefersManualInput ? 'Préférée' : 'Automatique'}
+                    </Text>
+                  </View>
+                  <View className="flex-row justify-between">
+                    <Text className="text-sm text-secondary-600">Fournisseur externe</Text>
+                    <Text className="text-sm text-brand-text">
+                      {cycleConfig.usesExternalProvider ? 'Activé' : 'Désactivé'}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            ) : (
+              <View className="items-center py-4">
+                <Text className="text-4xl mb-3">📅</Text>
+                <Text className="text-lg font-bold text-brand-text mb-2">
+                  Cycle non configuré
+                </Text>
+                <Text className="text-secondary-600 text-center">
+                  Configurez votre cycle pour des recommandations personnalisées
+                </Text>
+              </View>
+            )}
+          </View>
+        </View>
+
+        {/* Streak Information Section */}
+        <View className="px-6 mb-6">
+          <Text className="text-xl font-bold text-brand-text mb-4">Statistiques d'entraînement</Text>
+          <View className="bg-surface rounded-xl p-4 shadow-sm border border-border-light">
+            <View className="flex-row justify-between items-center mb-4">
+              <View className="items-center">
+                <Text className="text-2xl font-bold text-primary-500">{streakData.currentStreak}</Text>
+                <Text className="text-sm text-secondary-600">Série actuelle</Text>
+              </View>
+              <View className="items-center">
+                <Text className="text-2xl font-bold text-accent-500">{streakData.longestStreak}</Text>
+                <Text className="text-sm text-secondary-600">Record</Text>
+              </View>
+              <View className="items-center">
+                <Text className="text-2xl font-bold text-success-500">{streakData.totalWorkouts}</Text>
+                <Text className="text-sm text-secondary-600">Total</Text>
+              </View>
+            </View>
+            
+            <View className="flex-row justify-between">
+              <View className="items-center">
+                <Text className="text-lg font-bold text-brand-text">{streakData.thisWeekWorkouts}</Text>
+                <Text className="text-xs text-secondary-600">Cette semaine</Text>
+              </View>
+              <View className="items-center">
+                <Text className="text-lg font-bold text-brand-text">{streakData.thisMonthWorkouts}</Text>
+                <Text className="text-xs text-secondary-600">Ce mois</Text>
+              </View>
+              <View className="items-center">
+                <Text className="text-lg font-bold text-brand-text">
+                  {streakData.lastWorkoutDate ? new Date(streakData.lastWorkoutDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) : 'Jamais'}
+                </Text>
+                <Text className="text-xs text-secondary-600">Dernier entraînement</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+
         {/* Workout History Section */}
         <View className="px-6 mb-6">
           <Text className="text-xl font-bold text-brand-text mb-4">Historique des séances</Text>
@@ -401,9 +524,9 @@ const ProfileScreen = ({ navigation }: ProfileScreenProps) => {
                         {formatDate(session.date)}
                       </Text>
                     </View>
-                    <View className={`px-3 py-1 rounded-full ${getPhaseColor(session.phase)}`}>
+                    <View className={`px-3 py-1 rounded-full ${getWorkoutPhaseColor(session.phase)}`}>
                       <Text className="text-xs font-medium">
-                        {getPhaseEmoji(session.phase as any)} {session.phaseLabel}
+                        {session.phaseLabel}
                       </Text>
                     </View>
                   </View>
@@ -457,7 +580,7 @@ const ProfileScreen = ({ navigation }: ProfileScreenProps) => {
               <Ionicons name="chevron-forward-outline" size={20} color="#A99985" />
             </TouchableOpacity>
             
-            <TouchableOpacity className="flex-row items-center justify-between p-4 border-b border-border-light active:bg-surface-secondary">
+            <TouchableOpacity className="flex-row items-center justify-between p-4 border-b border-border-light active:bg-surface-secondary" onPress={() => navigation.navigate('CycleTracking' as never)}>
               <View className="flex-row items-center">
                 <Ionicons name="moon-outline" size={20} color="#8B5A3C" />
                 <Text className="text-brand-text ml-3">Suivi du cycle</Text>
@@ -465,7 +588,7 @@ const ProfileScreen = ({ navigation }: ProfileScreenProps) => {
               <Ionicons name="chevron-forward-outline" size={20} color="#A99985" />
             </TouchableOpacity>
             
-            <TouchableOpacity className="flex-row items-center justify-between p-4 active:bg-surface-secondary">
+            <TouchableOpacity className="flex-row items-center justify-between p-4 active:bg-surface-secondary" onPress={() => Alert.alert('Support', 'Envoyez un email à support@fitme.app')}>
               <View className="flex-row items-center">
                 <Ionicons name="help-circle-outline" size={20} color="#8B5A3C" />
                 <Text className="text-brand-text ml-3">Aide & Support</Text>

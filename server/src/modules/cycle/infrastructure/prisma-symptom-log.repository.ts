@@ -2,12 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../core/prisma.service';
 import {
   ISymptomLogRepository,
-  CreateSymptomLogData,
-  UpdateSymptomLogData,
   SymptomLogFilters,
   SymptomLogEntity,
 } from '../domain/symptom-log.repository';
-import { SymptomLog as PrismaSymptomLog } from '@prisma/client';
+import { SymptomLog, CreateSymptomLogData, UpdateSymptomLogData } from '../domain/symptom-log.entity';
+import { SymptomLog as PrismaSymptomLog } from '../../../../generated/prisma';
+import { $Enums } from '../../../../generated/prisma';
 
 @Injectable()
 export class PrismaSymptomLogRepository implements ISymptomLogRepository {
@@ -18,7 +18,7 @@ export class PrismaSymptomLogRepository implements ISymptomLogRepository {
       data: {
         userId: symptomData.userId,
         date: symptomData.date,
-        symptomType: symptomData.symptomType,
+        symptomType: symptomData.symptomType as $Enums.SymptomType,
         value: symptomData.value,
       },
     });
@@ -53,7 +53,7 @@ export class PrismaSymptomLogRepository implements ISymptomLogRepository {
       skip: filters?.offset,
     });
 
-    return prismaData.map((data) => this.toDomainEntity(data));
+    return prismaData.map((data: any) => this.toDomainEntity(data));
   }
 
   async findByUserIdAndDate(
@@ -78,7 +78,7 @@ export class PrismaSymptomLogRepository implements ISymptomLogRepository {
       orderBy: { symptomType: 'asc' },
     });
 
-    return prismaData.map((data) => this.toDomainEntity(data));
+    return prismaData.map((data: any) => this.toDomainEntity(data));
   }
 
   async update(
@@ -89,7 +89,7 @@ export class PrismaSymptomLogRepository implements ISymptomLogRepository {
       where: { id: symptomId },
       data: {
         date: updateData.date,
-        symptomType: updateData.symptomType,
+        symptomType: updateData.symptomType as $Enums.SymptomType,
         value: updateData.value,
       },
     });
@@ -122,14 +122,14 @@ export class PrismaSymptomLogRepository implements ISymptomLogRepository {
   }
 
   private toDomainEntity(prismaData: PrismaSymptomLog): SymptomLogEntity {
-    return {
-      id: prismaData.id,
-      userId: prismaData.userId,
-      date: prismaData.date,
-      symptomType: prismaData.symptomType,
-      value: prismaData.value,
-      createdAt: prismaData.createdAt,
-      updatedAt: prismaData.updatedAt,
-    };
+    return new SymptomLog(
+      prismaData.id,
+      prismaData.userId,
+      prismaData.date,
+      prismaData.symptomType,
+      prismaData.value,
+      prismaData.createdAt,
+      prismaData.updatedAt,
+    );
   }
 }

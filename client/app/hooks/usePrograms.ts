@@ -53,6 +53,16 @@ export const usePrograms = (options: UseProgramsOptions = {}): UseProgramsReturn
       setActiveProgram(active || null);
 
     } catch (err: any) {
+      // Don't show error alert for session expiration - user will be redirected to login
+      if (err?.name === 'SessionExpired') {
+        console.log('Session expired during programs fetch - user will be redirected to login');
+        setError(null); // Clear any previous errors
+        setPrograms([]);
+        setTotal(0);
+        setActiveProgram(null);
+        return;
+      }
+      
       const errorMessage = err.response?.data?.message || err.message || 'Erreur lors du chargement des programmes';
       setError(errorMessage);
       console.error('Error fetching programs:', err);
@@ -94,6 +104,12 @@ export const usePrograms = (options: UseProgramsOptions = {}): UseProgramsReturn
       
       return response;
     } catch (err: any) {
+      // Don't show error alert for session expiration - user will be redirected to login
+      if (err?.name === 'SessionExpired') {
+        console.log('Session expired during program generation - user will be redirected to login');
+        return null;
+      }
+      
       const errorMessage = err.response?.data?.message || err.message || 'Erreur lors de la génération du programme';
       setError(errorMessage);
       Alert.alert('Erreur', errorMessage);
@@ -116,6 +132,12 @@ export const usePrograms = (options: UseProgramsOptions = {}): UseProgramsReturn
       Alert.alert('Succès', 'Programme démarré avec succès !');
       return true;
     } catch (err: any) {
+      // Don't show error alert for session expiration - user will be redirected to login
+      if (err?.name === 'SessionExpired') {
+        console.log('Session expired during program start - user will be redirected to login');
+        return false;
+      }
+      
       const errorMessage = err.response?.data?.message || err.message || 'Erreur lors du démarrage du programme';
       setError(errorMessage);
       Alert.alert('Erreur', errorMessage);
@@ -138,6 +160,12 @@ export const usePrograms = (options: UseProgramsOptions = {}): UseProgramsReturn
       Alert.alert('Succès', 'Programme supprimé avec succès !');
       return true;
     } catch (err: any) {
+      // Don't show error alert for session expiration - user will be redirected to login
+      if (err?.name === 'SessionExpired') {
+        console.log('Session expired during program deletion - user will be redirected to login');
+        return false;
+      }
+      
       const errorMessage = err.response?.data?.message || err.message || 'Erreur lors de la suppression du programme';
       setError(errorMessage);
       Alert.alert('Erreur', errorMessage);

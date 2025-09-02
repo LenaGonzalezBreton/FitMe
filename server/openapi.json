@@ -479,19 +479,19 @@
         ]
       }
     },
-    "/cycle/current-phase": {
+    "/cycle/current-cycle": {
       "get": {
-        "operationId": "CycleController_getCurrentPhase",
-        "summary": "Récupérer la phase actuelle du cycle",
-        "description": "Retourne la phase actuelle du cycle menstruel de l'utilisatrice connectée",
+        "operationId": "CycleController_getCurrentCycle",
+        "summary": "Récupérer les informations actuelles du cycle",
+        "description": "Retourne les informations actuelles du cycle menstruel de l'utilisatrice connectée",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Phase actuelle retournée avec succès",
+            "description": "Informations du cycle retournées avec succès",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CurrentPhaseResponseDto"
+                  "$ref": "#/components/schemas/CurrentCycleResponseDto"
                 }
               }
             }
@@ -903,6 +903,27 @@
         ]
       }
     },
+    "/exercises/categories": {
+      "get": {
+        "operationId": "ExerciseController_getCategories",
+        "summary": "Récupérer les catégories d'exercices disponibles",
+        "description": "Retourne la liste des catégories d'exercices",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Catégories récupérées avec succès"
+          }
+        },
+        "tags": [
+          "Exercises"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
     "/exercises": {
       "get": {
         "operationId": "ExerciseController_getExercises",
@@ -913,14 +934,9 @@
             "name": "phase",
             "required": false,
             "in": "query",
-            "description": "Phase du cycle menstruel",
+            "description": "Phase du cycle menstruel (menstrual, follicular, ovulation, luteal)",
             "schema": {
-              "enum": [
-                "MENSTRUAL",
-                "FOLLICULAR",
-                "OVULATION",
-                "LUTEAL"
-              ],
+              "example": "follicular",
               "type": "string"
             }
           },
@@ -1277,6 +1293,48 @@
           {
             "bearer": []
           },
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/programs/types": {
+      "get": {
+        "operationId": "ProgramController_getProgramTypes",
+        "summary": "Récupérer les types de programmes disponibles",
+        "description": "Retourne la liste des types de programmes",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Types de programmes récupérés avec succès"
+          }
+        },
+        "tags": [
+          "Programs"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/programs/training-days": {
+      "get": {
+        "operationId": "ProgramController_getTrainingDays",
+        "summary": "Récupérer les jours d'entraînement disponibles",
+        "description": "Retourne la liste des jours d'entraînement",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Jours d'entraînement récupérés avec succès"
+          }
+        },
+        "tags": [
+          "Programs"
+        ],
+        "security": [
           {
             "bearer": []
           }
@@ -1884,6 +1942,484 @@
           }
         ]
       }
+    },
+    "/workouts/sessions": {
+      "post": {
+        "operationId": "WorkoutController_startWorkoutSession",
+        "summary": "Start a new workout session",
+        "description": "Creates a new workout session for the authenticated user",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Workout session started successfully"
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
+          "401": {
+            "description": "Unauthorized - JWT token required"
+          }
+        },
+        "tags": [
+          "Workouts"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "WorkoutController_getUserWorkoutSessions",
+        "summary": "Get user workout sessions",
+        "description": "Retrieves workout sessions for the authenticated user",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Workout sessions retrieved successfully"
+          }
+        },
+        "tags": [
+          "Workouts"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/workouts/sessions/{id}/complete": {
+      "put": {
+        "operationId": "WorkoutController_completeWorkoutSession",
+        "summary": "Complete a workout session",
+        "description": "Marks a workout session as completed",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Workout session ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Workout session completed successfully"
+          },
+          "404": {
+            "description": "Workout session not found"
+          }
+        },
+        "tags": [
+          "Workouts"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/workouts/sessions/{id}": {
+      "get": {
+        "operationId": "WorkoutController_getWorkoutSession",
+        "summary": "Get workout session details",
+        "description": "Retrieves detailed information about a specific workout session",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Workout session ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Workout session details retrieved successfully"
+          },
+          "404": {
+            "description": "Workout session not found"
+          }
+        },
+        "tags": [
+          "Workouts"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/workouts/stats": {
+      "get": {
+        "operationId": "WorkoutController_getWorkoutStats",
+        "summary": "Get workout statistics",
+        "description": "Retrieves workout statistics for the authenticated user",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Workout statistics retrieved successfully"
+          }
+        },
+        "tags": [
+          "Workouts"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/workouts/sessions/{id}/exercises": {
+      "post": {
+        "operationId": "WorkoutController_logExerciseCompletion",
+        "summary": "Log exercise completion",
+        "description": "Logs an exercise completion within a workout session",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Workout session ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Exercise logged successfully"
+          }
+        },
+        "tags": [
+          "Workouts"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/workouts/sessions/{id}/pause": {
+      "put": {
+        "operationId": "WorkoutController_pauseWorkoutSession",
+        "summary": "Pause workout session",
+        "description": "Pauses an active workout session",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Workout session ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Workout session paused successfully"
+          }
+        },
+        "tags": [
+          "Workouts"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/workouts/sessions/{id}/resume": {
+      "put": {
+        "operationId": "WorkoutController_resumeWorkoutSession",
+        "summary": "Resume workout session",
+        "description": "Resumes a paused workout session",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Workout session ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Workout session resumed successfully"
+          }
+        },
+        "tags": [
+          "Workouts"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/streak": {
+      "get": {
+        "operationId": "StreakController_getStreakData",
+        "summary": "Get user streak data",
+        "description": "Retrieves the current streak and workout statistics for the authenticated user",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Streak data retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized - JWT token required"
+          }
+        },
+        "tags": [
+          "Streak"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/streak/log-workout": {
+      "post": {
+        "operationId": "StreakController_logWorkout",
+        "summary": "Log a workout completion",
+        "description": "Logs a workout completion to update streak data",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Workout logged successfully"
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
+          "401": {
+            "description": "Unauthorized - JWT token required"
+          }
+        },
+        "tags": [
+          "Streak"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/analytics/user": {
+      "get": {
+        "operationId": "AnalyticsController_getUserAnalytics",
+        "parameters": [
+          {
+            "name": "period",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/analytics/workout": {
+      "get": {
+        "operationId": "AnalyticsController_getWorkoutAnalytics",
+        "parameters": [
+          {
+            "name": "workoutId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "period",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/analytics/cycle": {
+      "get": {
+        "operationId": "AnalyticsController_getCycleAnalytics",
+        "parameters": [
+          {
+            "name": "period",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/analytics/insights": {
+      "get": {
+        "operationId": "AnalyticsController_getProgressInsights",
+        "parameters": [
+          {
+            "name": "period",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/notifications": {
+      "get": {
+        "operationId": "NotificationController_getNotifications",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "read",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/notifications/mark-read": {
+      "post": {
+        "operationId": "NotificationController_markAsRead",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/notifications/mark-all-read": {
+      "post": {
+        "operationId": "NotificationController_markAllAsRead",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/notifications/preferences": {
+      "put": {
+        "operationId": "NotificationController_updatePreferences",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/user-preferences": {
+      "get": {
+        "operationId": "UserPreferencesController_getUserPreferences",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "operationId": "UserPreferencesController_updateUserPreferences",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/user-preferences/themes": {
+      "get": {
+        "operationId": "UserPreferencesController_getAvailableThemes",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/user-preferences/languages": {
+      "get": {
+        "operationId": "UserPreferencesController_getAvailableLanguages",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
     }
   },
   "info": {
@@ -2252,7 +2788,24 @@
           "settings": {
             "type": "object",
             "properties": {
-              "unitPreference": {
+              "theme": {
+                "type": "string",
+                "example": "LIGHT",
+                "enum": [
+                  "LIGHT",
+                  "DARK",
+                  "AUTO"
+                ]
+              },
+              "language": {
+                "type": "string",
+                "example": "FRENCH",
+                "enum": [
+                  "FRENCH",
+                  "ENGLISH"
+                ]
+              },
+              "units": {
                 "type": "string",
                 "example": "METRIC",
                 "enum": [
@@ -2260,13 +2813,13 @@
                   "IMPERIAL"
                 ]
               },
-              "notificationEnabled": {
-                "type": "boolean",
-                "example": true
+              "notifications": {
+                "type": "object",
+                "example": {}
               },
-              "notificationTime": {
-                "type": "string",
-                "example": "08:00:00"
+              "privacy": {
+                "type": "object",
+                "example": {}
               }
             }
           },
@@ -2339,7 +2892,24 @@
           "settings": {
             "type": "object",
             "properties": {
-              "unitPreference": {
+              "theme": {
+                "type": "string",
+                "example": "LIGHT",
+                "enum": [
+                  "LIGHT",
+                  "DARK",
+                  "AUTO"
+                ]
+              },
+              "language": {
+                "type": "string",
+                "example": "FRENCH",
+                "enum": [
+                  "FRENCH",
+                  "ENGLISH"
+                ]
+              },
+              "units": {
                 "type": "string",
                 "example": "METRIC",
                 "enum": [
@@ -2347,13 +2917,13 @@
                   "IMPERIAL"
                 ]
               },
-              "notificationEnabled": {
-                "type": "boolean",
-                "example": true
+              "notifications": {
+                "type": "object",
+                "example": {}
               },
-              "notificationTime": {
-                "type": "string",
-                "example": "08:00:00"
+              "privacy": {
+                "type": "object",
+                "example": {}
               }
             }
           },
@@ -2413,17 +2983,25 @@
           "settings": {
             "type": "object",
             "properties": {
-              "unitPreference": {
+              "theme": {
+                "type": "string",
+                "example": "LIGHT"
+              },
+              "language": {
+                "type": "string",
+                "example": "FRENCH"
+              },
+              "units": {
                 "type": "string",
                 "example": "METRIC"
               },
-              "notificationEnabled": {
-                "type": "boolean",
-                "example": true
+              "notifications": {
+                "type": "object",
+                "example": {}
               },
-              "notificationTime": {
-                "type": "string",
-                "example": "08:00:00"
+              "privacy": {
+                "type": "object",
+                "example": {}
               }
             }
           },
@@ -2457,7 +3035,24 @@
           "general": {
             "type": "object",
             "properties": {
-              "unitPreference": {
+              "theme": {
+                "type": "string",
+                "example": "LIGHT",
+                "enum": [
+                  "LIGHT",
+                  "DARK",
+                  "AUTO"
+                ]
+              },
+              "language": {
+                "type": "string",
+                "example": "FRENCH",
+                "enum": [
+                  "FRENCH",
+                  "ENGLISH"
+                ]
+              },
+              "units": {
                 "type": "string",
                 "example": "METRIC",
                 "enum": [
@@ -2465,13 +3060,13 @@
                   "IMPERIAL"
                 ]
               },
-              "notificationEnabled": {
-                "type": "boolean",
-                "example": true
+              "notifications": {
+                "type": "object",
+                "example": {}
               },
-              "notificationTime": {
-                "type": "string",
-                "example": "08:00:00"
+              "privacy": {
+                "type": "object",
+                "example": {}
               }
             }
           },
@@ -2580,20 +3175,9 @@
           }
         }
       },
-      "CurrentPhaseDataDto": {
+      "CurrentCycleDataDto": {
         "type": "object",
         "properties": {
-          "phase": {
-            "type": "string",
-            "enum": [
-              "MENSTRUAL",
-              "FOLLICULAR",
-              "OVULATION",
-              "LUTEAL"
-            ],
-            "example": "FOLLICULAR",
-            "description": "Phase actuelle du cycle menstruel"
-          },
           "cycleDay": {
             "type": "number",
             "example": 12,
@@ -2615,16 +3199,31 @@
             "minimum": 3,
             "maximum": 8
           },
-          "daysUntilNextPhase": {
+          "isPeriodDay": {
+            "type": "boolean",
+            "example": true,
+            "description": "Indique si le jour actuel est un jour de règles"
+          },
+          "isOvulationPhase": {
+            "type": "boolean",
+            "example": false,
+            "description": "Indique si le jour actuel est dans la phase d'ovulation"
+          },
+          "isFertileDay": {
+            "type": "boolean",
+            "example": false,
+            "description": "Indique si le jour actuel est dans la période fertile"
+          },
+          "daysUntilNextCycle": {
             "type": "number",
-            "example": 2,
-            "description": "Nombre de jours avant la prochaine phase",
+            "example": 16,
+            "description": "Nombre de jours avant le prochain cycle",
             "minimum": 0
           },
-          "phaseDescription": {
+          "cycleDescription": {
             "type": "string",
-            "example": "Phase folliculaire - Énergie croissante, idéale pour commencer de nouveaux défis",
-            "description": "Description détaillée de la phase actuelle et de ses caractéristiques"
+            "example": "Phase post-règles - Énergie croissante, idéale pour commencer de nouveaux défis",
+            "description": "Description détaillée du jour actuel du cycle et de ses caractéristiques"
           },
           "recommendations": {
             "example": [
@@ -2632,7 +3231,7 @@
               "Exercices cardiovasculaires modérés",
               "Renforcement musculaire avec poids légers"
             ],
-            "description": "Liste des recommandations spécifiques à cette phase",
+            "description": "Liste des recommandations spécifiques à ce jour du cycle",
             "type": "array",
             "items": {
               "type": "string"
@@ -2640,16 +3239,18 @@
           }
         },
         "required": [
-          "phase",
           "cycleDay",
           "cycleLength",
           "periodLength",
-          "daysUntilNextPhase",
-          "phaseDescription",
+          "isPeriodDay",
+          "isOvulationPhase",
+          "isFertileDay",
+          "daysUntilNextCycle",
+          "cycleDescription",
           "recommendations"
         ]
       },
-      "CurrentPhaseResponseDto": {
+      "CurrentCycleResponseDto": {
         "type": "object",
         "properties": {
           "success": {
@@ -2658,17 +3259,17 @@
             "description": "Indique si la requête a été traitée avec succès"
           },
           "data": {
-            "description": "Données détaillées sur la phase actuelle du cycle",
+            "description": "Données détaillées sur le jour actuel du cycle",
             "allOf": [
               {
-                "$ref": "#/components/schemas/CurrentPhaseDataDto"
+                "$ref": "#/components/schemas/CurrentCycleDataDto"
               }
             ]
           },
           "message": {
             "type": "string",
-            "example": "Vous êtes actuellement en Phase folliculaire - Énergie croissante, idéale pour commencer de nouveaux défis",
-            "description": "Message descriptif sur la phase actuelle"
+            "example": "Phase post-règles - Énergie croissante, idéale pour commencer de nouveaux défis",
+            "description": "Message descriptif sur le jour actuel du cycle"
           }
         },
         "required": [
@@ -2950,13 +3551,13 @@
         "properties": {
           "nextPeriodStart": {
             "type": "string",
-            "description": "Date prédite des prochaines règles",
-            "example": "2024-02-12T00:00:00.000Z"
+            "description": "Date de début des prochaines règles",
+            "example": "2024-02-15"
           },
           "nextOvulation": {
             "type": "string",
-            "description": "Date prédite de la prochaine ovulation",
-            "example": "2024-01-28T00:00:00.000Z"
+            "description": "Date de la prochaine ovulation",
+            "example": "2024-02-01"
           },
           "confidence": {
             "type": "number",
@@ -2970,16 +3571,16 @@
             "description": "Jour actuel dans le cycle",
             "example": 14
           },
-          "currentPhase": {
+          "currentCycleCharacteristics": {
             "type": "string",
-            "description": "Phase actuelle du cycle",
+            "description": "Caractéristiques du jour actuel",
+            "example": "post_period_phase",
             "enum": [
-              "MENSTRUAL",
-              "FOLLICULAR",
-              "OVULATION",
-              "LUTEAL"
-            ],
-            "example": "OVULATION"
+              "period_day",
+              "post_period_phase",
+              "ovulation_phase",
+              "post_ovulation_phase"
+            ]
           },
           "daysUntilNextPeriod": {
             "type": "number",
@@ -2997,7 +3598,7 @@
           "nextOvulation",
           "confidence",
           "currentCycleDay",
-          "currentPhase",
+          "currentCycleCharacteristics",
           "daysUntilNextPeriod",
           "daysUntilOvulation"
         ]
@@ -3032,16 +3633,16 @@
             "description": "Date du jour",
             "example": "2024-01-15"
           },
-          "phase": {
+          "cycleCharacteristics": {
             "type": "string",
-            "description": "Phase du cycle ce jour",
+            "description": "Caractéristiques du cycle ce jour",
+            "example": "period_day",
             "enum": [
-              "MENSTRUAL",
-              "FOLLICULAR",
-              "OVULATION",
-              "LUTEAL"
-            ],
-            "example": "MENSTRUAL"
+              "period_day",
+              "post_period_phase",
+              "ovulation_phase",
+              "post_ovulation_phase"
+            ]
           },
           "cycleDay": {
             "type": "number",
@@ -3130,25 +3731,17 @@
           "type": {
             "type": "string",
             "description": "Type de symptôme",
+            "example": "cramps",
             "enum": [
-              "CRAMPS",
-              "BLOATING",
-              "HEADACHE",
-              "BACK_PAIN",
-              "BREAST_TENDERNESS",
-              "ACNE",
-              "MOOD_SWINGS",
-              "FATIGUE",
-              "NAUSEA",
-              "FOOD_CRAVINGS",
-              "CONSTIPATION",
-              "DIARRHEA",
-              "HOT_FLASHES",
-              "COLD_FLASHES",
-              "JOINT_PAIN",
-              "INSOMNIA"
-            ],
-            "example": "CRAMPS"
+              "cramps",
+              "bloating",
+              "fatigue",
+              "mood_swings",
+              "breast_tenderness",
+              "headache",
+              "back_pain",
+              "other"
+            ]
           },
           "intensity": {
             "type": "number",
@@ -3201,25 +3794,17 @@
           "type": {
             "type": "string",
             "description": "Type de symptôme",
+            "example": "cramps",
             "enum": [
-              "CRAMPS",
-              "BLOATING",
-              "HEADACHE",
-              "BACK_PAIN",
-              "BREAST_TENDERNESS",
-              "ACNE",
-              "MOOD_SWINGS",
-              "FATIGUE",
-              "NAUSEA",
-              "FOOD_CRAVINGS",
-              "CONSTIPATION",
-              "DIARRHEA",
-              "HOT_FLASHES",
-              "COLD_FLASHES",
-              "JOINT_PAIN",
-              "INSOMNIA"
-            ],
-            "example": "CRAMPS"
+              "cramps",
+              "bloating",
+              "fatigue",
+              "mood_swings",
+              "breast_tenderness",
+              "headache",
+              "back_pain",
+              "other"
+            ]
           },
           "intensity": {
             "type": "number",
@@ -3284,24 +3869,12 @@
             "type": "string",
             "description": "Type de symptôme",
             "enum": [
-              "CRAMPS",
-              "BLOATING",
-              "HEADACHE",
-              "BACK_PAIN",
-              "BREAST_TENDERNESS",
-              "ACNE",
-              "MOOD_SWINGS",
-              "FATIGUE",
-              "NAUSEA",
-              "FOOD_CRAVINGS",
-              "CONSTIPATION",
-              "DIARRHEA",
-              "HOT_FLASHES",
-              "COLD_FLASHES",
-              "JOINT_PAIN",
-              "INSOMNIA"
+              "period_day",
+              "post_period_phase",
+              "ovulation_phase",
+              "post_ovulation_phase"
             ],
-            "example": "CRAMPS"
+            "example": "period_day"
           },
           "averageIntensity": {
             "type": "number",
@@ -3317,21 +3890,21 @@
             "type": "string",
             "description": "Phase du cycle la plus fréquente",
             "enum": [
-              "MENSTRUAL",
-              "FOLLICULAR",
-              "OVULATION",
-              "LUTEAL"
+              "period_day",
+              "post_period_phase",
+              "ovulation_phase",
+              "post_ovulation_phase"
             ],
-            "example": "MENSTRUAL"
+            "example": "period_day"
           },
           "phaseDistribution": {
             "type": "object",
             "description": "Pourcentage d'occurrence par phase",
             "example": {
-              "MENSTRUAL": 80,
-              "FOLLICULAR": 10,
-              "OVULATION": 5,
-              "LUTEAL": 15
+              "period_day": 80,
+              "post_period_phase": 10,
+              "ovulation_phase": 5,
+              "post_ovulation_phase": 15
             }
           }
         },
@@ -3419,7 +3992,7 @@
             "example": "https://fitme-app.com/images/exercises/squats.jpg",
             "description": "URL de l'image ou vidéo démonstrative de l'exercice"
           },
-          "durationMinutes": {
+          "duration": {
             "type": "number",
             "example": 15,
             "description": "Durée recommandée en minutes"
@@ -3485,14 +4058,8 @@
         "properties": {
           "phase": {
             "type": "string",
-            "enum": [
-              "MENSTRUAL",
-              "FOLLICULAR",
-              "OVULATION",
-              "LUTEAL"
-            ],
-            "example": "FOLLICULAR",
-            "description": "Phase du cycle menstruel"
+            "example": "follicular",
+            "description": "Phase du cycle menstruel (menstrual, follicular, ovulation, luteal)"
           },
           "phaseLabel": {
             "type": "string",
@@ -3600,7 +4167,7 @@
             "description": "URL de l'image de démonstration",
             "example": "https://example.com/images/pompes-modifiees.jpg"
           },
-          "durationMinutes": {
+          "duration": {
             "type": "number",
             "description": "Durée de l'exercice en minutes",
             "example": 15
@@ -3659,7 +4226,7 @@
             "description": "URL de l'image de l'exercice",
             "example": "https://fitme-app.com/images/exercises/squats.jpg"
           },
-          "durationMinutes": {
+          "duration": {
             "type": "number",
             "description": "Durée recommandée en minutes",
             "example": 15

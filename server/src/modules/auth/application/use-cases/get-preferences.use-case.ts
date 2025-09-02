@@ -2,6 +2,7 @@ import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import {
   IUserRepository,
   IUserSettingsRepository,
+  UserSettingsData,
 } from '../../domain/auth.repository';
 import {
   USER_REPOSITORY_TOKEN,
@@ -10,9 +11,11 @@ import {
 
 export interface GetPreferencesResponse {
   general: {
-    unitPreference: string;
-    notificationEnabled: boolean;
-    notificationTime?: string;
+    theme: UserSettingsData['theme'];
+    language: UserSettingsData['language'];
+    units: UserSettingsData['units'];
+    notifications: UserSettingsData['notifications'];
+    privacy: UserSettingsData['privacy'];
   };
   workouts: {
     objectives: Array<{
@@ -84,11 +87,21 @@ export class GetPreferencesUseCase {
 
     return {
       general: {
-        unitPreference: settings?.unitPreference || 'METRIC',
-        notificationEnabled: settings?.notificationEnabled ?? true,
-        notificationTime: settings?.notificationTime
-          ?.toTimeString()
-          .slice(0, 8),
+        theme: settings?.theme || 'LIGHT',
+        language: settings?.language || 'FRENCH',
+        units: settings?.units || 'METRIC',
+        notifications: settings?.notifications || {
+          email: true,
+          push: true,
+          workout: true,
+          cycle: true,
+          achievements: true,
+        },
+        privacy: settings?.privacy || {
+          shareProgress: false,
+          shareCycle: false,
+          allowAnalytics: true,
+        },
       },
       workouts: {
         objectives: objectives.map((objective) => ({
@@ -110,8 +123,8 @@ export class GetPreferencesUseCase {
           enabled: reminder.enabled,
           time: reminder.time?.toTimeString().slice(0, 8),
         })),
-        generalEnabled: settings?.notificationEnabled ?? true,
-        defaultTime: settings?.notificationTime?.toTimeString().slice(0, 8),
+        generalEnabled: true,
+        defaultTime: undefined,
       },
     };
   }

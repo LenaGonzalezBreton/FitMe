@@ -4,7 +4,7 @@ import Tag from '../../components/Tag';
 import ProgramExercisesList from '../../components/ProgramExercisesList';
 import { NavigationProp } from '@react-navigation/native';
 import { usePrograms } from '../../hooks/usePrograms';
-import { useCycle } from '../../hooks/useCycle';
+
 import { Program, ProgramExercise } from '../../types';
 
 interface ProgramScreenProps {
@@ -32,21 +32,13 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
     autoFetch: true
   });
 
-  const {
-    currentPhase,
-    loading: phaseLoading,
-    error: phaseError,
-    refreshPhase,
-    getPhaseLabel,
-    getPhaseEmoji,
-    getPhaseColor
-  } = useCycle();
+
 
   // Handle refresh
   const onRefresh = async () => {
     setRefreshing(true);
     try {
-      await Promise.all([refreshPrograms(), refreshPhase()]);
+      await refreshPrograms();
     } catch (error) {
       console.error('Error refreshing data:', error);
     } finally {
@@ -60,26 +52,31 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
       duration: 30,
       sessionType: 'mixed'
     });
-    
-    if (response) {
+
+    if (!response) {
       Alert.alert(
-        'Programme généré !',
-        `${response.message}\n\nVoulez-vous commencer ce programme maintenant ?`,
-        [
-          { text: 'Plus tard', style: 'cancel' },
-          { 
-            text: 'Commencer', 
-            onPress: () => {
-              // The program should be in the list now, find the most recent one
-              if (programs.length > 0) {
-                const latestProgram = programs[0]; // Assuming API returns newest first
-                startProgram(latestProgram.id);
-              }
+        'Génération impossible',
+        'Vérifiez que vous êtes connecté(e) et que le suivi du cycle est activé (ou réessayez plus tard).'
+      );
+      return;
+    }
+
+    Alert.alert(
+      'Programme généré !',
+      `${response.message}\n\nVoulez-vous commencer ce programme maintenant ?`,
+      [
+        { text: 'Plus tard', style: 'cancel' },
+        { 
+          text: 'Commencer', 
+          onPress: () => {
+            if (programs.length > 0) {
+              const latestProgram = programs[0];
+              startProgram(latestProgram.id);
             }
           }
-        ]
-      );
-    }
+        }
+      ]
+    );
   };
 
   // Helper functions
@@ -146,7 +143,7 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
   };
 
   // Loading state
-  if (programsLoading || phaseLoading) {
+  if (programsLoading) {
     return (
       <SafeAreaView className="flex-1 bg-brand-background">
         <View className="flex-1 justify-center items-center">
@@ -173,71 +170,7 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
           </Text>
         </View>
 
-        {/* Current Phase Card */}
-        <View className="mb-6">
-          <Text className="text-lg font-semibold text-brand-text mb-3">Phase actuelle</Text>
-          {currentPhase ? (
-            <View className="bg-surface rounded-xl p-4 shadow-sm border border-border-light">
-              <View className="flex-row items-center justify-between mb-4">
-                <View className="flex-1">
-                  <Text className="text-xl font-bold text-brand-text mb-1">
-                    {getPhaseLabel(currentPhase.phase)}
-                  </Text>
-                  <Text className="text-sm text-secondary-600 mb-2">
-                    Jour {currentPhase.cycleDay} de votre cycle
-                  </Text>
-                  <Text className="text-sm text-secondary-600">
-                    {currentPhase.phaseDescription}
-                  </Text>
-                </View>
-                <View className={`${getPhaseColor(currentPhase.phase)} rounded-full w-12 h-12 items-center justify-center`}>
-                  <Text className="text-brand-text text-xl">{getPhaseEmoji(currentPhase.phase)}</Text>
-                </View>
-              </View>
-              {currentPhase.recommendations.length > 0 && (
-                <View>
-                  <Text className="text-sm font-semibold text-brand-text mb-2">Recommandations :</Text>
-                  {currentPhase.recommendations.slice(0, 2).map((rec, index) => (
-                    <Text key={index} className="text-xs text-secondary-600 mb-1">• {rec}</Text>
-                  ))}
-                </View>
-              )}
-            </View>
-          ) : (
-            <View className="bg-surface rounded-xl p-4 shadow-sm border border-border-light">
-              <View className="flex-row items-center justify-between mb-4">
-                <View className="flex-1">
-                  <Text className="text-lg font-bold text-brand-text mb-1">
-                    Suivi du cycle non configuré
-                  </Text>
-                  <Text className="text-sm text-secondary-600 mb-2">
-                    {phaseError || 'Configurez votre suivi de cycle pour des programmes personnalisés'}
-                  </Text>
-                </View>
-                <View className="bg-secondary-100 rounded-full w-12 h-12 items-center justify-center">
-                  <Text className="text-secondary-600 text-xl">🌙</Text>
-                </View>
-              </View>
-              <TouchableOpacity 
-                className="bg-primary-50 p-3 rounded-lg active:bg-primary-100"
-                onPress={() => {
-                  Alert.alert(
-                    'Configuration du cycle',
-                    'Pour bénéficier de programmes personnalisés selon votre cycle hormonal, configurez le suivi de votre cycle dans les paramètres.',
-                    [
-                      { text: 'Plus tard', style: 'cancel' },
-                      { text: 'Configurer', onPress: () => console.log('Navigate to cycle settings') }
-                    ]
-                  );
-                }}
-              >
-                <Text className="text-primary-700 text-center font-medium">
-                  Configurer le suivi du cycle
-                </Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
+
 
         {/* Tabs */}
         <View className="mb-6">
@@ -319,27 +252,14 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
               <Text className="text-secondary-600 text-center mb-4">
                 Commencez votre parcours fitness en générant un programme adapté à votre cycle hormonal !
               </Text>
-              {currentPhase ? (
-                <View className="bg-primary-50 rounded-lg p-3 mb-4 w-full">
-                  <Text className="text-primary-700 text-center font-medium">
-                    Phase {getPhaseLabel(currentPhase.phase)} détectée
-                  </Text>
-                  <Text className="text-primary-600 text-center text-sm">
-                    Idéal pour un programme {currentPhase.phase === 'FOLLICULAR' ? 'de renforcement' : 
-                                              currentPhase.phase === 'OVULATION' ? 'intensif' :
-                                              currentPhase.phase === 'LUTEAL' ? 'modéré' : 'doux'}
-                  </Text>
-                </View>
-              ) : (
-                <View className="bg-secondary-50 rounded-lg p-3 mb-4 w-full">
-                  <Text className="text-secondary-700 text-center font-medium">
-                    Programme générique disponible
-                  </Text>
-                  <Text className="text-secondary-600 text-center text-sm">
-                    Un programme adapté sera généré selon vos préférences
-                  </Text>
-                </View>
-              )}
+              <View className="bg-primary-50 rounded-lg p-3 mb-4 w-full">
+                <Text className="text-primary-700 text-center font-medium">
+                  Programme personnalisé disponible
+                </Text>
+                <Text className="text-primary-600 text-center text-sm">
+                  Générez un programme adapté à vos objectifs
+                </Text>
+              </View>
               <TouchableOpacity
                 onPress={handleGenerateProgram}
                 className="bg-primary-500 py-3 px-6 rounded-xl w-full active:bg-primary-600"

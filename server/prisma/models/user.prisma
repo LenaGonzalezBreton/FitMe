@@ -9,7 +9,7 @@ model User {
   isMenopausal    Boolean       @default(false) @map("is_menopausal")
   objective       String?
   sportFrequency  SportFrequency? @map("sport_frequency")
-  experienceLevel ExperienceLevel? @map("experience_level")
+  experienceLevel ExperienceLevel? @default(BEGINNER) @map("experience_level")
   onboardingCompleted Boolean @default(false) @map("onboarding_completed")
   profileType     ProfileType   @default(FEMALE) @map("profile_type")
   contextType     ContextType   @default(CYCLE) @map("context_type")
@@ -21,7 +21,6 @@ model User {
   cycles              Cycle[]
   programs            Program[]
   moodTracks          MoodTrack[]
-  userSettings        UserSettings?
   reminderSettings    ReminderSettings[]
   userFeatureFlags    UserFeatureFlag[]
   userObjectives      UserObjective[]
@@ -38,6 +37,18 @@ model User {
   favoriteExercises   FavoriteExercise[]
   exerciseRatings     ExerciseRating[]
   createdExercises    Exercise[]        @relation("UserCreatedExercises")
+  
+  // New relations for workout and analytics
+  workoutSessions     WorkoutSession[]
+  workoutExercises    WorkoutExercise[]
+  streakLogs          StreakLog[]
+  userAnalytics       UserAnalytics[]
+  workoutAnalytics    WorkoutAnalytics[]
+  cycleAnalytics      CycleAnalytics[]
+  progressInsights    ProgressInsight[]
+  userPreferences     UserPreferences?
+  notificationPreferences NotificationPreference[]
+  pushNotifications   PushNotification[]
 
   @@map("user")
 } 

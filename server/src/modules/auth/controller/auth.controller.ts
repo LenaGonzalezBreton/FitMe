@@ -38,6 +38,8 @@ import {
   OnboardingDto,
 } from './dto/auth.dto';
 import { Public } from '../guards/public.decorator';
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import {
   ApiTags,
   ApiOperation,
@@ -49,6 +51,7 @@ import { CompleteOnboardingUseCase } from '../application/use-cases/complete-onb
 
 @ApiTags('Auth')
 @ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -494,21 +497,28 @@ export class AuthController {
           ].includes(r.type),
         );
 
-      let settings = undefined;
-      if (
-        updateNotificationPreferencesDto.generalEnabled !== undefined ||
-        updateNotificationPreferencesDto.defaultTime !== undefined
-      ) {
-        settings = {
-          notificationEnabled: updateNotificationPreferencesDto.generalEnabled,
-          notificationTime: updateNotificationPreferencesDto.defaultTime,
-        };
-      }
+      let settings = {
+          notifications: {
+            email: true,
+            push: true,
+            workout: true,
+            cycle: true,
+            achievements: true,
+            generalEnabled: updateNotificationPreferencesDto.generalEnabled,
+            defaultTime: updateNotificationPreferencesDto.defaultTime,
+            reminders: notificationReminders,
+          },
+          privacy: {
+            shareProgress: false,
+            shareCycle: false,
+            allowAnalytics: true,
+        },
+      };
 
       const result = await this.updateSettingsUseCase.execute({
         userId: req.user.id,
         settings,
-        reminders: notificationReminders,
+        reminders: updateNotificationPreferencesDto.reminders,
       });
 
       return result;

@@ -8,7 +8,7 @@ export interface CreateExerciseRequest {
   title: string;
   description?: string;
   imageUrl?: string;
-  durationMinutes?: number;
+  duration?: number;
   intensity?: string;
   muscleZone?: string;
 }
@@ -31,7 +31,7 @@ export class CreateExerciseUseCase {
     }
 
     // Validate optional numeric fields
-    if (request.durationMinutes !== undefined && request.durationMinutes <= 0) {
+    if (request.duration !== undefined && request.duration <= 0) {
       throw new BadRequestException('Duration must be positive');
     }
 
@@ -40,7 +40,7 @@ export class CreateExerciseUseCase {
       title: request.title.trim(),
       description: request.description?.trim(),
       imageUrl: request.imageUrl?.trim(),
-      durationMinutes: request.durationMinutes,
+      duration: request.duration,
       intensity: request.intensity as never, // Will be validated by Prisma enum
       muscleZone: request.muscleZone as never, // Will be validated by Prisma enum
       createdBy: request.userId,

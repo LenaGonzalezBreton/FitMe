@@ -1,5 +1,5 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
-import { CycleProfileConfig } from '../../domain/cycle.entity';
+import { CycleProfileConfig } from '../../domain/cycle-profile-config.entity';
 import { ICycleProfileConfigRepository } from '../../domain/cycle.repository';
 import { CYCLE_PROFILE_CONFIG_REPOSITORY_TOKEN } from '../../tokens';
 

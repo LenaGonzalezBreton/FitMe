@@ -6,7 +6,7 @@ model Exercise {
   title           String
   description     String?   @db.Text
   imageUrl        String?   @map("image_url")
-  durationMinutes Int?      @map("duration_minutes")
+  duration Int?      @map("duration")
   intensity       Intensity?
   muscleZone      MuscleZone? @map("muscle_zone")
   createdBy       String?   @map("created_by") // null = system exercise, value = user ID
@@ -17,8 +17,8 @@ model Exercise {
   // Relations
   creator          User?             @relation("UserCreatedExercises", fields: [createdBy], references: [id], onDelete: SetNull)
   exerciseTags     ExerciseTag[]
-  phaseExercises   PhaseExercise[]
   programExercises ProgramExercise[]
+  workoutExercises WorkoutExercise[]
   favoriteExercises FavoriteExercise[]
   ratings          ExerciseRating[]
 
@@ -55,20 +55,6 @@ model ExerciseTag {
   @@map("exercise_tag")
 }
 
-model PhaseExercise {
-  id         String     @id @default(cuid())
-  phaseName  CyclePhase @map("phase_name")
-  exerciseId String     @map("exercise_id")
-  
-  createdAt  DateTime   @default(now()) @map("created_at")
-
-  // Relations
-  exercise   Exercise   @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
-
-  @@index([phaseName])
-  @@map("phase_exercise")
-}
-
 model Program {
   id        String    @id @default(cuid())
   userId    String    @map("user_id")
@@ -85,7 +71,9 @@ model Program {
   // Relations
   user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   programExercises ProgramExercise[]
+  workoutSessions  WorkoutSession[]
   notifications    Notification[]
+  workoutAnalytics WorkoutAnalytics[]
 
   @@index([userId])
   @@index([isActive])

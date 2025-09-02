@@ -22,13 +22,7 @@ generator client {
 }
 // --- ÉNUMÉRATIONS ---
 // Enumerations for cycle-related data
-
-enum CyclePhase {
-  MENSTRUAL
-  FOLLICULAR  
-  OVULATION
-  LUTEAL
-}
+// Note: CyclePhase enum removed - using only cycle-based logic now
 
 // Enumerations for exercise and program-related data
 
@@ -252,6 +246,108 @@ enum ChangeType {
   PASSWORD_CHANGE
 }
 // --- MODÈLES DE DONNÉES ---
+// Analytics and insights models
+/// @namespace "Analytics"
+
+model UserAnalytics {
+  id              String    @id @default(cuid())
+  userId          String    @map("user_id")
+  period          AnalyticsPeriod
+  fromDate        DateTime  @map("from_date")
+  toDate          DateTime  @map("to_date")
+  data            Json      // Analytics data as JSON
+  
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, period, fromDate, toDate])
+  @@index([userId])
+  @@index([period])
+  @@map("user_analytics")
+}
+
+model WorkoutAnalytics {
+  id              String    @id @default(cuid())
+  userId          String    @map("user_id")
+  period          AnalyticsPeriod
+  fromDate        DateTime  @map("from_date")
+  toDate          DateTime  @map("to_date")
+  programId       String?   @map("program_id")
+  data            Json      // Workout analytics data as JSON
+  
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  program         Program?  @relation(fields: [programId], references: [id])
+
+  @@unique([userId, period, fromDate, toDate, programId])
+  @@index([userId])
+  @@index([period])
+  @@map("workout_analytics")
+}
+
+model CycleAnalytics {
+  id              String    @id @default(cuid())
+  userId          String    @map("user_id")
+  period          AnalyticsPeriod
+  fromDate        DateTime  @map("from_date")
+  toDate          DateTime  @map("to_date")
+  data            Json      // Cycle analytics data as JSON
+  
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, period, fromDate, toDate])
+  @@index([userId])
+  @@index([period])
+  @@map("cycle_analytics")
+}
+
+model ProgressInsight {
+  id              String    @id @default(cuid())
+  userId          String    @map("user_id")
+  type            InsightType
+  title           String
+  description     String    @db.Text
+  data            Json      // Insight data as JSON
+  isRead          Boolean   @default(false) @map("is_read")
+  
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([isRead])
+  @@map("progress_insight")
+}
+
+// Enums for analytics models
+enum AnalyticsPeriod {
+  WEEK
+  MONTH
+  YEAR
+  ALL
+}
+
+enum InsightType {
+  WORKOUT_PROGRESS
+  CYCLE_INSIGHT
+  STREAK_MILESTONE
+  RECOMMENDATION
+  ACHIEVEMENT
+}
+
 // Cycle model for tracking menstrual cycles
 /// @namespace "Cycle"
 model Cycle {
@@ -270,7 +366,6 @@ model Cycle {
   // Relations
   user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   provider          CycleProvider? @relation(fields: [providerId], references: [id])
-  phases            Phase[]
   
   @@index([userId])
   @@index([startDate])
@@ -310,23 +405,6 @@ model CycleProvider {
   @@map("cycle_provider")
 }
 
-model Phase {
-  id        String     @id @default(cuid())
-  cycleId   String     @map("cycle_id")
-  name      CyclePhase
-  startDate DateTime   @map("start_date")
-  endDate   DateTime   @map("end_date")
-  
-  createdAt DateTime   @default(now()) @map("created_at")
-  updatedAt DateTime   @updatedAt @map("updated_at")
-
-  // Relations
-  cycle     Cycle      @relation(fields: [cycleId], references: [id], onDelete: Cascade)
-
-  @@index([cycleId])
-  @@map("phase")
-}
-
 // Exercise and program models
 /// @namespace "Exercise"
 
@@ -335,7 +413,7 @@ model Exercise {
   title           String
   description     String?   @db.Text
   imageUrl        String?   @map("image_url")
-  durationMinutes Int?      @map("duration_minutes")
+  duration Int?      @map("duration")
   intensity       Intensity?
   muscleZone      MuscleZone? @map("muscle_zone")
   createdBy       String?   @map("created_by") // null = system exercise, value = user ID
@@ -346,8 +424,8 @@ model Exercise {
   // Relations
   creator          User?             @relation("UserCreatedExercises", fields: [createdBy], references: [id], onDelete: SetNull)
   exerciseTags     ExerciseTag[]
-  phaseExercises   PhaseExercise[]
   programExercises ProgramExercise[]
+  workoutExercises WorkoutExercise[]
   favoriteExercises FavoriteExercise[]
   ratings          ExerciseRating[]
 
@@ -384,20 +462,6 @@ model ExerciseTag {
   @@map("exercise_tag")
 }
 
-model PhaseExercise {
-  id         String     @id @default(cuid())
-  phaseName  CyclePhase @map("phase_name")
-  exerciseId String     @map("exercise_id")
-  
-  createdAt  DateTime   @default(now()) @map("created_at")
-
-  // Relations
-  exercise   Exercise   @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
-
-  @@index([phaseName])
-  @@map("phase_exercise")
-}
-
 model Program {
   id        String    @id @default(cuid())
   userId    String    @map("user_id")
@@ -414,7 +478,9 @@ model Program {
   // Relations
   user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   programExercises ProgramExercise[]
+  workoutSessions  WorkoutSession[]
   notifications    Notification[]
+  workoutAnalytics WorkoutAnalytics[]
 
   @@index([userId])
   @@index([isActive])
@@ -481,8 +547,8 @@ model ExerciseRating {
   @@map("exercise_rating")
 }
 
-// System models for notifications, logging, auth, etc.
-/// @namespace "System"
+// Notification and reminder models
+/// @namespace "Notification"
 
 model Notification {
   id              String           @id @default(cuid())
@@ -505,6 +571,58 @@ model Notification {
   @@index([date])
   @@map("notification")
 }
+
+model NotificationPreference {
+  id              String           @id @default(cuid())
+  userId          String           @map("user_id")
+  type            NotificationType
+  email           Boolean          @default(true)
+  push            Boolean          @default(true)
+  sms             Boolean          @default(false)
+  frequency       NotificationFrequency @default(IMMEDIATE)
+  time            DateTime?        @db.Time // Preferred time for notifications
+  
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+
+  // Relations
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, type])
+  @@index([userId])
+  @@map("notification_preference")
+}
+
+model PushNotification {
+  id              String           @id @default(cuid())
+  userId          String           @map("user_id")
+  title           String
+  body            String
+  data            Json?            // Additional data for the app
+  sentAt          DateTime         @map("sent_at")
+  deliveredAt     DateTime?        @map("delivered_at")
+  readAt          DateTime?        @map("read_at")
+  
+  createdAt       DateTime         @default(now()) @map("created_at")
+
+  // Relations
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([sentAt])
+  @@map("push_notification")
+}
+
+// Enums for notification models
+enum NotificationFrequency {
+  IMMEDIATE
+  DAILY
+  WEEKLY
+  NEVER
+}
+
+// System models for logging, auth, etc.
+/// @namespace "System"
 
 model ExternalSync {
   id           String             @id @default(cuid())
@@ -599,18 +717,18 @@ model RefreshToken {
 }
 
 model AuthSession {
-  id        String    @id @default(cuid())
-  userId    String    @map("user_id")
-  userAgent String?   @map("user_agent") @db.Text
-  ipAddress String?   @map("ip_address")
-  lastSeen  DateTime  @map("last_seen")
-  isActive  Boolean   @default(true) @map("is_active")
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  userAgent String?  @map("user_agent") @db.Text
+  ipAddress String?  @map("ip_address")
+  lastSeen  DateTime @map("last_seen")
+  isActive  Boolean  @default(true) @map("is_active")
   
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relations
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([isActive])
@@ -659,15 +777,17 @@ model SymptomLog {
   @@map("symptom_log")
 }
 
-// User settings and configuration models
-/// @namespace "UserSettings"
+// User preferences and settings models
+/// @namespace "UserPreferences"
 
-model UserSettings {
+model UserPreferences {
   id                    String          @id @default(cuid())
   userId                String          @unique @map("user_id")
-  unitPreference        UnitPreference  @default(METRIC) @map("unit_preference")
-  notificationEnabled   Boolean         @default(true) @map("notification_enabled")
-  notificationTime      DateTime?       @map("notification_time") @db.Time
+  theme                 ThemePreference @default(LIGHT)
+  language              LanguagePreference @default(FRENCH)
+  units                 UnitPreference  @default(METRIC)
+  privacy               Json?           // Privacy settings as JSON
+  notifications         Json?           // Notification preferences as JSON
   
   createdAt             DateTime        @default(now()) @map("created_at")
   updatedAt             DateTime        @updatedAt @map("updated_at")
@@ -675,8 +795,49 @@ model UserSettings {
   // Relations
   user                  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("user_settings")
+  @@map("user_preferences")
 }
+
+model Theme {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  displayName String   @map("display_name")
+  description String?
+  isActive    Boolean  @default(true) @map("is_active")
+  
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("theme")
+}
+
+model Language {
+  id          String   @id @default(cuid())
+  code        String   @unique // e.g., 'fr', 'en'
+  name        String   @unique
+  displayName String   @map("display_name")
+  isActive    Boolean  @default(true) @map("is_active")
+  
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("language")
+}
+
+// Enums for user preferences
+enum ThemePreference {
+  LIGHT
+  DARK
+  AUTO
+}
+
+enum LanguagePreference {
+  FRENCH
+  ENGLISH
+}
+
+// User settings and configuration models
+/// @namespace "UserSettings"
 
 model ReminderSettings {
   id        String        @id @default(cuid())
@@ -752,7 +913,7 @@ model User {
   isMenopausal    Boolean       @default(false) @map("is_menopausal")
   objective       String?
   sportFrequency  SportFrequency? @map("sport_frequency")
-  experienceLevel ExperienceLevel? @map("experience_level")
+  experienceLevel ExperienceLevel? @default(BEGINNER) @map("experience_level")
   onboardingCompleted Boolean @default(false) @map("onboarding_completed")
   profileType     ProfileType   @default(FEMALE) @map("profile_type")
   contextType     ContextType   @default(CYCLE) @map("context_type")
@@ -764,7 +925,6 @@ model User {
   cycles              Cycle[]
   programs            Program[]
   moodTracks          MoodTrack[]
-  userSettings        UserSettings?
   reminderSettings    ReminderSettings[]
   userFeatureFlags    UserFeatureFlag[]
   userObjectives      UserObjective[]
@@ -781,6 +941,106 @@ model User {
   favoriteExercises   FavoriteExercise[]
   exerciseRatings     ExerciseRating[]
   createdExercises    Exercise[]        @relation("UserCreatedExercises")
+  
+  // New relations for workout and analytics
+  workoutSessions     WorkoutSession[]
+  workoutExercises    WorkoutExercise[]
+  streakLogs          StreakLog[]
+  userAnalytics       UserAnalytics[]
+  workoutAnalytics    WorkoutAnalytics[]
+  cycleAnalytics      CycleAnalytics[]
+  progressInsights    ProgressInsight[]
+  userPreferences     UserPreferences?
+  notificationPreferences NotificationPreference[]
+  pushNotifications   PushNotification[]
 
   @@map("user")
+}
+
+// Workout and streak tracking models
+/// @namespace "Workout"
+
+model WorkoutSession {
+  id              String    @id @default(cuid())
+  userId          String    @map("user_id")
+  programId       String?   @map("program_id")
+  title           String?
+  startTime       DateTime  @map("start_time")
+  endTime         DateTime? @map("end_time")
+  totalDuration   Int?      @map("total_duration") // in seconds
+  status          WorkoutStatus @default(ACTIVE)
+  notes           String?   @db.Text
+  rating          Int?      // 1-5 stars
+  
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  program         Program?  @relation(fields: [programId], references: [id])
+  workoutExercises WorkoutExercise[]
+  streakLogs      StreakLog[]
+
+  @@index([userId])
+  @@index([startTime])
+  @@index([status])
+  @@map("workout_session")
+}
+
+model WorkoutExercise {
+  id              String    @id @default(cuid())
+  workoutSessionId String   @map("workout_session_id")
+  exerciseId      String    @map("exercise_id")
+  userId          String    @map("user_id")
+  order           Int
+  sets            Int?
+  reps            String?
+  weight          Float?    // in kg
+  duration        Int?      // in seconds
+  restTime        Int?      @map("rest_time") // in seconds
+  notes           String?   @db.Text
+  completed       Boolean   @default(false)
+  
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  workoutSession  WorkoutSession @relation(fields: [workoutSessionId], references: [id], onDelete: Cascade)
+  exercise        Exercise       @relation(fields: [exerciseId], references: [id])
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([workoutSessionId])
+  @@index([exerciseId])
+  @@index([userId])
+  @@index([order])
+  @@map("workout_exercise")
+}
+
+model StreakLog {
+  id              String    @id @default(cuid())
+  userId          String    @map("user_id")
+  workoutSessionId String?  @map("workout_session_id")
+  date            DateTime  @db.Date
+  duration        Int?      // in seconds
+  intensity       Intensity?
+  notes           String?   @db.Text
+  
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workoutSession  WorkoutSession? @relation(fields: [workoutSessionId], references: [id])
+
+  @@unique([userId, date])
+  @@index([userId])
+  @@index([date])
+  @@map("streak_log")
+}
+
+// Enums for workout models
+enum WorkoutStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  CANCELLED
 }
