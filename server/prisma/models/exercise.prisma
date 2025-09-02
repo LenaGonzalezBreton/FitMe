@@ -64,6 +64,11 @@ model Program {
   endDate   DateTime? @map("end_date")
   isActive  Boolean   @default(false) @map("is_active")
   isTemplate Boolean  @default(false) @map("is_template")
+  type      String?   // Program type (strength, cardio, flexibility, mixed)
+  trainingDays Int[]  @map("training_days") // Array of weekday numbers (0=Sunday, 1=Monday, etc.)
+  duration  Int?      // Program duration in weeks
+  focusZone String?   @map("focus_zone") // Focus zone for muscle targeting (comma-separated if multiple)
+  cyclePhase String?  @map("cycle_phase") // Cycle phase when program was created
   
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
@@ -78,6 +83,8 @@ model Program {
   @@index([userId])
   @@index([isActive])
   @@index([isTemplate])
+  @@index([type])
+  @@index([cyclePhase])
   @@map("program")
 }
 

@@ -176,6 +176,51 @@ export class CreateProgramDto {
   isTemplate?: boolean;
 
   @ApiPropertyOptional({
+    description: 'Program type (strength, cardio, flexibility, mixed)',
+    example: 'strength',
+  })
+  @IsOptional()
+  @IsString()
+  type?: string;
+
+  @ApiPropertyOptional({
+    description: 'Training days as array of weekday numbers (0=Sunday, 1=Monday, etc.)',
+    example: [1, 3, 5],
+  })
+  @IsOptional()
+  @IsArray()
+  @IsNumber({}, { each: true })
+  @Min(0, { each: true })
+  @Max(6, { each: true })
+  trainingDays?: number[];
+
+  @ApiPropertyOptional({
+    description: 'Program duration in weeks',
+    example: 4,
+  })
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Max(52)
+  duration?: number;
+
+  @ApiPropertyOptional({
+    description: 'Focus zone for muscle targeting (comma-separated if multiple)',
+    example: 'FULL_BODY,CORE',
+  })
+  @IsOptional()
+  @IsString()
+  focusZone?: string;
+
+  @ApiPropertyOptional({
+    description: 'Current cycle phase when program was created',
+    example: 'follicular',
+  })
+  @IsOptional()
+  @IsString()
+  cyclePhase?: string | null;
+
+  @ApiPropertyOptional({
     description: 'List of exercises in this program',
     type: [ProgramExerciseDto],
   })

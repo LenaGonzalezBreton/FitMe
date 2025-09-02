@@ -197,6 +197,11 @@ export class ProgramController {
         startDate: new Date(createDto.startDate),
         endDate: createDto.endDate ? new Date(createDto.endDate) : undefined,
         isTemplate: createDto.isTemplate,
+        type: createDto.type,
+        trainingDays: createDto.trainingDays,
+        duration: createDto.duration,
+        focusZone: createDto.focusZone,
+        cyclePhase: createDto.cyclePhase,
         exercises: createDto.exercises,
       });
 

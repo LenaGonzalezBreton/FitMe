@@ -506,6 +506,8 @@ export const exerciseApi = {
     intensity?: 'LOW' | 'MODERATE' | 'HIGH';
     muscleZone?: string;
     phase?: 'menstrual' | 'follicular' | 'ovulation' | 'luteal';
+    search?: string;
+    maxDuration?: number;
     limit?: number;
     offset?: number;
   }) => {
@@ -529,7 +531,7 @@ export const exerciseApi = {
   createExercise: async (exerciseData: {
     title: string;
     description: string;
-    intensity: 'LOW' | 'MEDIUM' | 'HIGH';
+    intensity: 'LOW' | 'MODERATE' | 'HIGH';
     muscleZone: string;
     duration: number;
     instructions?: string;
@@ -543,7 +545,7 @@ export const exerciseApi = {
   updateExercise: async (id: string, updates: Partial<{
     title: string;
     description: string;
-    intensity: 'LOW' | 'MEDIUM' | 'HIGH';
+    intensity: 'LOW' | 'MODERATE' | 'HIGH';
     muscleZone: string;
     duration: number;
     instructions: string;

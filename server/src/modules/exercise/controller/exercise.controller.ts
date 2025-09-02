@@ -26,6 +26,8 @@ import { RemoveFromFavoritesUseCase } from '../application/use-cases/remove-from
 import { GetFavoriteExercisesUseCase } from '../application/use-cases/get-favorite-exercises.use-case';
 import { RateExerciseUseCase } from '../application/use-cases/rate-exercise.use-case';
 import { CreateExerciseUseCase } from '../application/use-cases/create-exercise.use-case';
+import { UpdateExerciseUseCase } from '../application/use-cases/update-exercise.use-case';
+import { DeleteExerciseUseCase } from '../application/use-cases/delete-exercise.use-case';
 import { GetAllExercisesUseCase } from '../application/use-cases/get-all-exercises.use-case';
 import {
   ExerciseQueryDto,
@@ -54,6 +56,8 @@ export class ExerciseController {
     private readonly getFavoriteExercisesUseCase: GetFavoriteExercisesUseCase,
     private readonly rateExerciseUseCase: RateExerciseUseCase,
     private readonly createExerciseUseCase: CreateExerciseUseCase,
+    private readonly updateExerciseUseCase: UpdateExerciseUseCase,
+    private readonly deleteExerciseUseCase: DeleteExerciseUseCase,
     private readonly getAllExercisesUseCase: GetAllExercisesUseCase,
   ) {}
 
@@ -520,6 +524,143 @@ export class ExerciseController {
 
       if (message.includes('not found')) {
         throw new HttpException(message, HttpStatus.NOT_FOUND);
+      }
+      throw new HttpException(message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Put(':id')
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Mettre à jour un exercice',
+    description: "Permet à un utilisateur authentifié de mettre à jour un exercice personnalisé",
+  })
+  @ApiParam({
+    name: 'id',
+    description: "Identifiant unique de l'exercice à mettre à jour",
+    example: 'clh123456789',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Exercice mis à jour avec succès',
+    type: CreateExerciseResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: "Données invalides pour la mise à jour de l'exercice",
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Non autorisé - token JWT requis',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Exercice non trouvé',
+  })
+  async updateExercise(
+    @Param('id') exerciseId: string,
+    @Body() updateExerciseDto: Partial<CreateExerciseDto>,
+    @Request() req: { user: { id: string } },
+  ): Promise<CreateExerciseResponseDto> {
+    try {
+      const exercise = await this.updateExerciseUseCase.execute({
+        exerciseId,
+        userId: req.user.id,
+        title: updateExerciseDto.title,
+        description: updateExerciseDto.description,
+        imageUrl: updateExerciseDto.imageUrl,
+        duration: updateExerciseDto.duration,
+        intensity: updateExerciseDto.intensity,
+        muscleZone: updateExerciseDto.muscleZone,
+      });
+
+      // Map domain entity to DTO
+      const exerciseDto = {
+        id: exercise.id,
+        title: exercise.title,
+        description: exercise.description,
+        imageUrl: exercise.imageUrl,
+        duration: exercise.duration,
+        formattedDuration: exercise.duration
+          ? `${exercise.duration} min`
+          : 'Variable',
+        intensity: exercise.intensity,
+        intensityLabel: this.getIntensityLabel(exercise.intensity),
+        muscleZone: exercise.muscleZone,
+        muscleZoneLabel: this.getMuscleZoneLabel(exercise.muscleZone),
+        isFavorite: false,
+        averageRating: 0,
+        totalRatings: 0,
+        userRating: undefined,
+        createdAt:
+          exercise.createdAt?.toISOString() || new Date().toISOString(),
+        updatedAt:
+          exercise.updatedAt?.toISOString() || new Date().toISOString(),
+      };
+
+      return {
+        exercise: exerciseDto,
+        message: 'Exercice mis à jour avec succès',
+      };
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Erreur lors de la mise à jour de l'exercice";
+
+      if (message.includes('not found')) {
+        throw new HttpException(message, HttpStatus.NOT_FOUND);
+      }
+      if (message.includes('forbidden') || message.includes('own exercises')) {
+        throw new HttpException(message, HttpStatus.FORBIDDEN);
+      }
+      throw new HttpException(message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Delete(':id')
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Supprimer un exercice',
+    description: "Permet à un utilisateur authentifié de supprimer un exercice personnalisé",
+  })
+  @ApiParam({
+    name: 'id',
+    description: "Identifiant unique de l'exercice à supprimer",
+    example: 'clh123456789',
+  })
+  @ApiResponse({
+    status: 204,
+    description: 'Exercice supprimé avec succès',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Non autorisé - token JWT requis',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Exercice non trouvé',
+  })
+  async deleteExercise(
+    @Param('id') exerciseId: string,
+    @Request() req: { user: { id: string } },
+  ): Promise<void> {
+    try {
+      await this.deleteExerciseUseCase.execute({
+        exerciseId,
+        userId: req.user.id,
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Erreur lors de la suppression de l'exercice";
+
+      if (message.includes('not found')) {
+        throw new HttpException(message, HttpStatus.NOT_FOUND);
+      }
+      if (message.includes('forbidden') || message.includes('own exercises')) {
+        throw new HttpException(message, HttpStatus.FORBIDDEN);
       }
       throw new HttpException(message, HttpStatus.BAD_REQUEST);
     }

@@ -134,6 +134,11 @@ export interface ProgramProps {
   endDate?: Date;
   isActive?: boolean;
   isTemplate?: boolean;
+  type?: string;
+  trainingDays?: number[];
+  duration?: number;
+  focusZone?: string;
+  cyclePhase?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
   exercises?: ProgramExercise[];
@@ -193,6 +198,41 @@ export class Program {
   readonly isTemplate?: boolean;
 
   @ApiProperty({
+    description: 'Program type (strength, cardio, flexibility, mixed)',
+    example: 'strength',
+    required: false,
+  })
+  readonly type?: string;
+
+  @ApiProperty({
+    description: 'Training days as array of weekday numbers (0=Sunday, 1=Monday, etc.)',
+    example: [1, 3, 5],
+    required: false,
+  })
+  readonly trainingDays?: number[];
+
+  @ApiProperty({
+    description: 'Program duration in weeks',
+    example: 4,
+    required: false,
+  })
+  readonly duration?: number;
+
+  @ApiProperty({
+    description: 'Focus zone for muscle targeting (comma-separated if multiple)',
+    example: 'FULL_BODY,CORE',
+    required: false,
+  })
+  readonly focusZone?: string;
+
+  @ApiProperty({
+    description: 'Cycle phase when program was created',
+    example: 'follicular',
+    required: false,
+  })
+  readonly cyclePhase?: string | null;
+
+  @ApiProperty({
     description: 'Creation timestamp',
     example: '2024-01-15T10:30:00.000Z',
   })
@@ -219,6 +259,11 @@ export class Program {
     this.endDate = props.endDate;
     this.isActive = props.isActive ?? false;
     this.isTemplate = props.isTemplate ?? false;
+    this.type = props.type;
+    this.trainingDays = props.trainingDays;
+    this.duration = props.duration;
+    this.focusZone = props.focusZone;
+    this.cyclePhase = props.cyclePhase;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
     this.exercises = props.exercises;
@@ -267,6 +312,11 @@ export class Program {
       endDate: props.endDate ?? this.endDate,
       isActive: props.isActive ?? this.isActive,
       isTemplate: props.isTemplate ?? this.isTemplate,
+      type: props.type ?? this.type,
+      trainingDays: props.trainingDays ?? this.trainingDays,
+      duration: props.duration ?? this.duration,
+      focusZone: props.focusZone ?? this.focusZone,
+      cyclePhase: props.cyclePhase ?? this.cyclePhase,
       createdAt: this.createdAt,
       updatedAt: new Date(),
       exercises: props.exercises ?? this.exercises,

@@ -10,6 +10,11 @@ export interface CreateProgramRequest {
   startDate: Date;
   endDate?: Date;
   isTemplate?: boolean;
+  type?: string;
+  trainingDays?: number[];
+  duration?: number;
+  focusZone?: string;
+  cyclePhase?: string | null;
   exercises?: Array<{
     exerciseId: string;
     order: number;
@@ -46,6 +51,11 @@ export class CreateProgramUseCase {
       startDate: request.startDate,
       endDate: request.endDate,
       isTemplate: request.isTemplate,
+      type: request.type,
+      trainingDays: request.trainingDays,
+      duration: request.duration,
+      focusZone: request.focusZone,
+      cyclePhase: request.cyclePhase,
       exercises: request.exercises?.map((exercise) =>
         ProgramExercise.create({
           exerciseId: exercise.exerciseId,

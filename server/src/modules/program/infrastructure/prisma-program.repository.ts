@@ -17,6 +17,13 @@ export class PrismaProgramRepository implements IProgramRepository {
       goal: program.goal,
       startDate: program.startDate,
       endDate: program.endDate,
+      isActive: program.isActive,
+      isTemplate: program.isTemplate,
+      type: program.type,
+      trainingDays: program.trainingDays,
+      duration: program.duration,
+      focusZone: program.focusZone,
+      cyclePhase: program.cyclePhase,
       ...(program.exercises &&
         program.exercises.length > 0 && {
           programExercises: {
@@ -162,6 +169,21 @@ export class PrismaProgramRepository implements IProgramRepository {
     if (programData.isTemplate !== undefined) {
       updateData.isTemplate = programData.isTemplate;
     }
+    if (programData.type !== undefined) {
+      updateData.type = programData.type;
+    }
+    if (programData.trainingDays !== undefined) {
+      updateData.trainingDays = programData.trainingDays;
+    }
+    if (programData.duration !== undefined) {
+      updateData.duration = programData.duration;
+    }
+    if (programData.focusZone !== undefined) {
+      updateData.focusZone = programData.focusZone;
+    }
+    if (programData.cyclePhase !== undefined) {
+      updateData.cyclePhase = programData.cyclePhase;
+    }
 
     // If updating to active, deactivate all other programs for this user
     if (programData.isActive === true) {
@@ -230,6 +252,11 @@ export class PrismaProgramRepository implements IProgramRepository {
       endDate: prismaProgram.endDate,
       isActive: prismaProgram.isActive,
       isTemplate: prismaProgram.isTemplate,
+      type: prismaProgram.type,
+      trainingDays: prismaProgram.trainingDays,
+      duration: prismaProgram.duration,
+      focusZone: prismaProgram.focusZone,
+      cyclePhase: prismaProgram.cyclePhase,
       createdAt: prismaProgram.createdAt,
       updatedAt: prismaProgram.updatedAt,
       exercises: prismaProgram.programExercises?.map((pe: any) => ({
