@@ -10,8 +10,8 @@ import {
   Put,
   Request,
   NotFoundException,
+  Inject,
 } from '@nestjs/common';
-import { Request as ExpressRequest } from 'express';
 import { RegisterUseCase } from '../application/use-cases/register.use-case';
 import { LoginUseCase } from '../application/use-cases/login.use-case';
 import { RefreshTokenUseCase } from '../application/use-cases/refresh-token.use-case';
@@ -48,6 +48,9 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { CompleteOnboardingUseCase } from '../application/use-cases/complete-onboarding.use-case';
+import { GetCurrentCycleUseCase } from '../../cycle/application/use-cases/get-current-cycle.use-case';
+import { ICycleProfileConfigRepository } from '../../cycle/domain/cycle.repository';
+import { CYCLE_PROFILE_CONFIG_REPOSITORY_TOKEN } from '../../cycle/tokens';
 
 @ApiTags('Auth')
 @ApiBearerAuth()
@@ -66,6 +69,9 @@ export class AuthController {
     private readonly getPreferencesUseCase: GetPreferencesUseCase,
 
     private readonly completeOnboardingUseCase: CompleteOnboardingUseCase,
+    private readonly getCurrentCycleUseCase: GetCurrentCycleUseCase,
+    @Inject(CYCLE_PROFILE_CONFIG_REPOSITORY_TOKEN)
+    private readonly cycleConfigRepository: ICycleProfileConfigRepository,
   ) {}
 
   @Public()
@@ -83,7 +89,7 @@ export class AuthController {
   @Post('register')
   async register(
     @Body() registerDto: RegisterDto,
-    @Req() request: ExpressRequest,
+    @Req() request: any,
     @Ip() ipAddress: string,
   ): Promise<AuthResponseDto> {
     try {
@@ -133,7 +139,7 @@ export class AuthController {
   @Post('login')
   async login(
     @Body() loginDto: LoginDto,
-    @Req() request: ExpressRequest,
+    @Req() request: any,
     @Ip() ipAddress: string,
   ): Promise<AuthResponseDto> {
     try {
@@ -215,10 +221,21 @@ export class AuthController {
         ...onboardingDto,
       });
 
+      // Fetch latest cycle config and current cycle after onboarding
+      const cycleConfig = await this.cycleConfigRepository.findByUserId(userId);
+      let currentCycle = null;
+      try {
+        currentCycle = await this.getCurrentCycleUseCase.execute({ userId });
+      } catch (_) {
+        // If tracking not enabled or no config, keep currentCycle null
+      }
+
       return {
         success: true,
         message: 'Profil mis à jour avec succès.',
         user: updatedUser,
+        cycleConfig,
+        currentCycle,
       };
     } catch (error) {
       const message =

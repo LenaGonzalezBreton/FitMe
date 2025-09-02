@@ -22,7 +22,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
   const [showPeriodLogging, setShowPeriodLogging] = useState(false);
 
   // Dynamic cycle characteristics based on current cycle
-  const midPoint = currentCycle ? Math.ceil(currentCycle.cycleLength / 2) : 14;
+  const midPoint = currentCycle ? Math.ceil(currentCycle.cycleLength / 2) : 14; // only used when currentCycle exists
   const cycleCharacteristics = [
     { 
       name: 'Menstruelle', 
@@ -109,7 +109,13 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
                 <View className="flex-row items-center justify-between mb-4">
                   <View className="flex-1">
                     <Text className="text-2xl font-bold text-brand-text mb-1">
-                      {getCycleCharacteristics(currentCycle.cycleDay, currentCycle.isPeriodDay, currentCycle.isOvulationPhase, currentCycle.isFertileDay)}
+                      {getCycleCharacteristics(
+                        currentCycle.cycleDay,
+                        currentCycle.isPeriodDay,
+                        currentCycle.isOvulationPhase,
+                        currentCycle.isFertileDay,
+                        currentCycle.cycleLength
+                      )}
                     </Text>
                     <Text className="text-sm text-secondary-600 mb-1">Jour {currentCycle.cycleDay} de {currentCycle.cycleLength}</Text>
                     {currentCycle.daysUntilNextCycle > 0 && (
@@ -118,8 +124,20 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
                       </Text>
                     )}
                   </View>
-                  <View className={`${getCycleColor(currentCycle.cycleDay, currentCycle.isPeriodDay, currentCycle.isOvulationPhase, currentCycle.isFertileDay)} rounded-full w-16 h-16 items-center justify-center`}>
-                    <Text className="text-brand-text text-2xl">{getCycleEmoji(currentCycle.cycleDay, currentCycle.isPeriodDay, currentCycle.isOvulationPhase, currentCycle.isFertileDay)}</Text>
+                  <View className={`${getCycleColor(
+                    currentCycle.cycleDay,
+                    currentCycle.isPeriodDay,
+                    currentCycle.isOvulationPhase,
+                    currentCycle.isFertileDay,
+                    currentCycle.cycleLength
+                  )} rounded-full w-16 h-16 items-center justify-center`}>
+                    <Text className="text-brand-text text-2xl">{getCycleEmoji(
+                      currentCycle.cycleDay,
+                      currentCycle.isPeriodDay,
+                      currentCycle.isOvulationPhase,
+                      currentCycle.isFertileDay,
+                      currentCycle.cycleLength
+                    )}</Text>
                   </View>
                 </View>
 
@@ -164,19 +182,19 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
                   <View className="items-center">
                     <Text className="text-lg font-bold text-primary-500">
                       {currentCycle.isPeriodDay ? '💤' : 
-                       currentCycle.cycleDay <= 14 ? '💪' :
+                       currentCycle.cycleDay <= Math.ceil(currentCycle.cycleLength / 2) ? '💪' :
                        currentCycle.isOvulationPhase ? '⚡' : '🧘'}
                     </Text>
                     <Text className="text-xs text-secondary-600">
                       {currentCycle.isPeriodDay ? 'Repos' : 
-                       currentCycle.cycleDay <= 14 ? 'Force' :
+                       currentCycle.cycleDay <= Math.ceil(currentCycle.cycleLength / 2) ? 'Force' :
                        currentCycle.isOvulationPhase ? 'Performance' : 'Récupération'}
                     </Text>
                   </View>
                   <View className="items-center">
                     <Text className="text-lg font-bold text-accent-500">
                       {currentCycle.isPeriodDay ? '🩸' : 
-                       currentCycle.cycleDay <= 14 ? '🌱' :
+                       currentCycle.cycleDay <= Math.ceil(currentCycle.cycleLength / 2) ? '🌱' :
                        currentCycle.isOvulationPhase ? '🌻' : '🍂'}
                     </Text>
                     <Text className="text-xs text-secondary-600">Caractéristiques</Text>
