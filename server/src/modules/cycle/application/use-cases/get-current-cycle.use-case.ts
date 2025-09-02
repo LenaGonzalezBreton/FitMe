@@ -48,16 +48,30 @@ export class GetCurrentCycleUseCase {
     }
 
     // Récupérer le cycle actuel
-    const currentCycle =
-      await this.cycleRepository.findCurrentCycleByUserId(userId);
+    let currentCycle = await this.cycleRepository.findCurrentCycleByUserId(userId);
+    
+    // Si aucun cycle "actuel" n'est trouvé, essayer de récupérer le plus récent
+    if (!currentCycle) {
+      const userCycles = await this.cycleRepository.findByUserId(userId);
+      if (userCycles.length > 0) {
+        // Utiliser le cycle le plus récent même s'il n'est pas strictement "actuel"
+        currentCycle = userCycles[0]; // Les cycles sont triés par date décroissante
+        
+        console.log(`Using most recent cycle for user ${userId} as fallback:`, {
+          cycleId: currentCycle.id,
+          startDate: currentCycle.startDate,
+          cycleLength: currentCycle.cycleLength
+        });
+      }
+    }
     
     if (!currentCycle) {
-      // Si aucun cycle n'existe, fournir des informations par défaut basées sur la configuration
+      // Si aucun cycle n'existe du tout, fournir des informations par défaut
       const cycleLength = config.averageCycleLength;
       const periodLength = config.averagePeriodLength;
       
-      // Jour par défaut : milieu du cycle
-      const defaultCycleDay = Math.floor(cycleLength / 2);
+      // Jour par défaut : début du cycle
+      const defaultCycleDay = 1;
       const daysUntilNextCycle = cycleLength - defaultCycleDay;
       
       return {
@@ -75,13 +89,16 @@ export class GetCurrentCycleUseCase {
 
     // Calculer le jour actuel dans le cycle
     const cycleDay = currentCycle.getCurrentCycleDay(date);
-    const cycleLength = currentCycle.cycleLength || config.averageCycleLength;
-    const periodLength = currentCycle.periodLength || config.averagePeriodLength;
+    // Prioritiser la configuration utilisateur pour la longueur du cycle
+    const cycleLength = config.averageCycleLength || currentCycle.cycleLength || 28;
+    const periodLength = config.averagePeriodLength || currentCycle.periodLength || 5;
 
-    // Déterminer les caractéristiques du jour actuel
-    const isPeriodDay = currentCycle.isPeriodDay(date);
-    const isOvulationPhase = currentCycle.isOvulationPhase(date);
-    const isFertileDay = currentCycle.isFertileDay(date);
+
+    // Déterminer les caractéristiques du jour actuel avec la configuration utilisateur
+    const isPeriodDay = this.isPeriodDay(cycleDay, periodLength);
+    const isOvulationPhase = this.isOvulationPhase(cycleDay, cycleLength);
+    const isFertileDay = this.isFertileDay(cycleDay, cycleLength);
+
 
     // Calculer les jours jusqu'au prochain cycle
     const daysUntilNextCycle = this.calculateDaysUntilNextCycle(
@@ -179,5 +196,26 @@ export class GetCurrentCycleUseCase {
       'Écoutez votre corps et adaptez l\'intensité',
       'Consultez un professionnel de santé pour des conseils personnalisés',
     ];
+  }
+
+  // Helper methods that use user configuration instead of cycle entity defaults
+  private isPeriodDay(cycleDay: number, periodLength: number): boolean {
+    return cycleDay <= periodLength;
+  }
+
+  private getOvulationDay(cycleLength: number): number {
+    // L'ovulation se produit généralement 14 jours avant les prochaines règles
+    return cycleLength - 14;
+  }
+
+  private isOvulationPhase(cycleDay: number, cycleLength: number): boolean {
+    const ovulationDay = this.getOvulationDay(cycleLength);
+    return cycleDay >= ovulationDay - 2 && cycleDay <= ovulationDay + 2;
+  }
+
+  private isFertileDay(cycleDay: number, cycleLength: number): boolean {
+    const ovulationDay = this.getOvulationDay(cycleLength);
+    // Période fertile : 5 jours avant l'ovulation jusqu'à 2 jours après
+    return cycleDay >= ovulationDay - 5 && cycleDay <= ovulationDay + 2;
   }
 }

@@ -38,14 +38,15 @@ export class Cycle {
    */
   isCurrentCycle(currentDate: Date = new Date()): boolean {
     // A cycle is considered current if:
-    // 1. The current date is after the start date, AND
+    // 1. The current date is after or equal to the start date, AND
     // 2. Either we're within the expected cycle length OR no new cycle has started
     const daysSinceStart = Math.floor((currentDate.getTime() - this.startDate.getTime()) / (1000 * 60 * 60 * 24));
     const cycleLength = this.cycleLength || 28;
     
+    // Handle same-day cycles and time zone differences (allow -1 for edge cases)
     // If we're within a reasonable range (up to 1.5x the cycle length), consider it current
     // This handles cases where cycles are longer than expected
-    return daysSinceStart >= 0 && daysSinceStart <= (cycleLength * 1.5);
+    return daysSinceStart >= -1 && daysSinceStart <= (cycleLength * 1.5);
   }
 
   /**

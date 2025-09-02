@@ -2,10 +2,11 @@ import { Injectable, Inject, BadRequestException } from '@nestjs/common';
 import { Cycle } from '../../domain/cycle.entity';
 import {
   ICycleRepository,
+  ICycleProfileConfigRepository,
   CreateCycleData,
   UpdateCycleData,
 } from '../../domain/cycle.repository';
-import { CYCLE_REPOSITORY_TOKEN } from '../../tokens';
+import { CYCLE_REPOSITORY_TOKEN, CYCLE_PROFILE_CONFIG_REPOSITORY_TOKEN } from '../../tokens';
 
 export interface LogPeriodRequest {
   userId: string;
@@ -25,6 +26,8 @@ export class LogPeriodUseCase {
   constructor(
     @Inject(CYCLE_REPOSITORY_TOKEN)
     private readonly cycleRepository: ICycleRepository,
+    @Inject(CYCLE_PROFILE_CONFIG_REPOSITORY_TOKEN)
+    private readonly configRepository: ICycleProfileConfigRepository,
   ) {}
 
   async execute(request: LogPeriodRequest): Promise<LogPeriodResponse> {
@@ -66,9 +69,11 @@ export class LogPeriodUseCase {
 
     if (existingCycle) {
       // Mise à jour du cycle existant
+      const config = await this.configRepository.findByUserId(request.userId);
       const periodLength = request.endDate
         ? this.calculateDaysDifference(request.startDate, request.endDate)
-        : undefined;
+        : config?.averagePeriodLength; // Utiliser la configuration utilisateur par défaut
+
 
       const updateData: UpdateCycleData = {
         startDate: request.startDate,
@@ -79,14 +84,17 @@ export class LogPeriodUseCase {
       period = await this.cycleRepository.update(existingCycle.id, updateData);
     } else {
       // Création d'un nouveau cycle
+      const config = await this.configRepository.findByUserId(request.userId);
       const periodLength = request.endDate
         ? this.calculateDaysDifference(request.startDate, request.endDate)
-        : undefined;
+        : config?.averagePeriodLength; // Utiliser la configuration utilisateur par défaut
 
-      // Calculer la longueur du cycle basée sur le cycle précédent
-      const cycleLength = this.calculateCycleLength(
+
+      // Calculer la longueur du cycle basée sur le cycle précédent et la configuration utilisateur
+      const cycleLength = await this.calculateCycleLength(
         userCycles,
         request.startDate,
+        request.userId,
       );
 
       const createData: CreateCycleData = {
@@ -118,12 +126,19 @@ export class LogPeriodUseCase {
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
   }
 
-  private calculateCycleLength(
+  private async calculateCycleLength(
     userCycles: Cycle[],
     currentStartDate: Date,
-  ): number {
+    userId: string,
+  ): Promise<number> {
+    // Récupérer la configuration utilisateur
+    const config = await this.configRepository.findByUserId(userId);
+    const userConfiguredLength = config?.averageCycleLength || 28;
+
+
     if (userCycles.length === 0) {
-      return 28; // Valeur par défaut
+      // Pour le premier cycle, utiliser la configuration de l'utilisateur
+      return userConfiguredLength;
     }
 
     // Trier les cycles par date de début
@@ -132,7 +147,8 @@ export class LogPeriodUseCase {
       .sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
 
     if (sortedCycles.length === 0) {
-      return 28;
+      // Pas de cycles précédents valides, utiliser la configuration utilisateur
+      return userConfiguredLength;
     }
 
     // Prendre le cycle le plus récent pour calculer la longueur
@@ -147,10 +163,10 @@ export class LogPeriodUseCase {
       return daysBetween;
     }
 
-    // Sinon, retourner la moyenne des cycles récents
+    // Sinon, retourner la moyenne des cycles récents avec la configuration utilisateur comme fallback
     const recentCycles = sortedCycles.slice(-6); // 6 derniers cycles
     const avgLength =
-      recentCycles.reduce((sum, cycle) => sum + (cycle.cycleLength || 28), 0) /
+      recentCycles.reduce((sum, cycle) => sum + (cycle.cycleLength || userConfiguredLength), 0) /
       recentCycles.length;
 
     return Math.round(avgLength);

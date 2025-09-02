@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, SafeAreaView, ActivityIndicator, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { useCycle } from '../../hooks/useCycle';
+import { useCycleContext } from '../../context/CycleContext';
 import { usePrograms } from '../../hooks/usePrograms';
 import { programApi } from '../../services/api';
 
@@ -23,7 +23,7 @@ interface TrainingDay {
 
 const CreateProgramScreen = () => {
   const navigation = useNavigation();
-  const { currentCycle } = useCycle();
+  const { currentCycle, getPhaseApiKey } = useCycleContext();
   const { generateProgram } = usePrograms();
   
   const [programTitle, setProgramTitle] = useState('');
@@ -139,7 +139,7 @@ const CreateProgramScreen = () => {
         startDate: new Date().toISOString(),
         duration: parseInt(duration),
         focusZone,
-        cyclePhase: currentCycle?.cycleDay || null
+        cyclePhase: getPhaseApiKey() || null
       });
 
       Alert.alert(

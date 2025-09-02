@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { usePeriods } from '../../hooks/usePeriods';
-import { useCycle } from '../../hooks/useCycle';
+import { useCycleContext } from '../../context/CycleContext';
 import { Ionicons } from '@expo/vector-icons';
 import { LogPeriodRequest } from '../../types';
 
@@ -20,7 +20,7 @@ interface PeriodLoggingScreenProps {
 
 const PeriodLoggingScreen = ({ onClose }: PeriodLoggingScreenProps) => {
   const { logPeriod, loading } = usePeriods();
-  const { refreshCycle } = useCycle();
+  const { refreshCycle } = useCycleContext();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [flowIntensity, setFlowIntensity] = useState<number>(3);

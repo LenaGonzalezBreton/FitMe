@@ -3,7 +3,7 @@ import { View, Text, ScrollView, SafeAreaView, TouchableOpacity, Image, Activity
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../types';
-import { useCycle } from '../../hooks/useCycle';
+import { useCycleContext } from '../../context/CycleContext';
 import { exerciseApi } from '../../services/api';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -34,17 +34,8 @@ const ExercicesScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  const { currentCycle } = useCycle();
+  const { currentCycle, getPhaseApiKey } = useCycleContext();
   const navigation = useNavigation<NativeStackNavigationProp<AppStackParamList, 'Exercices'>>();
-
-  // Map current cycle to API phase key
-  const getPhaseKey = (): string | undefined => {
-    if (!currentCycle) return undefined;
-    if (currentCycle.isPeriodDay) return 'menstrual';
-    if (currentCycle.isOvulationPhase) return 'ovulation';
-    const midPoint = Math.ceil(currentCycle.cycleLength / 2);
-    return currentCycle.cycleDay <= midPoint ? 'follicular' : 'luteal';
-  };
 
   // Fetch exercises from API (filtered by current phase when available)
   const fetchExercises = async () => {
@@ -53,7 +44,7 @@ const ExercicesScreen = () => {
       setError(null);
       
       const response = await exerciseApi.getExercises({
-        phase: getPhaseKey(),
+        phase: getPhaseApiKey(),
       });
       setExercises(response.exercises || []);
     } catch (err: any) {

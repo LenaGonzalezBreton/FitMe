@@ -120,8 +120,13 @@ const OnboardingScreen = () => {
       };
 
       if (formData.isMenopausal === false) {
-        onboardingPayload.averageCycleLength = parseInt(formData.averageCycleLength, 10);
-        onboardingPayload.averagePeriodLength = parseInt(formData.averagePeriodLength, 10);
+        // Capture final values from temp refs if they exist
+        const finalCycleLength = tempCycleLength.current || formData.averageCycleLength;
+        const finalPeriodLength = tempPeriodLength.current || formData.averagePeriodLength;
+        
+        onboardingPayload.averageCycleLength = parseInt(finalCycleLength, 10);
+        onboardingPayload.averagePeriodLength = parseInt(finalPeriodLength, 10);
+        
       }
 
       const response = await api.post('/auth/onboarding', onboardingPayload);
@@ -151,7 +156,29 @@ const OnboardingScreen = () => {
         if (!formData.isMenopausal && formData.cycleTrackingEnabled && formData.lastPeriodDate) {
           try {
             const [day, month, year] = formData.lastPeriodDate.split('/');
-            const startDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+            // Create date object and ensure it's in the correct format for the server
+            const dateObj = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+            
+            // Ensure the date is not in the future
+            const today = new Date();
+            if (dateObj > today) {
+              console.warn('Last period date is in the future, adjusting to today');
+              dateObj.setTime(today.getTime());
+            }
+            
+            // Format as ISO date string (YYYY-MM-DD) in local timezone
+            const startDate = dateObj.getFullYear() + '-' + 
+                              String(dateObj.getMonth() + 1).padStart(2, '0') + '-' + 
+                              String(dateObj.getDate()).padStart(2, '0');
+            
+            if (__DEV__) {
+              console.log('Logging period with date:', {
+                original: formData.lastPeriodDate,
+                parsed: startDate,
+                dateObj: dateObj.toISOString()
+              });
+            }
+            
             await cycleApi.logPeriod({
               startDate,
               flowIntensity: 3,

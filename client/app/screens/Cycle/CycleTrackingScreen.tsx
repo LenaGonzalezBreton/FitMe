@@ -10,7 +10,7 @@ import {
   StatusBar,
   Modal,
 } from 'react-native';
-import { useCycle } from '../../hooks/useCycle';
+import { useCycleContext } from '../../context/CycleContext';
 import { useAuth } from '../../context/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 import HormoneGraph from '../../components/HormoneGraph';
@@ -42,7 +42,7 @@ interface CycleTrackingScreenProps {
 }
 
 const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
-  const { currentCycle, cycleConfig, getCycleCharacteristics, getCycleEmoji, getCycleColor, refreshCycle, refreshConfig } = useCycle();
+  const { currentCycle, cycleConfig, getCycleCharacteristics, getCycleEmoji, getCycleColor, refreshCycle, refreshConfig } = useCycleContext();
   const { user } = useAuth();
   const [refreshing, setRefreshing] = useState(false);
   const [selectedTab, setSelectedTab] = useState<'overview' | 'hormones' | 'recommendations'>('overview');
