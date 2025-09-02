@@ -1,0 +1,69 @@
+---
+id: cycle-controller-get-cycle-predictions
+title: "Obtenir les prédictions du cycle"
+description: "Calculs intelligents des prochaines règles et ovulation"
+sidebar_label: "Obtenir les prédictions du cycle"
+hide_title: true
+hide_table_of_contents: true
+api: eJylVttqI0cQ/ZWmYNkExvZYOFmjN+FLcJAtYUsJRIhQ6ilJ7e3pGfdFWCvmX/K4+x3+sVA9usu7dggINJrurnOqzukqLaAoyaJXhbnJoAkXc6npojDeFlqT/XtCPr7qWsqU5G0OEsjISatK/slnUMugnVDGk9ZqQsY7kZETpS3kFJUhJ+zL14kmJ8iLYhZ0BIQESrSYkyfroDkYJmDJlYVx5KC5gEaa8tcuWNe+fFsxETIiv3wjJ3BGUrgg5ctXZigL48l4Po9lqZWMiCePjoMswMkp5chPfl4SNKEYPZL0zMhyQbyqKZRbaf+YShaE5EJBAqh1ZwzNwVvBDT37LllVZA8erd9i47xVZnJQ6Ev0JMqI6uk7FYYE6BnzUnOcRto4O0obR6eNXpo24+c4TdO/oEoiemctxX/GFho36Dua7sOfHjXOD+FlYcYqIyNpC9uEfET2APtOzQgDg8ZTaOSGwVoC8dOHn7fRzz8d/5JArozKQw7NNIEcn+vn0zRlBsFaMrW9L3H+No3fi2AFSh9IiwyNE5rWmq9hT882obtTdPR2aeO2ZWBN204iw3QHcHt199C777fakMB1p92+uei3W/eQQOePfrvVu+ncQQLtfu+q1YbhtgKb9SqBDOeub7zSd2vjvS9pJx6DewofMTy/4biY/RrnNXu9A+bln3eYK60qbhdPQVnKuEb7t2nf4TuWO1R/T7TXq/VqbsMEvPKx3Hut8tIXUA2rBHJyDifvsMJtvVEoMy5sjl6Ndy7UD5vf+acPu1dkhC6uumDFrHDiV5GRNYqsqw3mYL+G5U6XX7H+foLuftmvY6YVhztLz17plOgEOkdfmGBWGBN5lXyfdOxim7QiJ48THgg1HOM7ksEqP49ddURoyfLAqIbM0k/ZyDCh2GLRT6EJJzHDk92EHNnZetSsQj7wKKgb8irwcj5wwstXyfLhOqrCfv2zB8lKzKn3ZeTNskWRl+W6Vv6WRKt7c9hOCxlyMj5aKDazj63ujagPHInWZmbx4lh5Q84tFY2CrnqPyMk4bwNpSICzq+OfHqfLKYiSJwuzKwvnc4yX0WDMrjPyZNShCNs9aIf3YjNY/8/YX9bN07M/KTUqw+0pWB1HbhRwACv8bQmHCUwL53l5sRiho77VVcWvnwLZeS3sDK3CEdd/wHdvSphFtyzgM82hCS0pqWSrzFAHpnHwB2HHVr9dsdIYmNX6+u7ZYnvYo5lvxV4s6h294jOZqoJkScLzb24OVfUv0vBW7g==
+sidebar_class_name: "get api-method"
+info_path: docs/api/fitme-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Obtenir les prédictions du cycle"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/cycle/predictions"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Calculs intelligents des prochaines règles et ovulation
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  responses={{"200":{"description":"Prédictions calculées avec succès","content":{"application/json":{"schema":{"type":"object","properties":{"predictions":{"description":"Prédictions du cycle","allOf":[{"type":"object","properties":{"nextPeriodStart":{"type":"string","description":"Date prédite des prochaines règles","example":"2024-02-12T00:00:00.000Z"},"nextOvulation":{"type":"string","description":"Date prédite de la prochaine ovulation","example":"2024-01-28T00:00:00.000Z"},"confidence":{"type":"number","description":"Niveau de confiance de la prédiction (%)","example":87.5,"minimum":0,"maximum":100},"currentCycleDay":{"type":"number","description":"Jour actuel dans le cycle","example":14},"currentPhase":{"type":"string","description":"Phase actuelle du cycle","enum":["MENSTRUAL","FOLLICULAR","OVULATION","LUTEAL"],"example":"OVULATION"},"daysUntilNextPeriod":{"type":"number","description":"Jours jusqu'aux prochaines règles","example":14},"daysUntilOvulation":{"type":"number","description":"Jours jusqu'à la prochaine ovulation","example":0}},"required":["nextPeriodStart","nextOvulation","confidence","currentCycleDay","currentPhase","daysUntilNextPeriod","daysUntilOvulation"],"title":"CyclePredictionDto"}]},"message":{"type":"string","description":"Message informatif","example":"Prédictions calculées avec 87% de confiance basées sur vos 6 derniers cycles"}},"required":["predictions","message"],"title":"CyclePredictionsResponseDto"}}}},"404":{"description":"Pas assez de données pour les prédictions"}}}
+ id="cycle-controller-get-cycle-predictions-responses">
+  
+</StatusCodes>
+
+
+      

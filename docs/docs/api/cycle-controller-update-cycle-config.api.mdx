@@ -1,0 +1,69 @@
+---
+id: cycle-controller-update-cycle-config
+title: "Mettre à jour la configuration du cycle"
+description: "Modifie les paramètres personnalisés du cycle menstruel"
+sidebar_label: "Mettre à jour la configuration du cycle"
+hide_title: true
+hide_table_of_contents: true
+api: eJztWNtu4zYQ/RWCL80CykZ2knarN3eTtC5q1NhNUKCGsaClsc0sRWp58cYw9C99jL9DP1YMKcdyrDS7aRYFirzYupAzZ4ZzzlBcUVWAZpYr2c9oQt8uUwFvlbRaCQH6gysyZmHzdMpnNKIZmFTzAufQhA5UxqcciABDCqZZXt1ajdegjZKSCW6qtSGZIylaITlIY7UDQSPqx4MFbWgyGkdUwycHxv6ksiVNVv6Wa8hoghMimippQVp8xYpC8NTjPro2CGRFTTqHnOGVXRZAE6om15Ba9KMxSsvB4FtufDyXmqUfuZydSzYR6ORu3kQpAUzuhdpLLV+APsqqtWHhmgggxvEFvwuQRhRuWF4ICLDLiDoD5vzGgpZMDLVa8Az0091NldOSGwNOE/BWd3xOmTC10wFIVTC8UBk83WGuMiB5ta6NtTljC9BsFurkN5AzO2+4ky6fgN7zduZ0tUbrS5AStgVy0O0cnsTkWjltXjWddd9ENOeS5y6nSbcT0ZzdhJuTeIthCJqr7KkgwBBd3c6wmA+ODzttME4bKI4bIDoIotAwBW0GTDom+rJw9gvyPtTVelqtNaabEcO44UByJh0I0ZLuMqKWW7ynV/fpeWYVLUscosEUSppQ8t04xr9dt2GGC+wnOTdAqr98wIQtICXGpWl1a+izES8NCvIIkAaRmBC/T2kyesywM6D7TQYbq7nc16p+BtLyKWfSEme54IZZcLqZYm/rQ6d7fHL6/Q9vfqRl9HS9eL8jDMRTqlo/n0Bc+RCAONkmCuSgVxQCyC/AhJ1H5GelZgLIBbevnkkvBrvC0BbgtxAIkIGV/6E2tEH4Vrpwq+GLZCGiqQZmIevZx5lwxixGRFJdrT3tdjjQjbsnh3HnsHN62YmT4ziJ49dxHP+JbAg7gq9ykoGW3MeR+81C+jUey6ixDxhtqP4gKx8gU0t9ty5KM4nNWMdbzb2vtuMyojkYw2bweEoGYaBPPZrQ+X4u2uWQ6GqduqJa+6LcEej7OUo3O7UNrHb07+oOse0Z3bjzmDpjwewBeOkQLx3ipUO8dIiXDvF/7xAnbR8SZ0rKag2GcLlggmcQHFo2w+/6YBA9GEid5nbp9XoCTKOGjcblGHHYucIDiJDigiH96JGP6+gOrQG9uDss2Fh7j70lqPzGZt1wPHPCo6i+uFCYT5rQX/+4pNFmKebWFh4y9qt320OI803GHz40CCcT7fLsWdemm/WLNslDmWrVotN2idgwm8up8sVVr+IFtwMgvWF/n3MqdTlIWxcPEPFdb9gnYcIh6W3bN76ccivBGDJhBqvKOH8ksH+Ug+sS7Hdex/WGgKUoAZjXQhmbM78VkMyvywCs1dsPTsFCtbf1+B34q+1W418dPdUrb+HGHhWCcemVSwv0EKpvRDcA6vobR3SujMU3q9WEGbjSoizx8ScHehmqcsE0x9LwhR3ROTBfCqMV/QjLQF1Ef3iJ/nG4cIhjb9NURpsZvTSFwv7j2CaBhldY2JP6CC339UY1+0wj/5tQGlHlk+kp45+tqGBy5rw+0WASV425nSZ4j0rNXReTywbA1SqMuFQfQZYljepILN6jHJbl30++QWE=
+sidebar_class_name: "put api-method"
+info_path: docs/api/fitme-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Mettre à jour la configuration du cycle"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"put"}
+  path={"/cycle/config"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Modifie les paramètres personnalisés du cycle menstruel
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"isCycleTrackingEnabled":{"type":"boolean","description":"Activer/désactiver le suivi du cycle","example":true},"usesExternalProvider":{"type":"boolean","description":"Activer/désactiver le fournisseur externe","example":false},"useMenopauseMode":{"type":"boolean","description":"Activer/désactiver le mode ménopause","example":false},"averageCycleLength":{"type":"number","description":"Durée moyenne du cycle (21-40 jours)","example":28,"minimum":21,"maximum":40},"averagePeriodLength":{"type":"number","description":"Durée moyenne des règles (3-10 jours)","example":5,"minimum":3,"maximum":10},"prefersManualInput":{"type":"boolean","description":"Préférer la saisie manuelle","example":false}},"title":"UpdateCycleConfigDto"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  responses={{"200":{"description":"Configuration mise à jour avec succès","content":{"application/json":{"schema":{"type":"object","properties":{"config":{"description":"Configuration du cycle","allOf":[{"type":"object","properties":{"userId":{"type":"string","description":"Identifiant utilisateur","example":"user_123456789"},"isCycleTrackingEnabled":{"type":"boolean","description":"Suivi du cycle activé","example":true},"usesExternalProvider":{"type":"boolean","description":"Utilise un fournisseur externe (Apple Health, Google Fit)","example":false},"useMenopauseMode":{"type":"boolean","description":"Mode ménopause activé","example":false},"averageCycleLength":{"type":"number","description":"Durée moyenne du cycle en jours","example":28,"minimum":21,"maximum":40},"averagePeriodLength":{"type":"number","description":"Durée moyenne des règles en jours","example":5,"minimum":3,"maximum":10},"prefersManualInput":{"type":"boolean","description":"Préfère la saisie manuelle","example":false},"createdAt":{"type":"string","description":"Date de création","example":"2024-01-15T10:30:00.000Z"},"updatedAt":{"type":"string","description":"Date de dernière modification","example":"2024-01-15T10:30:00.000Z"}},"required":["userId","isCycleTrackingEnabled","usesExternalProvider","useMenopauseMode","prefersManualInput","createdAt","updatedAt"],"title":"CycleConfigDto"}]},"message":{"type":"string","description":"Message de confirmation","example":"Configuration du cycle récupérée avec succès"}},"required":["config","message"],"title":"CycleConfigResponseDto"}}}},"201":{"description":"Configuration créée avec succès","content":{"application/json":{"schema":{"type":"object","properties":{"config":{"description":"Configuration du cycle","allOf":[{"type":"object","properties":{"userId":{"type":"string","description":"Identifiant utilisateur","example":"user_123456789"},"isCycleTrackingEnabled":{"type":"boolean","description":"Suivi du cycle activé","example":true},"usesExternalProvider":{"type":"boolean","description":"Utilise un fournisseur externe (Apple Health, Google Fit)","example":false},"useMenopauseMode":{"type":"boolean","description":"Mode ménopause activé","example":false},"averageCycleLength":{"type":"number","description":"Durée moyenne du cycle en jours","example":28,"minimum":21,"maximum":40},"averagePeriodLength":{"type":"number","description":"Durée moyenne des règles en jours","example":5,"minimum":3,"maximum":10},"prefersManualInput":{"type":"boolean","description":"Préfère la saisie manuelle","example":false},"createdAt":{"type":"string","description":"Date de création","example":"2024-01-15T10:30:00.000Z"},"updatedAt":{"type":"string","description":"Date de dernière modification","example":"2024-01-15T10:30:00.000Z"}},"required":["userId","isCycleTrackingEnabled","usesExternalProvider","useMenopauseMode","prefersManualInput","createdAt","updatedAt"],"title":"CycleConfigDto"}]},"message":{"type":"string","description":"Message de confirmation","example":"Configuration du cycle récupérée avec succès"}},"required":["config","message"],"title":"CycleConfigResponseDto"}}}},"400":{"description":"Données invalides"}}}
+ id="cycle-controller-update-cycle-config-responses">
+  
+</StatusCodes>
+
+
+      

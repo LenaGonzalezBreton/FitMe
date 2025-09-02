@@ -1,0 +1,69 @@
+---
+id: program-controller-get-program-by-id
+title: "Récupérer un programme par ID"
+description: "Récupère les détails complets d'un programme spécifique"
+sidebar_label: "Récupérer un programme par ID"
+hide_title: true
+hide_table_of_contents: true
+api: eJylVv9u2zYQfpUD/2kLKI3spF3n/9ymHTLsR5BmKLA0GGjybLOlSJU8uTEMvU/9HH6x4SipluO0TjfAgCXqeN93d+TdtxK+xCDJeHeuxUhcBD8LsnjlHQVvLYZ/Zkjt4svluRaZ0BhVMCVvESNxuVmrqtx8CQgWI+jNmqSxEZQvSosUQT+qHJSNhwIhlpu1MlPzqUKRiVIGWSBhiGJ0vRJOFihGwjBMwE+VCajFiEKFmTCMVkqa71E4PwNdbSFEJqKaYyHFaCXwVjIPMRLKzgfDk9Nnz3968bPIBC1LXo0UjJuJur5hxFh6FzHyxmGe898u0sXXMEIT9jps1iAXqCBWSm2+RJEJ5R2hI94ty9IalbJ7/CGyi1WPW0vBTz6gIk5G4FqQaQgY3bNpad6NvOUD52ci+1aodSbIEK8/1Ftj3nf4xltrVGVlgIu5jAhvKaCb0RyugjQuZTATMy/tfXHdj5Ks+yAvK2M1xM6zrpgkTLfQJUMzUCQZ6EzSD8SUtoDmPX3MYT48PcoHR4NnV3k+Sr+neZ7/zSjo9B2MAxGh099CGN6LYOJYkVn0ISbeW5RuD+PdHGmOAWiO3UkHE0FVIaAjuwTZeOpB87VJIFdYlHY3ksMwJvZxJFDnpIcwlTYyhAooCfWYDtfjFZsa74BMgZFkUX6rHoN8dLKTrarUD0X5TUaCxv4/AOEtBmUivvKV64O5qphg2AP7Iy2Dn0K3MYJx/Ur1kV/0AOJ+h3m966JXhcfe2SUYp2ylUfNnjdxqUcPC4Ocn254mQ5BLkQlDWMTDjaZjc/6AhtPRu6fjNO1mMDzhFPqgMRxO3Z9sxplLkXZEvpO9Ad9+pPgjVUn2PR8nNbf6Mh6OdusjYIlkeDnCYyUdTBCCdDMEaz4ivBcvjgbD9+LJTlIG+dHgGWdDV82EPcz6rLXkFERU3ukIUx/SIT6ayIh6e8h2YspTUJGuTIGHYS4xUvLZx5kgfUZ0e/l6zr6dJ3xAxsZapyxJC2lHQ75f3DtzRVURvGOzAvwCA8QSUYu67guA6/4Z7Q7Xzde51jXg7nCekRf1XQ9JU3STrZ092zmy7fa9rrzTO/tdrt+L7raLfVqXraxoadWZOM1P9m/+OOkHcN6BrMgHEzdrkYxPvydE2J6CrxZszbNezlhLdRaRCRVIc8/qbobp+rOIGonj9n7F45XRNacDw6JRYjf8oqpgaPmW5UpT+gnK0NzqpGHSHGmWsvbhjQ+FJDESv7672vajOVGZuBk39ekMtQl6Y+h3hPHF+f498Koq0FFzGTSCfTS+OIdmwxGMt7qKP04NOYwRJjJu1gixCmAR1FJZhAJd5EnI9eboGv+Dp3mr1KTiFs/sSh+pkOmStjr0shN5GGBHxJYyNB1wh/VqK/3+pyxuE0d4S8ellcal+ReSumqqdy266olMjIzmMs99JP6yWnGn+CvYuublTxWGZVPUhQxGTjj31yuhTeRn3c7x7wTz+LK9SE9gX2vfy7WbRI7n0ELait9EJj7istH39U2diTnKNCauV+2HsVJYUm/LnoCu+8f5l9dXoq7/BQtyYxE=
+sidebar_class_name: "get api-method"
+info_path: docs/api/fitme-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Récupérer un programme par ID"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/programs/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Récupère les détails complets d'un programme spécifique
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"ID du programme","schema":{"example":"clh123456789","type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  responses={{"200":{"description":"Programme récupéré avec succès","content":{"application/json":{"schema":{"type":"object","properties":{"id":{"type":"string","description":"Program ID","example":"clh123456789"},"title":{"type":"string","description":"Program title","example":"Follicular Phase Strength Training"},"goal":{"type":"object","description":"Program goal","example":"Build strength during follicular phase"},"startDate":{"type":"string","description":"Program start date","example":"2024-01-15T00:00:00.000Z"},"endDate":{"type":"object","description":"Program end date","example":"2024-02-15T00:00:00.000Z"},"isActive":{"type":"boolean","description":"Whether the program is currently active","example":true},"isTemplate":{"type":"boolean","description":"Whether this program is a template","example":false},"createdAt":{"type":"string","description":"Creation timestamp","example":"2024-01-15T10:30:00.000Z"},"updatedAt":{"type":"string","description":"Last update timestamp","example":"2024-01-15T10:30:00.000Z"},"exerciseCount":{"type":"number","description":"Number of exercises in the program","example":8},"exercises":{"description":"Exercises in this program (only included in detailed view)","type":"array","items":{"type":"object","properties":{"exerciseId":{"type":"string","description":"Exercise ID","example":"clh456789123"},"order":{"type":"number","description":"Order of this exercise in the program","example":1},"sets":{"type":"number","description":"Number of sets","example":3},"reps":{"type":"string","description":"Number of repetitions (can be range like \"8-12\")","example":"10-15"},"duration":{"type":"number","description":"Duration in seconds for time-based exercises","example":30},"restTime":{"type":"number","description":"Rest time in seconds between sets","example":60},"notes":{"type":"string","description":"Additional notes for this exercise","example":"Focus on form over speed"}},"required":["exerciseId","order"],"title":"ProgramExerciseDto"}}},"required":["id","title","goal","startDate","endDate","isActive","isTemplate","createdAt","updatedAt","exerciseCount"],"title":"ProgramResponseDto"}}}},"403":{"description":"Accès non autorisé"},"404":{"description":"Programme non trouvé"}}}
+ id="program-controller-get-program-by-id-responses">
+  
+</StatusCodes>
+
+
+      

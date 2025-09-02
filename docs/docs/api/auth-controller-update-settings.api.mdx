@@ -1,0 +1,69 @@
+---
+id: auth-controller-update-settings
+title: "Mettre à jour les paramètres de l'utilisateur connecté"
+description: "Mettre à jour les paramètres de l'utilisateur connecté"
+sidebar_label: "Mettre à jour les paramètres de l'utilisateur connecté"
+hide_title: true
+hide_table_of_contents: true
+api: eJzFVtuOGkcQ/ZVWvfhlnMV2IkXzRhbWIdoLAjZWhFarZqaAXs90j7uriRGaf/Gj9zv4sah6BhhY8PqSKDygoaa7+lT1OXVYgSnQSlJG91KIoe1pfm40WZNlaO99kUrCIRIpPXMQQSGtzJHQOojHdxFY/ODR0W8mXUK8Cj+VxRRish4jSIwm1MSvZFFkKgknnT04oznmkjnmkp9oWSDEYCYPmBCfYxkXKXRh3QbAsyu9VtS3OEWLOsHGekdW6RlEgB9lXmQcuuqOBr1zDmmfQzzeBXpX/e6g176EuzICbUhNa+RdLScZl7fNOzEmQ6mbibn0g30jlT8DpvVr3GrFrRaUZcltzZVOQ5dXkKJLrCo4D8QwkEWBmRPrTyJHIov89GC8baYbb4/iQm4698NRezAKpdYFVPdDAVfj8Ltos1FaK5cQgSLM3VPsjLK6A7XAIzBvqnfTrwb6rtt7+/vo/vJmOITQvIAebWpR/PJ+JlCLNyI3yn0jyClK8hYvMjk7AjOERYpianTCMS0zRevH52HXeVkznT/b1+fdzn37un3516h3zgUo1222+lswl1FDR+Md+TmFosCW2z1ddsjwtrDPFUa76kJet1pPC+6zgNefyaITuXKb4oRcYCKcT5L1Z9b5vyTcHJ2Ts2eo/5WQ9uu4qjLz1SVGT5XNA0Ioo/92WvxPA6EaxOmgORfqvdrnE9xj5+vDZl2bfGJDr2w9PRp9hl36mz1Bn8z/6lT+F2ar+uMHXByI8eQRb06XUAtPTIN09845UM6GfQ1KHOnkseqPAz4pwEEtu50Qfz6mvY7Rev2ITii9kJlK0QnjBVqL3nJlIVjTuIyAQpPGwZP57EMBNIeTyNCJoiGkFEX2wpPKlJPE+ROjNSa0foQIcqS5YbsvfBCFpDnEcCY9zc8arXJoF1und5h4q2g5ZOlXBJmgtGi38yCwvwpF9cOFYV1CDH+8Y/epr3tOVIQKeZwMdv8gupvb33f8Q5XufPqoEitneyq2hqL2DPZHvLLpgN9rZfsG9R3OUkag9NQEPdX0vFB0haLd7z2Zmx2T+Bw1hcZULGn3e6La8FK0d8M+aE2RRufERLr1IwoXiCaSZZKhyFE7BpBBBEyTKv+rn1q1fciE7YOvuTCOchmMQ8vQxB8h7149254TfqSzIpMqWIC3Gb+riD0GJnZzCtxFMDeO+NVqNZEOb21Wlhz+4NEuK8IvpFXcZ/5VRjBHmTLZxyt4j0uI4byyyJcjBsDLMx/s/dAuy2izo50kWNAX1941xNm/ZRZO6r/WuUl5i5V/QxS+Y4AITOhDkEmIrSCTeuaD50KVkj//AF8AJww=
+sidebar_class_name: "put api-method"
+info_path: docs/api/fitme-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Mettre à jour les paramètres de l'utilisateur connecté"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"put"}
+  path={"/auth/settings"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Mettre à jour les paramètres de l'utilisateur connecté
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"settings":{"type":"object","properties":{"unitPreference":{"type":"string","example":"METRIC","enum":["METRIC","IMPERIAL"]},"notificationEnabled":{"type":"boolean","example":true},"notificationTime":{"type":"string","example":"08:00:00"}}},"reminders":{"description":"Rappels à mettre à jour","example":[{"type":"PERIOD_START","enabled":true,"time":"08:00:00"}],"type":"array","items":{"type":"string"}},"objectives":{"description":"Objectifs à mettre à jour","example":[{"type":"WEIGHT_LOSS","note":"Perdre 5kg en 3 mois"}],"type":"array","items":{"type":"string"}},"featureFlags":{"description":"Flags de fonctionnalités à mettre à jour","example":[{"feature":"ADVANCED_ANALYTICS","isEnabled":true}],"type":"array","items":{"type":"string"}}},"required":["settings"],"title":"UpdateSettingsDto"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  responses={{"200":{"description":"Paramètres mis à jour avec succès","content":{"application/json":{"schema":{"type":"object","properties":{"message":{"type":"string","example":"Paramètres mis à jour avec succès","description":"Message de confirmation"},"settings":{"type":"object","properties":{"unitPreference":{"type":"string","example":"METRIC"},"notificationEnabled":{"type":"boolean","example":true},"notificationTime":{"type":"string","example":"08:00:00"}}},"updatedReminders":{"type":"number","example":2,"description":"Nombre de rappels mis à jour"},"updatedObjectives":{"type":"number","example":1,"description":"Nombre d'objectifs mis à jour"},"updatedFeatureFlags":{"type":"number","example":3,"description":"Nombre de feature flags mis à jour"}},"required":["message","settings","updatedReminders","updatedObjectives","updatedFeatureFlags"],"title":"UpdateSettingsResponseDto"}}}},"400":{"description":"Données invalides ou erreur de validation"}}}
+ id="auth-controller-update-settings-responses">
+  
+</StatusCodes>
+
+
+      

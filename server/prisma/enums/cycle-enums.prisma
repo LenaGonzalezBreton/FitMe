@@ -1,8 +1,2 @@
 // Enumerations for cycle-related data
-
-enum CyclePhase {
-  MENSTRUAL
-  FOLLICULAR  
-  OVULATION
-  LUTEAL
-} 
+// Note: CyclePhase enum removed - using only cycle-based logic now 

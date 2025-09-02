@@ -1,0 +1,69 @@
+---
+id: auth-controller-get-preferences
+title: "Récupérer toutes les préférences de l'utilisateur connecté"
+description: "Récupérer toutes les préférences de l'utilisateur connecté"
+sidebar_label: "Récupérer toutes les préférences de l'utilisateur connecté"
+hide_title: true
+hide_table_of_contents: true
+api: eJylVcGO2kgQ/ZVWXXJxdshGK618QzNOwiqjIGA1kRAaNe0COmN3O9XVbBDy/4RLfsI/FpXNMIZESVY5YcrVr+u9elXeg6+QNFvvRjmkMIy8ufaOyRcF0v0aeUy4QkJnMEAClSZdIiMFSOeLBAhD5V3AAOke/hwM5CfHYMhWggkpjKk5rJpDh6Ai28IGzRhJUXMwsWoO1BwwKL1Fo0I0pvksFxnvGB0Lnq6qwpq2xqsPQUD3EMwGSy1PvKsQUvDLD2hYKiRhxLYraY0OSRc/T4zO9qj28gOTdWtIAD/psiokdJvNJqNrCblYQjp/Coxux9lkNHwLizoB59mujoVnTi8LzHu4S+8L1K4PzBTx4tzMlj8pZvB3OhikgwHUdZ3Af54efOTwPcI/6kv+DB2Tbr44LEX23g37I4LdilLzPVgxiok2v3/MSR7vustGr9/M7t++m06hJSLBMVJOqP56WCt06qUqvQ1Qt+Yprcs7L/0QNnufTa5H06yV/CikiJUAt/r0RFjUFwr+fylQnZ8/0+KXaxYjvLu5n86Gk9mv1J08ejU7z8xxpWPBs8sDwpPwY7QkufOT03seuBRiIfdy65reVE+OI3zDXlAFl/Va+LXbQE6dyzV5nFskxT4yBlVgUNWlisWz/rQb7xwabg6QQIm88SLdGttJ1LyBFK505M1VdbZvAtL2tGwCmkiWd1MZ/m5sl6gJ6bQR2sHqQsnx4ZWnUjOk8M/d7Kk7G+YKhKp1K9865CjMK8u3qIbj0TcuufEmymy0Ynb8huOR6g48V8OnLSUvV5YdhqCWOjQHVCGSKlCZnSlQleiCNFeaJew6/Bd/DI57TxvZe1Jd5QOXut14Trfsfl/8M1an0WD8xFdVoa2DOoFI7crsGjMHaUy7MZ9as0hg4wPL2/1+qQP+S0VdS/hjRNp1DdtqsmJm+VcnsEGdS7Pme3jAnXxtjMFKHLDVRZQqvln1Mhcnt7zOZlDXXwE/v1uL
+sidebar_class_name: "get api-method"
+info_path: docs/api/fitme-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Récupérer toutes les préférences de l'utilisateur connecté"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/auth/preferences"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Récupérer toutes les préférences de l'utilisateur connecté
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  responses={{"200":{"description":"Préférences utilisateur récupérées avec succès","content":{"application/json":{"schema":{"type":"object","properties":{"general":{"type":"object","properties":{"unitPreference":{"type":"string","example":"METRIC","enum":["METRIC","IMPERIAL"]},"notificationEnabled":{"type":"boolean","example":true},"notificationTime":{"type":"string","example":"08:00:00"}}},"workouts":{"type":"object","description":"Préférences d'entraînement","example":{"objectives":[{"id":"cuid_example","type":"WEIGHT_LOSS","note":"Perdre 5kg en 3 mois"}],"reminders":[{"id":"cuid_example","type":"EXERCISE","enabled":true,"time":"08:00:00"}]}},"notifications":{"type":"object","description":"Préférences de notifications","example":{"reminders":[{"id":"cuid_example","type":"PERIOD_START","enabled":true,"time":"08:00:00"}],"generalEnabled":true,"defaultTime":"08:00:00"}}},"required":["general","workouts","notifications"],"title":"PreferencesResponseDto"}}}}}}
+ id="auth-controller-get-preferences-responses">
+  
+</StatusCodes>
+
+
+      

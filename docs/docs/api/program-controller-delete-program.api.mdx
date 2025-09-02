@@ -1,0 +1,69 @@
+---
+id: program-controller-delete-program
+title: "Supprimer un programme"
+description: "Supprime définitivement un programme et ses exercices associés"
+sidebar_label: "Supprimer un programme"
+hide_title: true
+hide_table_of_contents: true
+api: eJytk9tu2zAMhl9F4M02QFuPO/muWFsgwwYEa4ddFMGgyEwtTJZUkQoaGH6f5jnyYgNjt12XoVe7skT5F8mPvzqICbNhF8OkhgqmOV5n036KgXP0HvPPGj0yjnHQUCPZ7JIooIKLklJ2Lap6s1644NgtscXAqgSVBk2LClkRksJbzNZZJGWIonWbNYGGZLJpkTETVFcdBNMiVOBq0JDxpriMNVScC2pwkjIZbnbqmJyqujxmBA1kG2wNVB3grWmTl0utbw4Oj47fvnv/4SNo4FWSKHF24Rr6fiYZKcVASCI83D+Wz9NM04euaOh9s1ZmiVZRsXZzR9BrON4/2hVuUSGRi0GFGJQpHLOjzRoHybO5RMA5luVmDX2vgc214Lr/g2CmoUVuogxxGNkWLTdQwd7IhfY6V/fCBvNy4D2TjS3Z8epCgA2Nz9FkzLLaUhRIY0iPi/OYW8NQwecfl48kG+a0Lc+FRRQ5O96CP3f8FdXJdLIzuNNoixhma0FVo/IvTqYTNQheq5OUvLMPhwvHAYnU3Ag3RSUrj8qurEfVYiCxiQcN0t1w/8GbfdBgY2BjGapOqkuRuDVBChzddm/j/MS3fxfbbe/BwP/H+CM0xlveS964ID4o2UuiYXJXcD850FC5WqbcRGI56bq5Ifyefd9L+KZgXg0DXZrszFy4X3VQO5J1DdXCeMJnOnr5bXxtr9Tua/pnrWPQhJUgN77IDjT8wtXwgvtZ/4ctT8++nF2eQd//Bh+0j9A=
+sidebar_class_name: "delete api-method"
+info_path: docs/api/fitme-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Supprimer un programme"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"delete"}
+  path={"/programs/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Supprime définitivement un programme et ses exercices associés
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"ID du programme","schema":{"example":"clh123456789","type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  responses={{"204":{"description":"Programme supprimé avec succès"},"403":{"description":"Suppression non autorisée"},"404":{"description":"Programme non trouvé"}}}
+ id="program-controller-delete-program-responses">
+  
+</StatusCodes>
+
+
+      

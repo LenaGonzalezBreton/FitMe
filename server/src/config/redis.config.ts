@@ -5,7 +5,7 @@ export const getRedisConfig = (
   configService: ConfigService,
 ): CacheModuleOptions => ({
   store: 'redis' as any,
-  host: configService.get<string>('REDIS_HOST'),
-  port: configService.get<number>('REDIS_PORT'),
+  host: configService.get<string>('REDIS_HOST') || 'localhost',
+  port: Number(configService.get<string>('REDIS_PORT')) || 6379,
   isGlobal: true,
 });

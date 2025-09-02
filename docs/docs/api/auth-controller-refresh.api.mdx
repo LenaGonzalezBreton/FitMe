@@ -5,7 +5,7 @@ description: "Rafraîchissement du token d'accès"
 sidebar_label: "Rafraîchissement du token d'accès"
 hide_title: true
 hide_table_of_contents: true
-api: eJytVEtP20AQ/iuruXAxSah6qW8plCpIBRRAPURRNV5P4gV71+wjkEb+P82FP5E/Vs065AEVrURziT2encf32AWYmix6ZfQghxT6wRfHRntrypLsD0sTS66ABGq0WJEn6yAdjROwdB/I+c8mn0O6iK/KUg6pt4ESkEZ70p4/YV2XSsYW3VtnNMecLKhCfvLzmiAFk92S9NzH8kBekWvLxv7X5o70TrbzVukpJECPWNUlh2h+VmRfpbpQZ4Obn4OjczVwnU4HEsjJSatq7g8pxFIiJ2FxYnH1JAvlHFWkvTj7fg1Nk+zsMtofYJyAVz62G+7ET7yBpmlPutpo187+oXfEf/vtz02YEYZH4fmkE9PVUq+WdrV08N9Aa0v/PQ+lJOfegW3c+L0ENZxUK0tusFtBhyoju1vhU6/3gp3xS7bWm+/wFAcbrmnZEvXxT9y8IQ2lZ1iqnIQJIk67WkapeJyyH6JtuO1+weGrOnloiRf5AUq5+sWsV+QLw96rjYskoS8ghS4GX3S3BnRkZxv3OZLBKj+/Ykm0bGaEluxGJ7z8OpSsH06NrdBDCiz05Bnowvs67sIyG25d/eUZ95cufItJpScmkriG/1T5byT6l4NXPjwxMjAkUeIMennQvxyI9sCh6G/1zx8nymtyTmToVksSLlhRkpBzWZKoSDu+dEpIgBFq6x91emtHoWRH8YYMcIVRZRojQv/G0N7kG4V6evTdukSlefNgS/7WkjcCJg829mBpFMxuOoLFIkNHN7ZsGg7fB7LzltQZWoUZ4zYaNwkUhDkTOlrAHc0hheP2eji85v6cXgae49VV0STPJ/pSUu3fzB3vCPDy4oqFka3v9MrkfMbiA2+CD5ACJGAiDu3tzLEFlKinAaec29bk329o1Dk9
+api: eJytVM1O20AQfpXVXLiYJFS91LcUShWkAgqgHqKoWq8n8YK9a3ZnA2nk92kufYm8WDXr/JaKVqK5xB7Pzs/3swuwNTpJ2ppBDin0AxWn1pCzZYnum8OJQ19AArV0skJC5yEdjRNw+BjQ00ebzyFdxFftMIeUXMAElDWEhviTrOtSq9iie++t4ZhXBVaSn2heI6Rgs3tUxH0cD0QafVs29r+1D2j2sj05baaQAD7Lqi45hPOLIvus9JW+GNx9H5xc6oHvdDqQQI5eOV1zf0ghlhI5CicnTq5+qkJ7jxUaEhdfb6Fpkr1dRocDjBMgTbHdcC9+Rhaapj3pa2t8O/u73gn/Hba/tGGGMjwL4pNeTFdLs1q61dLDfwOtLf33PKkUev8GbOPGbyWo4aRaO/SD/QomVBm6/Qofer0Nyjt+1rvuMRNHGa6J2FHz/k9svCIGbWay1DkKG0Scb7WM4iA5ZQdEo3Dbw4LDF3Xy0FIt8iOp1OoH81whFZbdVlsfaZFUQApdGajo7izn0c22fvOogtM0v2ERtPxlKB26rTJ4+XUoWT+cW1dJghRY2skG2oKojruwsIY7H3/aIP27717jTpuJjbSt4T/X9AVF/3rwwnlnVgWGJIqaQS+P+tcD0R44Fv2d4vnjRJNB70Um/WqJwgcnShRqrkoUFRrP10wJCTBCbf2TTm/tIanYQ7whA1zJqCsjI0L/xtDB5FtNEj5Tty6lNrx5cCV/a8kbAZMHW0OwNApmNx3BYpFJj3eubBoOPwZ085bUmXRaZozbaNwkUKDMmdDRAh5wDimcthfC8S335/Qy8BwvLocm2ZzoK4U1vZo73hPg9dUNCyNb3+KVzfmMk0+8iXyCFCABG3Fo72OOLaCUZhrklHPbmvz7Bc3HNHo=
 sidebar_class_name: "post api-method"
 info_path: docs/api/fitme-api
 custom_edit_url: null
@@ -60,7 +60,7 @@ Rafraîchissement du token d'accès
 </RequestSchema>
 
 <StatusCodes
-  responses={{"201":{"description":"Nouveaux tokens générés","content":{"application/json":{"schema":{"type":"object","properties":{"tokens":{"type":"object","properties":{"accessToken":{"type":"string","example":"eyJhbGciOiJIUzI1NiIs..."},"refreshToken":{"type":"string","example":"eyJhbGciOiJIUzI1NiIs..."},"expiresIn":{"type":"number","example":900}},"required":[]}},"required":["tokens"],"title":"TokenResponseDto"}}}},"401":{"description":"Token de rafraîchissement invalide ou expiré"}}}
+  responses={{"201":{"description":"Nouveaux tokens générés","content":{"application/json":{"schema":{"type":"object","properties":{"tokens":{"type":"object","properties":{"accessToken":{"type":"string","example":"eyJhbGciOiJIUzI1NiIs..."},"refreshToken":{"type":"string","example":"eyJhbGciOiJIUzI1NiIs..."},"expiresIn":{"type":"number","example":900}}}},"required":["tokens"],"title":"TokenResponseDto"}}}},"401":{"description":"Token de rafraîchissement invalide ou expiré"}}}
  id="auth-controller-refresh-responses">
   
 </StatusCodes>

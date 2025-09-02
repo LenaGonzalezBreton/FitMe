@@ -1,0 +1,69 @@
+---
+id: auth-controller-update-profile
+title: "Mettre à jour le profil de l'utilisateur connecté"
+description: "Mettre à jour le profil de l'utilisateur connecté"
+sidebar_label: "Mettre à jour le profil de l'utilisateur connecté"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVs1uIjkQfhXLl81IzYTs7hyG0zBJM8NuICgkihCKkHEXwdluu8cuM4MQ77LHzXPwYqOym7+wIkp2OTTddvmr6qrvq+oFNyVYgcrodsYbvOlxem40WpPnYEe+zARCz5qJyoEnvBRWFIBgHW8M7xNu4ZsHh59NNueNRXhUFjLeQOsh4dJoBI20JcoyVzI4On10RtOak1MoBN3hvATe4Gb8CBLJj6WwUIGj3YmyDruigB1Th1bpB55w+CGKMqelP4SmGDNw0qqSPPEG79nVkzYFXyZ8rCxOLwS+AHP28WO9Vv9QO/twAEaHWQZMC+Wc0BLYycTYQiAbDAaDWqdTu7h4R67KmLGb4OSYs1baaV6mB47oIDmKOOwkmiUsXrtX3dHndrd5PUjY1c3X9PodYWpf8MZwi1j9bY15woM1v19WpfmBL0d4Pjg/EmAFA+wk2CXsS9pNr5uXCeuk3ate87Yf4013Q1xDVrYU69o4BpyGECMb1OyFAO/S9pevN6PLq37/IMyrCDFhpVVaqlLkVB1XGoutwF0t58fRfxvdtDtpf3SXpn8ewLfs6imAhFwEWMJXrgPalMI7ke+gj43JQehd+InIHTxH7aNAj6wg4hII8OUy4agwBHS7K8kLNHy5pG0LrjTaRcH8Wq/T33MlBC4VyrHV3+zReMvEDCRzXsrVP47/b3L1DuzLVio7nnjpVTZaPy4TDoVQ+fEj5PhT9fheRtG/pne8qUe8Qe2vl9/b1PBfqP56Gq95uB4Bw0iE+y11K9JeV1Tdkvf3f+PrhdF69QSOKT0TucrAMeMZWAvektzCYmBo1Id4oKEUJhg53QfrAKKFDfHzTWvNgOW/eFS5cgIJWRqtQeLqiSe8AJwaGoulDwQWOOUNfio8Tk/LzVB0YGebiehAeqtw3iexRKaPQdioiKCgkMO4lFQ3rTBEiIZ3NzxZJ3qKWIZXIwFebydtuk773mRcj78dBu+Psj2WbsfEHhM3rXmHbc8a7HNGPe+Q+6yJzEi40hMTOFRRoaWwA6zZax/OWCN9ARpDZWN5mr02iwdqrLltTLQ5UajBOTYWbvUEzMXayrnMgRWgHX2H5DzhVKCIf/a+Xr21kNTqKMGlcViI0OR0TObb+LL3JhvBUHpPy1woTaryNogpcmnIiUvb4hBxp8Yh7SwWY+Hg1ubLJS1/82DnkWMzYZUYUx6HNCenIDLi13DB/wKqyHns47VQUzLPPcVx0NOXyfpEU0oo8ajt/Y4cerdE03H11VeYjI5Y8Z0n4drgxKCQhiCAsLbgudAPXjyQbYSk308LEY7Y
+sidebar_class_name: "put api-method"
+info_path: docs/api/fitme-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Mettre à jour le profil de l'utilisateur connecté"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"put"}
+  path={"/auth/profile"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Mettre à jour le profil de l'utilisateur connecté
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"firstName":{"type":"string","example":"Jane","description":"Prénom"},"birthDate":{"type":"string","example":"1990-05-15","description":"Date de naissance (format YYYY-MM-DD)"},"profileType":{"type":"string","example":"FEMALE","description":"Type de profil (FEMALE, MALE, NON_BINARY, OTHER)","enum":["FEMALE","MALE","NON_BINARY","OTHER"]},"contextType":{"type":"string","example":"CYCLE","description":"Type de contexte (CYCLE, GENERAL, MENOPAUSE, NONE)","enum":["CYCLE","GENERAL","MENOPAUSE","NONE"]},"objective":{"type":"string","example":"WEIGHT_LOSS","description":"Objectif principal"},"sportFrequency":{"type":"string","example":"3_TIMES_WEEK","description":"Fréquence de sport"},"isMenopausal":{"type":"boolean","example":false,"description":"Statut ménopause"}},"title":"UpdateProfileDto"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  responses={{"200":{"description":"Profil mis à jour avec succès","content":{"application/json":{"schema":{"type":"object","properties":{"user":{"type":"object","properties":{"id":{"type":"string","example":"cuid_example"},"email":{"type":"string","example":"user@example.com"},"firstName":{"type":"string","example":"Jane"},"birthDate":{"type":"string","example":"1990-05-15"},"profileType":{"type":"string","example":"FEMALE"},"contextType":{"type":"string","example":"CYCLE"},"objective":{"type":"string","example":"WEIGHT_LOSS"},"sportFrequency":{"type":"string","example":"3_TIMES_WEEK"},"isMenopausal":{"type":"boolean","example":false}}}},"required":["user"],"title":"ProfileResponseDto"}}}},"400":{"description":"Données invalides ou erreur de validation"}}}
+ id="auth-controller-update-profile-responses">
+  
+</StatusCodes>
+
+
+      

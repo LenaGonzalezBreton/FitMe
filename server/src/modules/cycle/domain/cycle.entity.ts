@@ -1,10 +1,3 @@
-export enum CyclePhase {
-  MENSTRUAL = 'MENSTRUAL',
-  FOLLICULAR = 'FOLLICULAR',
-  OVULATION = 'OVULATION',
-  LUTEAL = 'LUTEAL',
-}
-
 export class Cycle {
   constructor(
     public readonly id: string,
@@ -20,36 +13,14 @@ export class Cycle {
   ) {}
 
   /**
-   * Calcule la phase actuelle du cycle en fonction de la date donnée
+   * Calcule le jour actuel dans le cycle
    */
-  getCurrentPhase(currentDate: Date = new Date()): CyclePhase {
+  getCurrentCycleDay(currentDate: Date = new Date()): number {
     const daysSinceStart = Math.floor(
       (currentDate.getTime() - this.startDate.getTime()) /
         (1000 * 60 * 60 * 24),
     );
-
-    const cycleLength = this.cycleLength || 28;
-    const periodLength = this.periodLength || 5;
-
-    const dayInCycle = daysSinceStart % cycleLength;
-
-    // Phase menstruelle : jours 1-5 (par défaut)
-    if (dayInCycle < periodLength) {
-      return CyclePhase.MENSTRUAL;
-    }
-
-    // Phase folliculaire : jours 6-13 (par défaut)
-    if (dayInCycle < Math.floor(cycleLength / 2) - 2) {
-      return CyclePhase.FOLLICULAR;
-    }
-
-    // Phase d'ovulation : jours 14-16 (par défaut)
-    if (dayInCycle < Math.floor(cycleLength / 2) + 2) {
-      return CyclePhase.OVULATION;
-    }
-
-    // Phase lutéale : jours 17-28 (par défaut)
-    return CyclePhase.LUTEAL;
+    return daysSinceStart + 1;
   }
 
   /**
@@ -66,53 +37,101 @@ export class Cycle {
    * Vérifie si le cycle est en cours
    */
   isCurrentCycle(currentDate: Date = new Date()): boolean {
-    const nextCycleStart = this.getNextCycleStart();
-    return currentDate >= this.startDate && currentDate < nextCycleStart;
-  }
-}
-
-export class CycleProfileConfig {
-  constructor(
-    public readonly id: string,
-    public readonly userId: string,
-    public readonly isCycleTrackingEnabled: boolean = true,
-    public readonly usesExternalProvider: boolean = false,
-    public readonly useMenopauseMode: boolean = false,
-    public readonly averageCycleLength: number = 28,
-    public readonly averagePeriodLength: number = 5,
-    public readonly prefersManualInput: boolean = false,
-    public readonly createdAt?: Date,
-    public readonly updatedAt?: Date,
-  ) {}
-}
-
-export class Phase {
-  constructor(
-    public readonly id: string,
-    public readonly cycleId: string,
-    public readonly name: CyclePhase,
-    public readonly startDate: Date,
-    public readonly endDate: Date,
-    public readonly createdAt?: Date,
-    public readonly updatedAt?: Date,
-  ) {}
-
-  /**
-   * Vérifie si la phase est active à la date donnée
-   */
-  isActiveAt(date: Date): boolean {
-    return date >= this.startDate && date <= this.endDate;
+    // A cycle is considered current if:
+    // 1. The current date is after the start date, AND
+    // 2. Either we're within the expected cycle length OR no new cycle has started
+    const daysSinceStart = Math.floor((currentDate.getTime() - this.startDate.getTime()) / (1000 * 60 * 60 * 24));
+    const cycleLength = this.cycleLength || 28;
+    
+    // If we're within a reasonable range (up to 1.5x the cycle length), consider it current
+    // This handles cases where cycles are longer than expected
+    return daysSinceStart >= 0 && daysSinceStart <= (cycleLength * 1.5);
   }
 
   /**
-   * Calcule la durée de la phase en jours
+   * Valide les paramètres du cycle
    */
-  getDurationInDays(): number {
-    return (
-      Math.floor(
-        (this.endDate.getTime() - this.startDate.getTime()) /
-          (1000 * 60 * 60 * 24),
-      ) + 1
+  static validateCycleParameters(cycleLength: number, periodLength: number): boolean {
+    // Vérifier que la durée du cycle est dans les limites normales (21-35 jours)
+    if (cycleLength < 21 || cycleLength > 35) {
+      return false;
+    }
+    
+    // Vérifier que la durée des règles est dans les limites normales (2-8 jours)
+    if (periodLength < 2 || periodLength > 8) {
+      return false;
+    }
+    
+    // Vérifier que la durée des règles ne dépasse pas la durée du cycle
+    if (periodLength >= cycleLength) {
+      return false;
+    }
+    
+    return true;
+  }
+
+  /**
+   * Calcule le jour d'ovulation prévu
+   */
+  getOvulationDay(): number {
+    const cycleLength = this.cycleLength || 28;
+    // L'ovulation se produit généralement 14 jours avant les prochaines règles
+    return cycleLength - 14;
+  }
+
+  /**
+   * Détermine si une date est dans la période fertile
+   */
+  isFertileDay(date: Date): boolean {
+    const daysSinceStart = Math.floor(
+      (date.getTime() - this.startDate.getTime()) /
+        (1000 * 60 * 60 * 24),
     );
+    
+    const cycleLength = this.cycleLength || 28;
+    const dayInCycle = daysSinceStart + 1;
+    const ovulationDay = this.getOvulationDay();
+    
+    // Période fertile : 5 jours avant l'ovulation jusqu'à 2 jours après
+    return dayInCycle >= ovulationDay - 5 && dayInCycle <= ovulationDay + 2;
+  }
+
+  /**
+   * Détermine si une date est pendant les règles
+   */
+  isPeriodDay(date: Date): boolean {
+    const dayInCycle = this.getCurrentCycleDay(date);
+    const periodLength = this.periodLength || 5;
+    return dayInCycle <= periodLength;
+  }
+
+  /**
+   * Détermine si une date est dans la phase post-règles (énergie croissante)
+   */
+  isPostPeriodPhase(date: Date): boolean {
+    const dayInCycle = this.getCurrentCycleDay(date);
+    const periodLength = this.periodLength || 5;
+    const ovulationDay = this.getOvulationDay();
+    return dayInCycle > periodLength && dayInCycle < ovulationDay - 2;
+  }
+
+  /**
+   * Détermine si une date est dans la phase d'ovulation
+   */
+  isOvulationPhase(date: Date): boolean {
+    const dayInCycle = this.getCurrentCycleDay(date);
+    const ovulationDay = this.getOvulationDay();
+    return dayInCycle >= ovulationDay - 2 && dayInCycle <= ovulationDay + 2;
+  }
+
+  /**
+   * Détermine si une date est dans la phase post-ovulation
+   */
+  isPostOvulationPhase(date: Date): boolean {
+    const dayInCycle = this.getCurrentCycleDay(date);
+    const ovulationDay = this.getOvulationDay();
+    return dayInCycle > ovulationDay + 2;
   }
 }
+
+

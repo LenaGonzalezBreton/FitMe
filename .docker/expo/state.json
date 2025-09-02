@@ -1,9 +1,0 @@
-{
-  "uuid": "16de097b-0e30-4cff-b191-841e032a04f4",
-  "auth": {
-    "sessionSecret": "{\"id\":\"aa574f57-4614-405f-a919-5d6e4ee70127\",\"version\":1,\"expires_at\":2068070400000}",
-    "userId": "9b1c598e-f786-499c-9cee-eef6f5b53a89",
-    "username": "littlemoonie",
-    "currentConnection": "Username-Password-Authentication"
-  }
-}

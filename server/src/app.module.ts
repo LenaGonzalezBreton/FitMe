@@ -10,6 +10,11 @@ import { AuthModule } from './modules/auth/auth.module';
 import { CycleModule } from './modules/cycle/cycle.module';
 import { ExerciseModule } from './modules/exercise/exercise.module';
 import { ProgramModule } from './modules/program/program.module';
+import { WorkoutModule } from './modules/workout/workout.module';
+import { StreakModule } from './modules/streak/streak.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { NotificationModule } from './modules/notification/notification.module';
+import { UserPreferencesModule } from './modules/user-preferences/user-preferences.module';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { CoreModule } from './core/core.module';
 
@@ -17,7 +22,10 @@ import { CoreModule } from './core/core.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: 'server/.env',
+      // Support env files from multiple locations to allow root-level .env usage
+      // Load order: root .env (when launched from repo root), server/.env (when launched from root),
+      // and local .env in server (when launched from server dir)
+      envFilePath: ['.env', 'server/.env', '../.env'],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -36,6 +44,11 @@ import { CoreModule } from './core/core.module';
     CycleModule,
     ExerciseModule,
     ProgramModule,
+    WorkoutModule,
+    StreakModule,
+    AnalyticsModule,
+    NotificationModule,
+    UserPreferencesModule,
     CoreModule,
   ],
   controllers: [],

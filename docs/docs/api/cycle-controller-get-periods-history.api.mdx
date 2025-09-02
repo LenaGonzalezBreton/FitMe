@@ -1,0 +1,69 @@
+---
+id: cycle-controller-get-periods-history
+title: "Récupérer l'historique des règles"
+description: "Liste chronologique des règles avec statistiques"
+sidebar_label: "Récupérer l'historique des règles"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVm1v2zYQ/isCv3QDlMRx6y3ztyBZNw9NYWQZhiwwClo6y0woUiGPaQxB/2Uf69/hPzYcKdlS7MZtMsCAbYl3z/Ge515KpgswHIVWo5QN2dkikXCmFRotJZhPGeAYjNCp/V1Y1GbBYpaCTYwoyIYN2QdhEaJkbrTSUmfi3kGUgo3M6ksmwUb8AZLIIkdhkV5aFrOCG54DgrFseFMyxXNgQyZFLpDFzMC9EwZSNpxxaSFmgnDuHexA/6jzqSHAKKHIbbT6NzKA2hkFhsXMJnPIORuWDBcFgSiXT8GwqorXuHo2s/B/AItMafPNsDOj83OO8J3AZEKw6Wo5dRj9cH19fX1wcXFwfv7jLmCLRqisA4z6FbAzob4dc0IYttDKgqX3/V6Pvrqeg7C8bsxqmbhitTSrZa0blySrLySZRCsEhWTOi0KKxGv26NaSj3I7Bj29hYRILQwpHEWIoAhi3o4iyJiEG/g8qvXL4sYjN4ZTXgRCbvcjiXQ7I0+TOkpBoZgJrjBKXUBmMYNHnheS7PyTT8f9t+8GP/188gurYmaRG/QE7nX/RCqtquyA9Hv9dwe944PjwVWvN/Sfw16v9w+hhXx9AJXhfFvOW4DOrJbd8gcV3WpnOoiDKg43+06/qJFLWGdqp+/+SRUzYS8hc5Kbluup1hK42vLtOx4pL3NSeOy1LzQOqpjNpP48IvVZgYv9wTZHV0uKdCbdY5TrBSjVofZtFTOlEex+Gj/Sscg6EyWwQyPhAkqbnMs4Krj1TUnn6yKxVP2tYr8hbbaF1E7YJGYo0DsOjf8ctbf3yd9/+7ov+tOb7tgO+LhfxYw/gOEZnL1ABXUydxZM/+RwsPE+fol41+53V8vgsO+T6bMlcDEGk4BCnsF+hLF2zeHW4FhLr4NzMjgcPKWtaV4NGTvTuPv2Xwl5i+1mzF/WbTuwX3kB8IzGddAbWVpInPElcVOyKXAafcObCXX9HHCuaZ/I/GAtOBHAjvyNjzbXsGAewhLQcvcntfJQF43Tur/7Mg6P4vrHe5I9siH74++rTaueIxZetELNtOelvuR7gRcQnY5H2+zrxOWUFfpP7Mg3p+NRFAwOotPNzAlTEBVYG025Jc1Qbcqa0CgHZalzED90u+D/+LBXTzGe0BSj6AptMed+ftWj+bIZgGAi+Wa+mYxdNXZCLzez8UXLWJ0zhEc8KiQXivq+M77WA3E3rCm0hrpJzObaIr0qyym38JeRVUWPw/ZAikiF5VPZ2i6+GvW+JW5nhHewaO2MD1w6OsNoz3kd8maLewZ3vTO+EPj5Le4Z4NbW+EroHZvcM7jrpXGDOqE/RhCsr/uYzYGnvgmUtdVpkkDRTtPW7tbpFr/9SkXMXaddP6l4771ZydSi5bssw4krfQeqqtgm9DsgoKqq/gO1J4Me
+sidebar_class_name: "get api-method"
+info_path: docs/api/fitme-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Récupérer l'historique des règles"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/cycle/periods"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Liste chronologique des règles avec statistiques
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"limit","required":false,"in":"query","description":"Nombre de cycles à retourner","schema":{"type":"number"}},{"name":"offset","required":false,"in":"query","description":"Nombre de cycles à ignorer","schema":{"type":"number"}},{"name":"fromDate","required":false,"in":"query","description":"Date de début (YYYY-MM-DD)","schema":{"type":"string"}},{"name":"toDate","required":false,"in":"query","description":"Date de fin (YYYY-MM-DD)","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  responses={{"200":{"description":"Historique récupéré avec succès","content":{"application/json":{"schema":{"type":"object","properties":{"periods":{"description":"Liste des cycles/règles","type":"array","items":{"type":"object","properties":{"id":{"type":"string","description":"Identifiant du cycle","example":"cycle_123456789"},"startDate":{"type":"string","description":"Date de début des règles","example":"2024-01-15T00:00:00.000Z"},"periodLength":{"type":"number","description":"Durée des règles en jours","example":5},"cycleLength":{"type":"number","description":"Durée totale du cycle en jours","example":28},"isRegular":{"type":"boolean","description":"Cycle régulier","example":true},"flowIntensity":{"type":"number","description":"Intensité du flux moyenne","example":3},"notes":{"type":"string","description":"Notes sur ce cycle","example":"Cycle normal, pas de complications"}},"required":["id","startDate","isRegular"],"title":"PeriodDto"}},"total":{"type":"number","description":"Nombre total de cycles","example":12},"averageCycleLength":{"type":"number","description":"Durée moyenne du cycle","example":28.5},"averagePeriodLength":{"type":"number","description":"Durée moyenne des règles","example":5.2},"regularityPercentage":{"type":"number","description":"Pourcentage de cycles réguliers","example":85.5}},"required":["periods","total","averageCycleLength","averagePeriodLength","regularityPercentage"],"title":"PeriodsHistoryResponseDto"}}}}}}
+ id="cycle-controller-get-periods-history-responses">
+  
+</StatusCodes>
+
+
+      

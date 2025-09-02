@@ -4,7 +4,7 @@
 **/
 
 import * as runtime from './runtime/library.js';
-import $Types = runtime.Types // general types
+import $Types = runtime.Types
 import $Public = runtime.Types.Public
 import $Utils = runtime.Types.Utils
 import $Extensions = runtime.Types.Extensions
@@ -8311,11 +8311,11 @@ export namespace Prisma {
   }
 
   export type ExerciseAvgAggregateOutputType = {
-    durationMinutes: number | null
+    duration: number | null
   }
 
   export type ExerciseSumAggregateOutputType = {
-    durationMinutes: number | null
+    duration: number | null
   }
 
   export type ExerciseMinAggregateOutputType = {
@@ -8323,7 +8323,7 @@ export namespace Prisma {
     title: string | null
     description: string | null
     imageUrl: string | null
-    durationMinutes: number | null
+    duration: number | null
     intensity: $Enums.Intensity | null
     muscleZone: $Enums.MuscleZone | null
     createdAt: Date | null
@@ -8335,7 +8335,7 @@ export namespace Prisma {
     title: string | null
     description: string | null
     imageUrl: string | null
-    durationMinutes: number | null
+    duration: number | null
     intensity: $Enums.Intensity | null
     muscleZone: $Enums.MuscleZone | null
     createdAt: Date | null
@@ -8347,7 +8347,7 @@ export namespace Prisma {
     title: number
     description: number
     imageUrl: number
-    durationMinutes: number
+    duration: number
     intensity: number
     muscleZone: number
     createdAt: number
@@ -8357,11 +8357,11 @@ export namespace Prisma {
 
 
   export type ExerciseAvgAggregateInputType = {
-    durationMinutes?: true
+    duration?: true
   }
 
   export type ExerciseSumAggregateInputType = {
-    durationMinutes?: true
+    duration?: true
   }
 
   export type ExerciseMinAggregateInputType = {
@@ -8369,7 +8369,7 @@ export namespace Prisma {
     title?: true
     description?: true
     imageUrl?: true
-    durationMinutes?: true
+    duration?: true
     intensity?: true
     muscleZone?: true
     createdAt?: true
@@ -8381,7 +8381,7 @@ export namespace Prisma {
     title?: true
     description?: true
     imageUrl?: true
-    durationMinutes?: true
+    duration?: true
     intensity?: true
     muscleZone?: true
     createdAt?: true
@@ -8393,7 +8393,7 @@ export namespace Prisma {
     title?: true
     description?: true
     imageUrl?: true
-    durationMinutes?: true
+    duration?: true
     intensity?: true
     muscleZone?: true
     createdAt?: true
@@ -8492,7 +8492,7 @@ export namespace Prisma {
     title: string
     description: string | null
     imageUrl: string | null
-    durationMinutes: number | null
+    duration: number | null
     intensity: $Enums.Intensity | null
     muscleZone: $Enums.MuscleZone | null
     createdAt: Date
@@ -8523,7 +8523,7 @@ export namespace Prisma {
     title?: boolean
     description?: boolean
     imageUrl?: boolean
-    durationMinutes?: boolean
+    duration?: boolean
     intensity?: boolean
     muscleZone?: boolean
     createdAt?: boolean
@@ -8539,7 +8539,7 @@ export namespace Prisma {
     title?: boolean
     description?: boolean
     imageUrl?: boolean
-    durationMinutes?: boolean
+    duration?: boolean
     intensity?: boolean
     muscleZone?: boolean
     createdAt?: boolean
@@ -8551,7 +8551,7 @@ export namespace Prisma {
     title?: boolean
     description?: boolean
     imageUrl?: boolean
-    durationMinutes?: boolean
+    duration?: boolean
     intensity?: boolean
     muscleZone?: boolean
     createdAt?: boolean
@@ -8563,14 +8563,14 @@ export namespace Prisma {
     title?: boolean
     description?: boolean
     imageUrl?: boolean
-    durationMinutes?: boolean
+    duration?: boolean
     intensity?: boolean
     muscleZone?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ExerciseOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "imageUrl" | "durationMinutes" | "intensity" | "muscleZone" | "createdAt" | "updatedAt", ExtArgs["result"]["exercise"]>
+  export type ExerciseOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "imageUrl" | "duration" | "intensity" | "muscleZone" | "createdAt" | "updatedAt", ExtArgs["result"]["exercise"]>
   export type ExerciseInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     exerciseTags?: boolean | Exercise$exerciseTagsArgs<ExtArgs>
     phaseExercises?: boolean | Exercise$phaseExercisesArgs<ExtArgs>
@@ -8592,7 +8592,7 @@ export namespace Prisma {
       title: string
       description: string | null
       imageUrl: string | null
-      durationMinutes: number | null
+      duration: number | null
       intensity: $Enums.Intensity | null
       muscleZone: $Enums.MuscleZone | null
       createdAt: Date
@@ -9027,7 +9027,7 @@ export namespace Prisma {
     readonly title: FieldRef<"Exercise", 'String'>
     readonly description: FieldRef<"Exercise", 'String'>
     readonly imageUrl: FieldRef<"Exercise", 'String'>
-    readonly durationMinutes: FieldRef<"Exercise", 'Int'>
+    readonly duration: FieldRef<"Exercise", 'Int'>
     readonly intensity: FieldRef<"Exercise", 'Intensity'>
     readonly muscleZone: FieldRef<"Exercise", 'MuscleZone'>
     readonly createdAt: FieldRef<"Exercise", 'DateTime'>
@@ -24903,6 +24903,7 @@ export namespace Prisma {
     id: string | null
     userId: string | null
     unitPreference: $Enums.UnitPreference | null
+
     notificationEnabled: boolean | null
     notificationTime: Date | null
     createdAt: Date | null
@@ -31931,7 +31932,7 @@ export namespace Prisma {
     title: 'title',
     description: 'description',
     imageUrl: 'imageUrl',
-    durationMinutes: 'durationMinutes',
+    duration: 'duration',
     intensity: 'intensity',
     muscleZone: 'muscleZone',
     createdAt: 'createdAt',
@@ -32936,7 +32937,7 @@ export namespace Prisma {
     title?: StringFilter<"Exercise"> | string
     description?: StringNullableFilter<"Exercise"> | string | null
     imageUrl?: StringNullableFilter<"Exercise"> | string | null
-    durationMinutes?: IntNullableFilter<"Exercise"> | number | null
+    duration?: IntNullableFilter<"Exercise"> | number | null
     intensity?: EnumIntensityNullableFilter<"Exercise"> | $Enums.Intensity | null
     muscleZone?: EnumMuscleZoneNullableFilter<"Exercise"> | $Enums.MuscleZone | null
     createdAt?: DateTimeFilter<"Exercise"> | Date | string
@@ -32951,7 +32952,7 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrderInput | SortOrder
     imageUrl?: SortOrderInput | SortOrder
-    durationMinutes?: SortOrderInput | SortOrder
+    duration?: SortOrderInput | SortOrder
     intensity?: SortOrderInput | SortOrder
     muscleZone?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -32969,7 +32970,7 @@ export namespace Prisma {
     title?: StringFilter<"Exercise"> | string
     description?: StringNullableFilter<"Exercise"> | string | null
     imageUrl?: StringNullableFilter<"Exercise"> | string | null
-    durationMinutes?: IntNullableFilter<"Exercise"> | number | null
+    duration?: IntNullableFilter<"Exercise"> | number | null
     intensity?: EnumIntensityNullableFilter<"Exercise"> | $Enums.Intensity | null
     muscleZone?: EnumMuscleZoneNullableFilter<"Exercise"> | $Enums.MuscleZone | null
     createdAt?: DateTimeFilter<"Exercise"> | Date | string
@@ -32984,7 +32985,7 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrderInput | SortOrder
     imageUrl?: SortOrderInput | SortOrder
-    durationMinutes?: SortOrderInput | SortOrder
+    duration?: SortOrderInput | SortOrder
     intensity?: SortOrderInput | SortOrder
     muscleZone?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -33004,7 +33005,7 @@ export namespace Prisma {
     title?: StringWithAggregatesFilter<"Exercise"> | string
     description?: StringNullableWithAggregatesFilter<"Exercise"> | string | null
     imageUrl?: StringNullableWithAggregatesFilter<"Exercise"> | string | null
-    durationMinutes?: IntNullableWithAggregatesFilter<"Exercise"> | number | null
+    duration?: IntNullableWithAggregatesFilter<"Exercise"> | number | null
     intensity?: EnumIntensityNullableWithAggregatesFilter<"Exercise"> | $Enums.Intensity | null
     muscleZone?: EnumMuscleZoneNullableWithAggregatesFilter<"Exercise"> | $Enums.MuscleZone | null
     createdAt?: DateTimeWithAggregatesFilter<"Exercise"> | Date | string
@@ -34711,7 +34712,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     imageUrl?: string | null
-    durationMinutes?: number | null
+    duration?: number | null
     intensity?: $Enums.Intensity | null
     muscleZone?: $Enums.MuscleZone | null
     createdAt?: Date | string
@@ -34726,7 +34727,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     imageUrl?: string | null
-    durationMinutes?: number | null
+    duration?: number | null
     intensity?: $Enums.Intensity | null
     muscleZone?: $Enums.MuscleZone | null
     createdAt?: Date | string
@@ -34741,7 +34742,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    durationMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
     intensity?: NullableEnumIntensityFieldUpdateOperationsInput | $Enums.Intensity | null
     muscleZone?: NullableEnumMuscleZoneFieldUpdateOperationsInput | $Enums.MuscleZone | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -34756,7 +34757,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    durationMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
     intensity?: NullableEnumIntensityFieldUpdateOperationsInput | $Enums.Intensity | null
     muscleZone?: NullableEnumMuscleZoneFieldUpdateOperationsInput | $Enums.MuscleZone | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -34771,7 +34772,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     imageUrl?: string | null
-    durationMinutes?: number | null
+    duration?: number | null
     intensity?: $Enums.Intensity | null
     muscleZone?: $Enums.MuscleZone | null
     createdAt?: Date | string
@@ -34783,7 +34784,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    durationMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
     intensity?: NullableEnumIntensityFieldUpdateOperationsInput | $Enums.Intensity | null
     muscleZone?: NullableEnumMuscleZoneFieldUpdateOperationsInput | $Enums.MuscleZone | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -34795,7 +34796,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    durationMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
     intensity?: NullableEnumIntensityFieldUpdateOperationsInput | $Enums.Intensity | null
     muscleZone?: NullableEnumMuscleZoneFieldUpdateOperationsInput | $Enums.MuscleZone | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -36671,7 +36672,7 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrder
     imageUrl?: SortOrder
-    durationMinutes?: SortOrder
+    duration?: SortOrder
     intensity?: SortOrder
     muscleZone?: SortOrder
     createdAt?: SortOrder
@@ -36679,7 +36680,7 @@ export namespace Prisma {
   }
 
   export type ExerciseAvgOrderByAggregateInput = {
-    durationMinutes?: SortOrder
+    duration?: SortOrder
   }
 
   export type ExerciseMaxOrderByAggregateInput = {
@@ -36687,7 +36688,7 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrder
     imageUrl?: SortOrder
-    durationMinutes?: SortOrder
+    duration?: SortOrder
     intensity?: SortOrder
     muscleZone?: SortOrder
     createdAt?: SortOrder
@@ -36699,7 +36700,7 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrder
     imageUrl?: SortOrder
-    durationMinutes?: SortOrder
+    duration?: SortOrder
     intensity?: SortOrder
     muscleZone?: SortOrder
     createdAt?: SortOrder
@@ -36707,7 +36708,7 @@ export namespace Prisma {
   }
 
   export type ExerciseSumOrderByAggregateInput = {
-    durationMinutes?: SortOrder
+    duration?: SortOrder
   }
 
   export type EnumIntensityNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -40781,7 +40782,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     imageUrl?: string | null
-    durationMinutes?: number | null
+    duration?: number | null
     intensity?: $Enums.Intensity | null
     muscleZone?: $Enums.MuscleZone | null
     createdAt?: Date | string
@@ -40795,7 +40796,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     imageUrl?: string | null
-    durationMinutes?: number | null
+    duration?: number | null
     intensity?: $Enums.Intensity | null
     muscleZone?: $Enums.MuscleZone | null
     createdAt?: Date | string
@@ -40846,7 +40847,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    durationMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
     intensity?: NullableEnumIntensityFieldUpdateOperationsInput | $Enums.Intensity | null
     muscleZone?: NullableEnumMuscleZoneFieldUpdateOperationsInput | $Enums.MuscleZone | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -40860,7 +40861,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    durationMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
     intensity?: NullableEnumIntensityFieldUpdateOperationsInput | $Enums.Intensity | null
     muscleZone?: NullableEnumMuscleZoneFieldUpdateOperationsInput | $Enums.MuscleZone | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -40901,7 +40902,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     imageUrl?: string | null
-    durationMinutes?: number | null
+    duration?: number | null
     intensity?: $Enums.Intensity | null
     muscleZone?: $Enums.MuscleZone | null
     createdAt?: Date | string
@@ -40915,7 +40916,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     imageUrl?: string | null
-    durationMinutes?: number | null
+    duration?: number | null
     intensity?: $Enums.Intensity | null
     muscleZone?: $Enums.MuscleZone | null
     createdAt?: Date | string
@@ -40945,7 +40946,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    durationMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
     intensity?: NullableEnumIntensityFieldUpdateOperationsInput | $Enums.Intensity | null
     muscleZone?: NullableEnumMuscleZoneFieldUpdateOperationsInput | $Enums.MuscleZone | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -40959,7 +40960,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    durationMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
     intensity?: NullableEnumIntensityFieldUpdateOperationsInput | $Enums.Intensity | null
     muscleZone?: NullableEnumMuscleZoneFieldUpdateOperationsInput | $Enums.MuscleZone | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -41250,7 +41251,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     imageUrl?: string | null
-    durationMinutes?: number | null
+    duration?: number | null
     intensity?: $Enums.Intensity | null
     muscleZone?: $Enums.MuscleZone | null
     createdAt?: Date | string
@@ -41264,7 +41265,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     imageUrl?: string | null
-    durationMinutes?: number | null
+    duration?: number | null
     intensity?: $Enums.Intensity | null
     muscleZone?: $Enums.MuscleZone | null
     createdAt?: Date | string
@@ -41329,7 +41330,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    durationMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
     intensity?: NullableEnumIntensityFieldUpdateOperationsInput | $Enums.Intensity | null
     muscleZone?: NullableEnumMuscleZoneFieldUpdateOperationsInput | $Enums.MuscleZone | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -41343,7 +41344,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    durationMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
     intensity?: NullableEnumIntensityFieldUpdateOperationsInput | $Enums.Intensity | null
     muscleZone?: NullableEnumMuscleZoneFieldUpdateOperationsInput | $Enums.MuscleZone | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

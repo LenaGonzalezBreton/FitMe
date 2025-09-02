@@ -1,0 +1,69 @@
+---
+id: program-controller-resume-program
+title: "Reprendre un programme"
+description: "Réactive un programme en pause"
+sidebar_label: "Reprendre un programme"
+hide_title: true
+hide_table_of_contents: true
+api: eJydVu9u2zYQfxWCX5YAciM7bZf5m5csgIdtNVIXBZYGA02ebbYUyZInN4ah91mfIy82HCXVsp3U6QADlqi7+90/3v023HkIArWzY8WHfBLcIoji0lkMzhgI/wSIZQHNOc+4giiD9qTBh/zm4auQqFfASst8LVQAA8u8KCPwjHsRRAEIIfLh7YZbUQAfcq14xgN8LnUAxYcYSsi4Jote4PIAZnzFVLm1zzMe5RIKwYcbDvei8IaMSrPsD85fvnr988UvPOO49nQaMWi74FV1R4jROxshkuIgz+lvF2nyLYYAPujIxAoki6WUD/9GnnHpLIJFUhTeGy1T7s4+RtLedNxq0N3sI0ikPATKNOoaW6uOTOPhftCNK2x8xbOnoqwyjhrp/LnWavGuwWtnjJalEYFNliICe4sB7AKXbBqEtil5GV84YR6L63GUJN0F+bXURrHYWlYlOcnmW2hP0AQUUQS8EvgDMSUVpkiniznIBy97eb/XfzXN82H6vcjz/G9CAav2MI5EBFY9hTB4FEHHUboZHYiZcwaEPcB4vwRcQmC4hLbJmY5MliGARbNm9R3rQtONSSBTKLzZjeQ4jI5dHMGwNdJBmAsTCUIGEAhqhMfrcUmi2lmGuoCIovBP1aOfD893slV69VyUP0REVsv/DyC4hyB1hEtX2i6YLYsZhAOwv9Ixc3PWKkambbdSXeSLDkA8HC6/7ZroVOHEWbNm2kpTKlD0WQEKbUCxlYYvp9txJkIQa55xjVDE44Om9Wb8jIHTuvfIxKnHTX9wTil0QUE4nro3JEaZS5G2jnwne326/YDxR6qS5Ds2ziua8j4ej3ZrI4AH1HQc2YkUls2ABWEXwIz+BOwDv+j1Bx/46U5S+nmv/4qyocp6fx73+qqRpBREkM6qyOYupCbuzUQEtW2ynZjyFFTEqS7gOMwNREw2uzgzwC8A9iBfr8m2dQjPyNhIqZQlYVjSqJ3vFndvr8gyMmdJrGBuBYFFD6B4VXV3/223R9vmuvu219oB3DbnFTpe7VtIdKLdbM3u2e6R7bTvTOWd2dmdct1ZtD8uDt26aRhF4xY5hmJBXKeViKRVAC4dESxfpjtKJGfIz5pLEM82WlVnNdUi1yGsasJ0Ry+yDBrXb4la1GWagQj1DUx8I838+ihrHq5dKATyIf/9/XQ7O5aIPmVf27lL9W6Cudb4J7DRZHzYs06WBVisG1cBMz+NJmNWK/TYaMuB6ONco4UY2UzEh6/AYhmYASbX0gArwEbaWlQbiq6233+RN6xKSBrH5J13EQuRLlRDF2/AB7Aq7NLMfWc3W3b2DGLa5AThHs+8EdqmNRQSyanrc8vb+vCMDxvKmkp0l/Gli0gimw3d3HfBVBUdfy4hrOvCrUTQYkb5vd1wpSM9q2avfsfzk5umsU/ZIe191Ol2M1jaCythSnrjGf8E65pqV3dVxpcg0ti+3TQfRlKCx47KAaGtup07eTflVfUfkucmgQ==
+sidebar_class_name: "put api-method"
+info_path: docs/api/fitme-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Reprendre un programme"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"put"}
+  path={"/programs/{id}/resume"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Réactive un programme en pause
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"ID du programme","schema":{"example":"clh123456789","type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  responses={{"200":{"description":"Programme repris avec succès","content":{"application/json":{"schema":{"type":"object","properties":{"id":{"type":"string","description":"Program ID","example":"clh123456789"},"title":{"type":"string","description":"Program title","example":"Follicular Phase Strength Training"},"goal":{"type":"object","description":"Program goal","example":"Build strength during follicular phase"},"startDate":{"type":"string","description":"Program start date","example":"2024-01-15T00:00:00.000Z"},"endDate":{"type":"object","description":"Program end date","example":"2024-02-15T00:00:00.000Z"},"isActive":{"type":"boolean","description":"Whether the program is currently active","example":true},"isTemplate":{"type":"boolean","description":"Whether this program is a template","example":false},"createdAt":{"type":"string","description":"Creation timestamp","example":"2024-01-15T10:30:00.000Z"},"updatedAt":{"type":"string","description":"Last update timestamp","example":"2024-01-15T10:30:00.000Z"},"exerciseCount":{"type":"number","description":"Number of exercises in the program","example":8},"exercises":{"description":"Exercises in this program (only included in detailed view)","type":"array","items":{"type":"object","properties":{"exerciseId":{"type":"string","description":"Exercise ID","example":"clh456789123"},"order":{"type":"number","description":"Order of this exercise in the program","example":1},"sets":{"type":"number","description":"Number of sets","example":3},"reps":{"type":"string","description":"Number of repetitions (can be range like \"8-12\")","example":"10-15"},"duration":{"type":"number","description":"Duration in seconds for time-based exercises","example":30},"restTime":{"type":"number","description":"Rest time in seconds between sets","example":60},"notes":{"type":"string","description":"Additional notes for this exercise","example":"Focus on form over speed"}},"required":["exerciseId","order"],"title":"ProgramExerciseDto"}}},"required":["id","title","goal","startDate","endDate","isActive","isTemplate","createdAt","updatedAt","exerciseCount"],"title":"ProgramResponseDto"}}}}}}
+ id="program-controller-resume-program-responses">
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,69 @@
+---
+id: program-controller-get-program-progress
+title: "Récupérer la progression d'un programme"
+description: "Récupère les informations de progression détaillées d'un programme"
+sidebar_label: "Récupérer la progression d'un programme"
+hide_title: true
+hide_table_of_contents: true
+api: eJytU81u2zAMfhWBl26AtqTdv2/Fug4ZMCDoOuxQBIMis7EwWVJFumhg+H2a58iLDbSdtlmGnXaSRInk90O1EBNmwy6GWQkFzHNcZVN/jIFz9B7zzxXyGOwXJAINJZLNLkkaFHCx3dgmbe8zKo+kXLiOue5rkipRpTHPxaDK7YaN8367QVLlUROGW1PXCBqSyaZGxkxQXLUQTI1QgCtBQ8abxmUsoeDcoAYnjZPh6gDN7EyVzV5ZshXWBooW8M7UyUtR66vjk1ev37x99/4DaOB1kihxdmEFXbeQjpRiICRJPJlOZdnvNH9K7ElLlQdBNnm7QWVu0SpqrN3eE3SdBjYr4bfTmmChoUauohiwQu6F4AoKmIwladK6spukRwMI8+0g00IOtsmO19+E54B3iSZjll1PXriNIT1uznuPoIAvPy4fBaiYUw9STJR0dtzrde74K6rT+exA77NomxoD94aL3/7odD5TQ8ILdZqSd/bh8tpxQCK1NCTiUJOVR2XX1qOqMZC460GDsBvqH7+cggYbAxvLULSCLkXi2gQBOA7JxU5yzMqb/Zn7c8z28Ld9aQz8Pwd5VJPxjifJGxeg09BkL+0Gb69g5y1oKPoRf7B3oaGKxPKobZeG8Hv2XSfhmwbzejD91mRnluLNVQulI9mXUFwbT/gPis8uxo/0XB1+lL/CHoMmrMUW4xs5gYZfuB4+Z7fongzw50+X0HW/Ab9Fi4U=
+sidebar_class_name: "get api-method"
+info_path: docs/api/fitme-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Récupérer la progression d'un programme"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/programs/{id}/progress"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Récupère les informations de progression détaillées d'un programme
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"ID du programme","schema":{"example":"clh123456789","type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  responses={{"200":{"description":"Progression du programme récupérée avec succès"}}}
+ id="program-controller-get-program-progress-responses">
+  
+</StatusCodes>
+
+
+      

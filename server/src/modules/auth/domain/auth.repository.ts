@@ -8,6 +8,23 @@ export enum ProfileType {
   OTHER = 'OTHER',
 }
 
+export enum ExperienceLevel {
+  BEGINNER = 'BEGINNER',
+  INTERMEDIATE = 'INTERMEDIATE',
+  ADVANCED = 'ADVANCED',
+}
+
+export enum ObjectiveType {
+  WEIGHT_LOSS = 'WEIGHT_LOSS',
+  MUSCLE_GAIN = 'MUSCLE_GAIN',
+  ENDURANCE = 'ENDURANCE',
+  STRENGTH = 'STRENGTH',
+  FLEXIBILITY = 'FLEXIBILITY',
+  GENERAL_FITNESS = 'GENERAL_FITNESS',
+  STRESS_REDUCTION = 'STRESS_REDUCTION',
+  ENERGY_BOOST = 'ENERGY_BOOST',
+}
+
 export enum ContextType {
   CYCLE = 'CYCLE',
   GENERAL = 'GENERAL',
@@ -15,11 +32,26 @@ export enum ContextType {
   NONE = 'NONE',
 }
 
+export interface OnboardingProfileData {
+  objective: ObjectiveType;
+  experienceLevel: ExperienceLevel;
+  isMenopausal: boolean;
+  onboardingCompleted: boolean;
+}
+
 export interface IUserRepository {
   findByEmail(email: string): Promise<AuthUser | null>;
   findById(userId: string): Promise<AuthUser | null>;
   create(userData: CreateUserData): Promise<AuthUser>;
+  updateOnboardingProfile(
+    userId: string,
+    data: OnboardingProfileData,
+  ): Promise<AuthUser>;
   updatePassword(userId: string, passwordHash: string): Promise<void>;
+  updateProfile(
+    userId: string,
+    profileData: UpdateProfileData,
+  ): Promise<AuthUser>;
 }
 
 export interface IRefreshTokenRepository {
@@ -44,6 +76,93 @@ export interface CreateUserData {
   firstName?: string;
   profileType?: ProfileType;
   contextType?: ContextType;
+}
+
+export interface UpdateProfileData {
+  firstName?: string;
+  birthDate?: Date;
+  profileType?: ProfileType;
+  contextType?: ContextType;
+  objective?: string;
+  sportFrequency?: string;
+  isMenopausal?: boolean;
+}
+
+// Settings interfaces
+export interface UserSettingsData {
+  id: string;
+  userId: string;
+  theme: 'LIGHT' | 'DARK' | 'AUTO';
+  language: 'FRENCH' | 'ENGLISH';
+  units: 'METRIC' | 'IMPERIAL';
+  notifications: {
+    email: boolean;
+    push: boolean;
+    workout: boolean;
+    cycle: boolean;
+    achievements: boolean;
+  };
+  privacy: {
+    shareProgress: boolean;
+    shareCycle: boolean;
+    allowAnalytics: boolean;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ReminderSettingsData {
+  id: string;
+  userId: string;
+  type: string;
+  enabled: boolean;
+  time?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface UserObjectiveData {
+  id: string;
+  userId: string;
+  type: string;
+  note?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface UserFeatureFlagData {
+  id: string;
+  userId: string;
+  feature: string;
+  isEnabled: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IUserSettingsRepository {
+  getUserSettings(userId: string): Promise<UserSettingsData | null>;
+  createOrUpdateUserSettings(
+    userId: string,
+    data: Partial<UserSettingsData>,
+  ): Promise<UserSettingsData>;
+  getReminderSettings(userId: string): Promise<ReminderSettingsData[]>;
+  createOrUpdateReminderSetting(
+    userId: string,
+    type: string,
+    data: Partial<ReminderSettingsData>,
+  ): Promise<ReminderSettingsData>;
+  getUserObjectives(userId: string): Promise<UserObjectiveData[]>;
+  createOrUpdateUserObjective(
+    userId: string,
+    type: string,
+    note?: string,
+  ): Promise<UserObjectiveData>;
+  getUserFeatureFlags(userId: string): Promise<UserFeatureFlagData[]>;
+  createOrUpdateFeatureFlag(
+    userId: string,
+    feature: string,
+    isEnabled: boolean,
+  ): Promise<UserFeatureFlagData>;
 }
 
 export interface RefreshTokenData {

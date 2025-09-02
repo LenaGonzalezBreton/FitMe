@@ -1,0 +1,69 @@
+---
+id: program-controller-complete-program
+title: "Marquer un programme comme terminé"
+description: "Marque un programme comme terminé et le désactive"
+sidebar_label: "Marquer un programme comme terminé"
+hide_title: true
+hide_table_of_contents: true
+api: eJydVu9u2zYQfxXiviwBlEZ2mi7TNy9ZgAzrZqQuCiwNBlq8xGwpUiVPbgxDD5TnyIsNR0mxbCdxWsCwZerufvePd78luBK9JO3shYIMxt7delmcOkveGYP+v9wVpUHC9g0koDDkXpesAxm8l/5bhaKyomwkChS5429CX2j7cC+QhEGhHu6DzEnPERIopZcFEvoA2dUSrCwQMtAKEvD4rdIeFWTkK0xAM0opabYFfXEmVLWChQRCPsNCQrYEvJPsN2SQm9lgePT2+N2vJ79BArQo+TSQ1/YW6vqaEUPpbMDAisM05Z91pPFjaAWH+3C/ESIkkDtLaIl1ZVkancekHn4JbGDZ86x1wE2/YE6cCs8lIN3Aa9WTaZ3cjLv1RlycQfJcoHUCpInPX2utEe8bPHfG6Lwy0ovxTAYUH8ijvaWZmHipbcxfArdOmqfieholSvdBfq+0USJ0llXFToqbFXTJ0AwUSHo6k/QDMUUVoVinjzlMh28P0sHB4HiSpln8vEnT9F9GQas2MHZEhFY9hzB8EkGHUXMNVhBT5wxKu4XxaYY0Qy9ohl2fCx1EXnmPlsxCPF6oR2i+NBFkgkVp1iPZDaNDH0cK6oz0EG6kCQyRe5SEakS763HKotpZQbrAQLIon6vHIM2O1rJVleq1KH/JQKKR/wkgvEOf64CnrrJ9MFsVU/RbYH/HY+FuRKcYhLb9SvWRT3oAYXu+/LFuoleFPWfNQmibm0qh4tcKSWqDSsw1ft9fTTTpvVxAApqwCLsHTefNxSsGTufeExOnGTeD4RGn0HmFfnfq/mExzlyMtHPkhewN+PYjhR+pSpTv2TiqedCXYXe0KxseSyTNx0Hs5dKKKQov7S0Ko7+i+AwnB4PhZ9hfS8ogPRgcczZU1SzW3V6ftZKcgoC5syqIG+djEx9MZUC1arK1mNIYVKCJLnA3zCUGijb7OFOk74h2K1/v2LZ1hK/I2EipmCVpRNRonO8Xd2Ov5FUQzrJYIdwcvQglooK67q//q36Pds11/bjXugHcNecZOag3LURG0W22dves9shq2vem8trs7E+5/izaHBfbbl22pKJ1ix0ject0p5MIrFUgzRwzr7KKd5R5TgaH7SUIh0ut6sOOg7Hz6OcNa7rmP3nlNS0+MLloCjVF6Zs7GBlHnPrNUdI+nDtfSIIM/vw0WU2PGVEZ86/tjYsVb8M51/QexWh8sd21Lq8KtNS0rkJhfhmNL0SjcCBGKxbEL280WQxBTGV4uEcRKs+kMF/kBkWBNvDe4upwdI39wZu05VUy54HM3pUuUCHjlWo5Y8M//UsEdNPz5Yqs/SR9bZNGeEeHpZHaxk3lIw9qSngFXQkhgSy24WMVrxOYuUAstFzy9f7oTV3zMUeyaGo7l17LKZfgaglKB35W7fJ9IZ69y7b798U2PX7S7W59WF4ec2kq/gcJfMVFQ8nr6zqBGco426+W7YtRnmNJPZUt1lv323v8cQJ1/T+SukBj
+sidebar_class_name: "put api-method"
+info_path: docs/api/fitme-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Marquer un programme comme terminé"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"put"}
+  path={"/programs/{id}/complete"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Marque un programme comme terminé et le désactive
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"ID du programme","schema":{"example":"clh123456789","type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  responses={{"200":{"description":"Programme marqué comme terminé","content":{"application/json":{"schema":{"type":"object","properties":{"id":{"type":"string","description":"Program ID","example":"clh123456789"},"title":{"type":"string","description":"Program title","example":"Follicular Phase Strength Training"},"goal":{"type":"object","description":"Program goal","example":"Build strength during follicular phase"},"startDate":{"type":"string","description":"Program start date","example":"2024-01-15T00:00:00.000Z"},"endDate":{"type":"object","description":"Program end date","example":"2024-02-15T00:00:00.000Z"},"isActive":{"type":"boolean","description":"Whether the program is currently active","example":true},"isTemplate":{"type":"boolean","description":"Whether this program is a template","example":false},"createdAt":{"type":"string","description":"Creation timestamp","example":"2024-01-15T10:30:00.000Z"},"updatedAt":{"type":"string","description":"Last update timestamp","example":"2024-01-15T10:30:00.000Z"},"exerciseCount":{"type":"number","description":"Number of exercises in the program","example":8},"exercises":{"description":"Exercises in this program (only included in detailed view)","type":"array","items":{"type":"object","properties":{"exerciseId":{"type":"string","description":"Exercise ID","example":"clh456789123"},"order":{"type":"number","description":"Order of this exercise in the program","example":1},"sets":{"type":"number","description":"Number of sets","example":3},"reps":{"type":"string","description":"Number of repetitions (can be range like \"8-12\")","example":"10-15"},"duration":{"type":"number","description":"Duration in seconds for time-based exercises","example":30},"restTime":{"type":"number","description":"Rest time in seconds between sets","example":60},"notes":{"type":"string","description":"Additional notes for this exercise","example":"Focus on form over speed"}},"required":["exerciseId","order"],"title":"ProgramExerciseDto"}}},"required":["id","title","goal","startDate","endDate","isActive","isTemplate","createdAt","updatedAt","exerciseCount"],"title":"ProgramResponseDto"}}}}}}
+ id="program-controller-complete-program-responses">
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,69 @@
+---
+id: exercise-controller-rate-exercise
+title: "Noter un exercice"
+description: "Permet à l'utilisateur de noter un exercice de 1 à 5 étoiles"
+sidebar_label: "Noter un exercice"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVl1u2zgQvgp3XrILKImcJvujN2+SAimwaeBmUWCNoKClccyUIhWScmIIOsDeoo/1OXSxxZCyJdtJti3yFIficL6Z+eabqUAXaLgTWl1kkMD5I5pUWDzVyhktJZpPhjtcHUMEGdrUiIIsIIErNDk61nxhcq90QgrLHZaGZciUdmhYqRh64xTpcEBXT1izdFpItBBBwQ3P0aGxkIwrUDxHSEBkEIHB+1IYzCBxpsQIBHksuJvtwLjIUDkxFVw5VipxX3pncm/tuvkS8EAENp1hziGpAB95Xkhyl8rZ4OjN8cmvv/3+B0TgFgWdWmeEuoW6vglY0Lo/dbYg021oqVYOlaNPvCikSH1KD+8swat6Ptun9eQOU0fhGyqAE2j9s9yRx+6eKvOJR70Z76V2z6RzHdNxBLlQIi9zSAYR5Pwx/D6pCW2et2g3Q932cxoucmGQaX+oUDJbml5u+07h/DFFKVG5ruqFpuvIDKqpNinSgyxDy+54PkHLfoK67td6vMrCTQROOP/sqMfBM6ehroONLbSyIXVH8YD+bOI/X4FQ2jVLxueYMlumafOVcvXqRdt03vw757L0b7LUNMtmiUyXLBfW8/FOl1RYLuX7qaf+y15E9v/l6reB53+zXEPYKJPh7lNHeErlKxLvRwn26rSKIDXIHWbDb0ByxkNkVKlQsxczeBQfHe/Hg/3ByfUgTt7ESRwfxHH8D3kti+x7vWZolGi+GmS5zsS0peI3etxqn6CdoaD9FPSB9Xpr1Vcjb+G766aOQNhLfBht02KitUSudpmnMq+6VrB0Dy2pMDVdOaeysV4SqQPo21YXrMMkOa0jUPgwnKPht7gD4Vlmts5I51muF6jU1hTYYOnBm2dkZzP0J6A8o0ujVo06fTqO411VONNKNUu07YgMSRFqzqXI0II3e0LJLrVivHTaCNss2T5z+jMq9u7jNfMhtIbHL0qgYs7oct4sPWUcv6WRu66/pcAspqURbuEFaYLcoIFkfEMTMEc307QjFNp6eaJBnMAhruwPK5HVh7Qu0JRFMw8zvffqB1LUIGert1uZ9dwKR1H74602OXeQwLuP191MnjlXePik0qNuKJ+vCtvp8XFPh35YQYSaak++tuJvhfsL2fDqYreVdVp6LevEY3h1wYLBPht2E4Y+ToVTaC2bcEtzwQYo6SKVyHJUlvpAQgSUxPD+4CBuZxZPSVkoCVSKnPtp1S5Ol9tb1zbOqht7r7C9tVVx+OgOC8mF8vpnJPkJBBnDmiAQQbISJyS2zYhJyRiqasIt/m1kXdPxfYlmEZgz50bwCWV+XEEmLP3OIJlyafGFwH4etX39C/ue1fDJaNpDrhZUDi5L+g8i+IyLsKh6uZwhz3yvVO2H0wBm/5rMO8OdRaOOVhbDNMXCvXi334ZX7z9QX0zajTTXWZjsDz7BDwFkWNraNeWB/kiubkt+S3fDm8QjXlKpOpXf7MT+drKZhqoKN65Jjep6nRWvTpSYuv4PAjhQ8Q==
+sidebar_class_name: "post api-method"
+info_path: docs/api/fitme-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Noter un exercice"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/exercises/{id}/rate"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Permet à l'utilisateur de noter un exercice de 1 à 5 étoiles
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Identifiant unique de l'exercice à noter","schema":{"example":"clh123456789","type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"rating":{"type":"number","description":"Note de 1 à 5 étoiles","example":4,"minimum":1,"maximum":5},"comment":{"type":"string","description":"Commentaire optionnel sur l'exercice","example":"Excellent exercice pour le renforcement des jambes !"}},"required":["rating"],"title":"RateExerciseDto"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  responses={{"201":{"description":"Exercice noté avec succès","content":{"application/json":{"schema":{"type":"object","properties":{"rating":{"description":"Évaluation créée ou mise à jour","allOf":[{"type":"object","properties":{"id":{"type":"string","description":"Identifiant de l'évaluation","example":"rat_123456789"},"rating":{"type":"number","description":"Note de 1 à 5 étoiles","example":4},"comment":{"type":"string","description":"Commentaire sur l'exercice","example":"Excellent exercice pour le renforcement des jambes !"},"createdAt":{"type":"string","description":"Date de création de l'évaluation","example":"2024-01-15T10:30:00.000Z"},"updatedAt":{"type":"string","description":"Date de dernière modification","example":"2024-01-15T10:30:00.000Z"}},"required":["id","rating","createdAt","updatedAt"],"title":"ExerciseRatingDto"}]},"isNewRating":{"type":"boolean","description":"Indique si c'est une nouvelle évaluation ou une mise à jour","example":true},"newAverageRating":{"type":"number","description":"Nouvelle note moyenne de l'exercice","example":4.3}},"required":["rating","isNewRating","newAverageRating"],"title":"RateExerciseResponseDto"}}}},"400":{"description":"Données de notation invalides"},"401":{"description":"Non autorisé - token JWT requis"},"404":{"description":"Exercice non trouvé"}}}
+ id="exercise-controller-rate-exercise-responses">
+  
+</StatusCodes>
+
+
+      

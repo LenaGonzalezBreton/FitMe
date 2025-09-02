@@ -28,6 +28,8 @@ export interface LoginResponse {
     firstName?: string;
     profileType?: string;
     contextType?: string;
+    onboardingCompleted: boolean;
+    experienceLevel?: string;
   };
 }
 
@@ -54,7 +56,7 @@ export class LoginUseCase {
       request.password,
       user.passwordHash,
     );
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+
     if (!isPasswordValid) {
       throw new Error('Email ou mot de passe incorrect');
     }
@@ -73,6 +75,8 @@ export class LoginUseCase {
         firstName: user.firstName,
         profileType: user.profileType,
         contextType: user.contextType,
+        onboardingCompleted: user.onboardingCompleted,
+        experienceLevel: user.experienceLevel,
       },
     };
   }
