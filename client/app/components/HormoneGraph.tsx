@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, Dimensions, TouchableOpacity, Modal } from 'react-native';
-import Svg, { Path, Circle, Line, G, Defs, LinearGradient, Stop } from 'react-native-svg';
+import Svg, { Path, Circle, Line, G, Defs, LinearGradient, Stop, Text as SvgText } from 'react-native-svg';
 
 const { width } = Dimensions.get('window');
 const GRAPH_WIDTH = width - 40;
@@ -18,11 +18,24 @@ interface HormoneGraphProps {
   data: HormoneData[];
   currentDay: number;
   cycleLength: number;
+  periodLength: number;
 }
 
-const HormoneGraph: React.FC<HormoneGraphProps> = ({ data, currentDay, cycleLength }) => {
+const HormoneGraph: React.FC<HormoneGraphProps> = ({ data, currentDay, cycleLength, periodLength }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipData, setTooltipData] = useState<{hormone: string, value: number, x: number, y: number} | null>(null);
+  
+  // Safety check for data
+  if (!data || data.length === 0 || !cycleLength) {
+    return (
+      <View className="bg-surface rounded-xl p-4 shadow-sm border border-border-light">
+        <Text className="text-lg font-bold text-brand-text mb-4">Courbes hormonales</Text>
+        <View className="h-48 justify-center items-center">
+          <Text className="text-secondary-500">Chargement des données...</Text>
+        </View>
+      </View>
+    );
+  }
   
   const maxValue = 100;
   const stepX = (GRAPH_WIDTH - PADDING * 2) / (cycleLength - 1);
@@ -72,54 +85,52 @@ const HormoneGraph: React.FC<HormoneGraphProps> = ({ data, currentDay, cycleLeng
   const progesteronePath = createPath(progesteroneCoords);
   const testosteronePath = createPath(testosteroneCoords);
 
-  // Get current day coordinates
-  const currentDayIndex = currentDay - 1;
+  // Get current day coordinates (ensure valid index)
+  const currentDayIndex = Math.max(0, Math.min(currentDay - 1, data.length - 1));
   const currentEstrogen = estrogenCoords[currentDayIndex];
   const currentProgesterone = progesteroneCoords[currentDayIndex];
   const currentTestosterone = testosteroneCoords[currentDayIndex];
 
-  // Phase markers
+  // Phase markers based on real cycle data
   const getPhaseMarkers = () => {
     const markers = [];
-    const phaseLengths = {
-      menstrual: 5,
-      follicular: 9,
-      ovulation: 1,
-      luteal: 13
-    };
+    const ovulationDay = Math.max(1, cycleLength - 14); // Ovulation typically 14 days before next cycle
+    const follicularEndDay = Math.max(periodLength, ovulationDay - 2); // Follicular phase ends ~2 days before ovulation
+    const lutealStartDay = Math.min(cycleLength, ovulationDay + 2); // Luteal phase starts ~2 days after ovulation
     
-    let currentX = PADDING;
+    const stepX = (GRAPH_WIDTH - PADDING * 2) / (cycleLength - 1);
     
-    // Menstrual phase
+    // Menstrual phase (day 1 to periodLength)
     markers.push({
-      x: currentX,
+      x: PADDING,
       label: 'Menstruelle',
       color: '#E91E63'
     });
-    currentX += (phaseLengths.menstrual / cycleLength) * (GRAPH_WIDTH - PADDING * 2);
     
-    // Follicular phase
-    markers.push({
-      x: currentX,
-      label: 'Folliculaire',
-      color: '#4CAF50'
-    });
-    currentX += (phaseLengths.follicular / cycleLength) * (GRAPH_WIDTH - PADDING * 2);
+    // Follicular phase (periodLength + 1 to follicularEndDay) 
+    if (follicularEndDay > periodLength) {
+      markers.push({
+        x: PADDING + (periodLength * stepX),
+        label: 'Folliculaire', 
+        color: '#4CAF50'
+      });
+    }
     
-    // Ovulation
+    // Ovulation phase (ovulationDay - 2 to ovulationDay + 2)
     markers.push({
-      x: currentX,
+      x: PADDING + ((ovulationDay - 2) * stepX),
       label: 'Ovulation',
       color: '#FF9800'
     });
-    currentX += (phaseLengths.ovulation / cycleLength) * (GRAPH_WIDTH - PADDING * 2);
     
-    // Luteal phase
-    markers.push({
-      x: currentX,
-      label: 'Lutéale',
-      color: '#9C27B0'
-    });
+    // Luteal phase (lutealStartDay to cycleLength)
+    if (lutealStartDay < cycleLength) {
+      markers.push({
+        x: PADDING + (lutealStartDay * stepX),
+        label: 'Lutéale',
+        color: '#9C27B0'
+      });
+    }
     
     return markers;
   };
@@ -127,15 +138,23 @@ const HormoneGraph: React.FC<HormoneGraphProps> = ({ data, currentDay, cycleLeng
   const phaseMarkers = getPhaseMarkers();
 
   const handleDotPress = (hormone: string, value: number, x: number, y: number) => {
-    setTooltipData({ hormone, value, x, y });
-    setShowTooltip(true);
+    const dayData = data[currentDay - 1];
+    if (dayData) {
+      setTooltipData({ 
+        hormone: `Jour ${currentDay}`, 
+        value: 0, // We'll show all hormone values in tooltip 
+        x, 
+        y 
+      });
+      setShowTooltip(true);
+    }
   };
 
   return (
     <View className="bg-surface rounded-xl p-4 shadow-sm border border-border-light">
       <Text className="text-lg font-bold text-brand-text mb-4">Courbes hormonales</Text>
       
-      <Svg width={GRAPH_WIDTH} height={GRAPH_HEIGHT + 40}>
+      <Svg width={GRAPH_WIDTH} height={GRAPH_HEIGHT + 60}>
         <Defs>
           {/* Estrogen gradient */}
           <LinearGradient id="estrogenGradient" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -212,53 +231,41 @@ const HormoneGraph: React.FC<HormoneGraphProps> = ({ data, currentDay, cycleLeng
           strokeLinejoin="round"
         />
 
-        {/* Current day indicators - clickable */}
+        {/* Current day indicators - subtle and elegant */}
         {currentEstrogen && (
-          <TouchableOpacity
-            onPress={() => handleDotPress('Œstrogène', data[currentDayIndex]?.estrogen || 0, currentEstrogen.x, currentEstrogen.y)}
-            style={{ position: 'absolute', left: currentEstrogen.x - 8, top: currentEstrogen.y - 8 }}
-          >
-            <Circle
-              cx={currentEstrogen.x}
-              cy={currentEstrogen.y}
-              r="6"
-              fill="#E91E63"
-              stroke="#FFFFFF"
-              strokeWidth="2"
-            />
-          </TouchableOpacity>
+          <Circle
+            cx={currentEstrogen.x}
+            cy={currentEstrogen.y}
+            r="4"
+            fill="#E91E63"
+            stroke="#FFFFFF"
+            strokeWidth="2"
+            opacity="0.9"
+          />
         )}
         
         {currentProgesterone && (
-          <TouchableOpacity
-            onPress={() => handleDotPress('Progestérone', data[currentDayIndex]?.progesterone || 0, currentProgesterone.x, currentProgesterone.y)}
-            style={{ position: 'absolute', left: currentProgesterone.x - 8, top: currentProgesterone.y - 8 }}
-          >
-            <Circle
-              cx={currentProgesterone.x}
-              cy={currentProgesterone.y}
-              r="6"
-              fill="#2196F3"
-              stroke="#FFFFFF"
-              strokeWidth="2"
-            />
-          </TouchableOpacity>
+          <Circle
+            cx={currentProgesterone.x}
+            cy={currentProgesterone.y}
+            r="4"
+            fill="#2196F3"
+            stroke="#FFFFFF"
+            strokeWidth="2"
+            opacity="0.9"
+          />
         )}
         
         {currentTestosterone && (
-          <TouchableOpacity
-            onPress={() => handleDotPress('Testostérone', data[currentDayIndex]?.testosterone || 0, currentTestosterone.x, currentTestosterone.y)}
-            style={{ position: 'absolute', left: currentTestosterone.x - 8, top: currentTestosterone.y - 8 }}
-          >
-            <Circle
-              cx={currentTestosterone.x}
-              cy={currentTestosterone.y}
-              r="6"
-              fill="#4CAF50"
-              stroke="#FFFFFF"
-              strokeWidth="2"
-            />
-          </TouchableOpacity>
+          <Circle
+            cx={currentTestosterone.x}
+            cy={currentTestosterone.y}
+            r="4"
+            fill="#4CAF50"
+            stroke="#FFFFFF"
+            strokeWidth="2"
+            opacity="0.9"
+          />
         )}
 
         {/* Current day line */}
@@ -274,10 +281,78 @@ const HormoneGraph: React.FC<HormoneGraphProps> = ({ data, currentDay, cycleLeng
             opacity="0.7"
           />
         )}
+        {/* Invisible clickable area for current day */}
+        {currentEstrogen && (
+          <TouchableOpacity
+            onPress={() => handleDotPress('Jour ' + currentDay, 0, currentEstrogen.x, currentEstrogen.y)}
+            style={{ 
+              position: 'absolute', 
+              left: currentEstrogen.x - 20, 
+              top: 0,
+              width: 40, 
+              height: GRAPH_HEIGHT,
+              backgroundColor: 'transparent'
+            }}
+          />
+        )}
+        {/* Y-axis labels (Hormone levels) */}
+        <G>
+          {[0, 25, 50, 75, 100].map((value, index) => {
+            const y = GRAPH_HEIGHT - PADDING - (value * stepY);
+            return (
+              <SvgText
+                key={`y-${index}`}
+                x={PADDING - 5}
+                y={y + 3}
+                fontSize="10"
+                fill="#9CA3AF"
+                textAnchor="end"
+              >
+                {value}%
+              </SvgText>
+            );
+          })}
+        </G>
+
+        {/* X-axis labels (Days) */}
+        <G>
+          {(() => {
+            const labelDays = [];
+            const step = Math.max(1, Math.floor(cycleLength / 6)); // Show ~6 labels max
+            for (let day = 1; day <= cycleLength; day += step) {
+              labelDays.push(day);
+            }
+            if (labelDays[labelDays.length - 1] !== cycleLength) {
+              labelDays.push(cycleLength);
+            }
+            
+            return labelDays.map((day) => {
+              const x = PADDING + ((day - 1) * stepX);
+              return (
+                <SvgText
+                  key={`x-${day}`}
+                  x={x}
+                  y={GRAPH_HEIGHT - PADDING + 15}
+                  fontSize="10"
+                  fill="#9CA3AF"
+                  textAnchor="middle"
+                >
+                  J{day}
+                </SvgText>
+              );
+            });
+          })()}
+        </G>
       </Svg>
 
+      {/* Axis labels */}
+      <View className="flex-row justify-between items-center mt-1 mb-3">
+        <Text className="text-xs text-secondary-500">Jours du cycle</Text>
+        <Text className="text-xs text-secondary-500">Niveau hormonal (%)</Text>
+      </View>
+
       {/* Legend */}
-      <View className="flex-row justify-between mt-4">
+      <View className="flex-row justify-between mt-2">
         <View className="flex-row items-center">
           <View className="w-4 h-1 bg-pink-500 rounded mr-2" />
           <Text className="text-xs text-secondary-600">Œstrogène</Text>
@@ -292,20 +367,6 @@ const HormoneGraph: React.FC<HormoneGraphProps> = ({ data, currentDay, cycleLeng
         </View>
       </View>
 
-      {/* Phase markers */}
-      <View className="flex-row justify-between mt-2">
-        {phaseMarkers.map((marker, index) => (
-          <View key={index} className="items-center">
-            <View 
-              className="w-2 h-2 rounded-full mb-1"
-              style={{ backgroundColor: marker.color }}
-            />
-            <Text className="text-xs text-secondary-500 text-center">
-              {marker.label}
-            </Text>
-          </View>
-        ))}
-      </View>
 
       {/* Tooltip Modal */}
       <Modal
@@ -322,17 +383,47 @@ const HormoneGraph: React.FC<HormoneGraphProps> = ({ data, currentDay, cycleLeng
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             {tooltipData && (
               <View className="bg-surface rounded-xl p-4 shadow-lg border border-border-light mx-4">
-                <Text className="text-lg font-bold text-brand-text mb-2">
-                  Jour {currentDay}
-                </Text>
-                <Text className="text-base text-brand-text mb-1">
+                <Text className="text-lg font-bold text-brand-text mb-3 text-center">
                   {tooltipData.hormone}
                 </Text>
-                <Text className="text-2xl font-bold text-primary-500">
-                  {Math.round(tooltipData.value)}%
-                </Text>
-                <Text className="text-xs text-secondary-500 mt-1">
-                  Niveau actuel
+                
+                {/* Hormone values for current day */}
+                {data[currentDay - 1] && (
+                  <View className="space-y-2">
+                    <View className="flex-row items-center justify-between">
+                      <View className="flex-row items-center">
+                        <View className="w-3 h-3 bg-pink-500 rounded-full mr-2" />
+                        <Text className="text-sm text-brand-text">Œstrogène</Text>
+                      </View>
+                      <Text className="text-sm font-bold text-pink-600">
+                        {Math.round(data[currentDay - 1].estrogen)}%
+                      </Text>
+                    </View>
+                    
+                    <View className="flex-row items-center justify-between">
+                      <View className="flex-row items-center">
+                        <View className="w-3 h-3 bg-blue-500 rounded-full mr-2" />
+                        <Text className="text-sm text-brand-text">Progestérone</Text>
+                      </View>
+                      <Text className="text-sm font-bold text-blue-600">
+                        {Math.round(data[currentDay - 1].progesterone)}%
+                      </Text>
+                    </View>
+                    
+                    <View className="flex-row items-center justify-between">
+                      <View className="flex-row items-center">
+                        <View className="w-3 h-3 bg-green-500 rounded-full mr-2" />
+                        <Text className="text-sm text-brand-text">Testostérone</Text>
+                      </View>
+                      <Text className="text-sm font-bold text-green-600">
+                        {Math.round(data[currentDay - 1].testosterone)}%
+                      </Text>
+                    </View>
+                  </View>
+                )}
+                
+                <Text className="text-xs text-secondary-500 mt-3 text-center">
+                  Niveaux hormonaux approximatifs
                 </Text>
               </View>
             )}

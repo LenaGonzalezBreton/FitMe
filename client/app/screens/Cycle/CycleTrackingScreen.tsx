@@ -49,50 +49,94 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
   const [showPeriodLogging, setShowPeriodLogging] = useState(false);
   const [showPeriodHistory, setShowPeriodHistory] = useState(false);
   
-  const generateHormoneData = (cycleLength: number = 28): HormoneData[] => {
+  const generateHormoneData = (cycleLength: number, periodLength: number, currentCycleData: any): HormoneData[] => {
     const data: HormoneData[] = [];
+    
+    // Use the SAME logic as the API server for calculating phases
+    const ovulationDay = Math.max(1, cycleLength - 14); // Same as server logic
     
     for (let day = 1; day <= cycleLength; day++) {
       let estrogen = 0;
       let progesterone = 0;
       let testosterone = 0;
       
-      // Estrogen curve - approximate peak near ovulation using cycle midpoint
-      const midPoint = Math.ceil(cycleLength / 2);
-      if (day <= midPoint) {
-        estrogen = Math.sin((day / midPoint) * Math.PI) * 100;
-      } else {
-        estrogen = Math.sin(((day - midPoint) / midPoint) * Math.PI) * 30;
+      // Use the SAME phase detection logic as the server
+      const isPeriodDay = day <= periodLength;
+      const isOvulationPhase = day >= ovulationDay - 2 && day <= ovulationDay + 2;
+      const isFertileDay = day >= ovulationDay - 5 && day <= ovulationDay + 2;
+      const isFollicularPhase = day > periodLength && day <= 14;
+      const isLutealPhase = day > ovulationDay + 2;
+      
+      // Realistic estrogen curve based on cycle phases
+      if (isPeriodDay) {
+        // Low during menstruation
+        estrogen = 15 + (day / periodLength) * 25;
+      } else if (isFollicularPhase) {
+        // Rising during follicular phase
+        const progress = (day - periodLength) / (14 - periodLength);
+        estrogen = 40 + progress * 45;
+      } else if (isOvulationPhase) {
+        // Peak during ovulation
+        const distance = Math.abs(day - ovulationDay);
+        estrogen = 85 - (distance * 15);
+      } else if (isLutealPhase) {
+        // Declining during luteal phase  
+        const progress = (day - (ovulationDay + 2)) / (cycleLength - (ovulationDay + 2));
+        estrogen = 70 - progress * 50;
       }
       
-      // Progesterone curve - low until ovulation, then rises
-      if (day <= midPoint) {
-        progesterone = 10 + Math.random() * 10;
-      } else {
-        progesterone = 20 + Math.sin(((day - midPoint) / midPoint) * Math.PI) * 80;
+      // Realistic progesterone curve
+      if (isPeriodDay || isFollicularPhase) {
+        // Very low during period and follicular phase
+        progesterone = 5 + Math.random() * 10;
+      } else if (isOvulationPhase) {
+        // Starts to rise during ovulation
+        progesterone = 20 + (day - (ovulationDay - 2)) * 15;
+      } else if (isLutealPhase) {
+        // High during luteal phase, then drops before period
+        const lutealLength = cycleLength - (ovulationDay + 2);
+        const progress = (day - (ovulationDay + 2)) / lutealLength;
+        if (progress < 0.7) {
+          progesterone = 50 + progress * 40; // Rising to peak
+        } else {
+          progesterone = 90 - ((progress - 0.7) / 0.3) * 85; // Dropping sharply
+        }
       }
       
-      // Testosterone curve - peaks around day 8-10 and day 20-22
-      if (day <= 10) {
-        testosterone = 30 + Math.sin((day / 10) * Math.PI) * 40;
-      } else if (day <= 20) {
-        testosterone = 20 + Math.random() * 20;
-      } else {
-        testosterone = 30 + Math.sin(((day - 20) / 8) * Math.PI) * 30;
+      // Realistic testosterone curve  
+      if (isPeriodDay) {
+        // Moderate during period
+        testosterone = 25 + Math.random() * 15;
+      } else if (isFollicularPhase) {
+        // Rising during follicular phase
+        const progress = (day - periodLength) / (14 - periodLength);
+        testosterone = 40 + progress * 35;
+      } else if (isOvulationPhase) {
+        // Peak around ovulation
+        testosterone = 70 + Math.random() * 15;
+      } else if (isLutealPhase) {
+        // Declining during luteal phase
+        const progress = (day - (ovulationDay + 2)) / (cycleLength - (ovulationDay + 2));
+        testosterone = 60 - progress * 30;
       }
       
       data.push({
         day,
-        estrogen: Math.max(0, estrogen),
-        progesterone: Math.max(0, progesterone),
-        testosterone: Math.max(0, testosterone),
+        estrogen: Math.max(5, Math.min(100, estrogen)),
+        progesterone: Math.max(5, Math.min(100, progesterone)),
+        testosterone: Math.max(15, Math.min(85, testosterone)),
       });
     }
     
     return data;
   };
 
-  const hormoneData = generateHormoneData(currentCycle?.cycleLength);
+  // Generate hormone data using the EXACT same data as the API
+  const hormoneData = currentCycle ? generateHormoneData(
+    currentCycle.cycleLength, 
+    currentCycle.periodLength,
+    currentCycle
+  ) : [];
 
   // Cycle-based recommendations
   const getCycleRecommendations = (cycleDay: number, isPeriodDay: boolean, isOvulationPhase: boolean, isFertileDay: boolean): CycleRecommendation => {
@@ -499,6 +543,7 @@ const CycleTrackingScreen = ({ onClose }: CycleTrackingScreenProps) => {
               data={hormoneData}
               currentDay={currentCycle.cycleDay}
               cycleLength={currentCycle.cycleLength}
+              periodLength={currentCycle.periodLength}
             />
             
             {/* Additional hormone info */}
