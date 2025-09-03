@@ -135,11 +135,13 @@ export class ExerciseController {
   })
   async getExercises(
     @Query() query: ExerciseQueryDto,
+    @Request() req: any,
   ): Promise<ExerciseListResponseDto> {
     try {
       // If phase is specified, use cycle-based approach
       if (query.phase) {
         const result = await this.getExercisesByPhaseUseCase.execute({
+          userId: req.user?.id,
           phase: query.phase,
           intensity: query.intensity,
           muscleZone: query.muscleZone,
@@ -160,6 +162,7 @@ export class ExerciseController {
       } else {
         // If no phase specified, return all exercises with filters
         const result = await this.getAllExercisesUseCase.execute({
+          userId: req.user?.id,
           intensity: query.intensity,
           muscleZone: query.muscleZone,
           minDuration: undefined,

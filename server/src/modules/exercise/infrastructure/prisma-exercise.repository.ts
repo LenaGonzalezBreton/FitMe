@@ -61,48 +61,63 @@ export class PrismaExerciseRepository implements IExerciseRepository {
   }
 
   async findWithFilters(filters: ExerciseFilters): Promise<Exercise[]> {
-    const where: any = {};
+    const andConditions: any[] = [];
 
-    // Always include public exercises (createdBy is null)
-    // This ensures seeded exercises are available to all users
-    where.createdBy = null;
-
-    if (filters.intensity) {
-      where.intensity = filters.intensity;
-    }
-
-    if (filters.muscleZone) {
-      where.muscleZone = filters.muscleZone;
-    }
-
-    if (filters.minDuration || filters.maxDuration) {
-      where.duration = {};
-      if (typeof filters.minDuration !== 'undefined' && filters.minDuration !== null) {
-        where.duration.gte = Number(filters.minDuration);
-      }
-      if (typeof filters.maxDuration !== 'undefined' && filters.maxDuration !== null) {
-        where.duration.lte = Number(filters.maxDuration);
-      }
+    // Include public exercises (createdBy is null) AND user's own exercises
+    if (filters.userId) {
+      andConditions.push({
+        OR: [
+          { createdBy: null }, // Public exercises
+          { createdBy: filters.userId } // User's own exercises
+        ]
+      });
+    } else {
+      andConditions.push({ createdBy: null });
     }
 
     // Add search functionality
     if (filters.search) {
-      where.OR = [
-        {
-          title: {
-            contains: filters.search,
-            mode: 'insensitive', // Case-insensitive search
+      andConditions.push({
+        OR: [
+          {
+            title: {
+              contains: filters.search,
+              mode: 'insensitive', // Case-insensitive search
+            },
           },
-        },
-        {
-          description: {
-            contains: filters.search,
-            mode: 'insensitive', // Case-insensitive search
+          {
+            description: {
+              contains: filters.search,
+              mode: 'insensitive', // Case-insensitive search
+            },
           },
-        },
-      ];
+        ]
+      });
     }
 
+    // Add other filters directly
+    if (filters.intensity) {
+      andConditions.push({ intensity: filters.intensity });
+    }
+
+    if (filters.muscleZone) {
+      andConditions.push({ muscleZone: filters.muscleZone });
+    }
+
+    if (filters.minDuration || filters.maxDuration) {
+      const durationCondition: any = {};
+      if (typeof filters.minDuration !== 'undefined' && filters.minDuration !== null) {
+        durationCondition.gte = Number(filters.minDuration);
+      }
+      if (typeof filters.maxDuration !== 'undefined' && filters.maxDuration !== null) {
+        durationCondition.lte = Number(filters.maxDuration);
+      }
+      andConditions.push({ duration: durationCondition });
+    }
+
+    // Construct final where clause
+    const where = andConditions.length === 1 ? andConditions[0] : { AND: andConditions };
+    
     const prismaData = await this.prisma.exercise.findMany({
       where,
       orderBy: { title: 'asc' },

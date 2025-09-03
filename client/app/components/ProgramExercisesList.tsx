@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Modal, Alert, TextInput } from 'react-native';
 import { ProgramExercise } from '../types';
 import { programApi, exerciseApi } from '../services/api';
+import { getIntensityLabel, getMuscleZoneLabel } from '../utils/constants';
 
 interface ProgramExercisesListProps {
   exercises: ProgramExercise[];
@@ -51,7 +52,7 @@ const ProgramExercisesList: React.FC<ProgramExercisesListProps> = ({
   const loadAvailableExercises = async () => {
     try {
       setLoading(true);
-      const response = await exerciseApi.getExercises({ limit: 100 });
+      const response = await exerciseApi.getExercises({ limit: 50 });
       const exercisesData = response.data || response;
       setAvailableExercises(exercisesData.exercises || []);
     } catch (err: any) {
@@ -310,14 +311,14 @@ const ProgramExercisesList: React.FC<ProgramExercisesListProps> = ({
                       {exercise.intensity && (
                         <View className="flex-row items-center">
                           <Text className="text-sm text-gray-600 mr-1">Intensité:</Text>
-                          <Text className="text-sm font-medium text-brand-dark-bg">{exercise.intensity}</Text>
+                          <Text className="text-sm font-medium text-brand-dark-bg">{getIntensityLabel(exercise.intensity)}</Text>
                         </View>
                       )}
                       
                       {exercise.muscleZone && (
                         <View className="flex-row items-center">
                           <Text className="text-sm text-gray-600 mr-1">Zone:</Text>
-                          <Text className="text-sm font-medium text-brand-dark-bg">{exercise.muscleZone}</Text>
+                          <Text className="text-sm font-medium text-brand-dark-bg">{getMuscleZoneLabel(exercise.muscleZone)}</Text>
                         </View>
                       )}
                     </View>

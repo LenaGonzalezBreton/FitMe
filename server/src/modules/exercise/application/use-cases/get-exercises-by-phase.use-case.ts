@@ -3,12 +3,13 @@ import {
   IExerciseRepository,
   ExerciseFilters,
 } from '../../domain/exercise.repository';
-import { Intensity, MuscleZone } from '../../domain/exercise.entity';
+import { Exercise, Intensity, MuscleZone } from '../../domain/exercise.entity';
 import {
   EXERCISE_REPOSITORY_TOKEN,
 } from '../../tokens';
 
 export interface GetExercisesByPhaseRequest {
+  userId?: string;
   phase: string;
   intensity?: Intensity;
   muscleZone?: MuscleZone;
@@ -52,7 +53,7 @@ export class GetExercisesByPhaseUseCase {
   async execute(
     request: GetExercisesByPhaseRequest,
   ): Promise<GetExercisesByPhaseResponse> {
-    const { phase, intensity, muscleZone, maxDuration, limit = 20, offset = 0 } = request;
+    const { userId, phase, intensity, muscleZone, maxDuration, limit = 20, offset = 0 } = request;
 
     // Valider la phase
     if (!this.isValidPhase(phase)) {
@@ -62,33 +63,58 @@ export class GetExercisesByPhaseUseCase {
     // Obtenir l'intensité recommandée pour cette phase
     const recommendedIntensity = this.getRecommendedIntensityForPhase(phase);
 
-    // Construire les filtres
-    const filters: ExerciseFilters = {
+    // Récupérer les exercices publics avec intensité recommandée
+    const publicExerciseFilters: ExerciseFilters = {
       intensity: intensity || recommendedIntensity,
       muscleZone,
       maxDuration,
     };
+    const publicExercises = await this.exerciseRepository.findWithFilters(publicExerciseFilters);
 
-    // Récupérer les exercices avec filtres
-    let exercises = await this.exerciseRepository.findWithFilters(filters);
+    // Récupérer tous les exercices de l'utilisateur (sans filtre d'intensité)
+    let userExercises: Exercise[] = [];
+    if (userId) {
+      const userExerciseFilters: ExerciseFilters = {
+        userId,
+        muscleZone,
+        maxDuration,
+      };
+      const allUserExercises = await this.exerciseRepository.findWithFilters(userExerciseFilters);
+      // Ne garder que les exercices créés par l'utilisateur (pas les publics)
+      userExercises = allUserExercises.filter(ex => ex.createdBy === userId);
+    }
+
+    // Combiner les exercices (éviter les doublons si l'utilisateur a des exercices publics)
+    const combinedExercises = [...publicExercises, ...userExercises];
+    let exercises = combinedExercises.filter((exercise, index, self) => 
+      index === self.findIndex(ex => ex.id === exercise.id)
+    );
 
     // Pagination simple en mémoire (repo ne pagine pas encore)
     exercises = exercises.slice(offset, offset + limit);
 
     // Convertir en format de réponse
-    const exerciseResponses: ExerciseResponse[] = exercises.map((exercise) => ({
-      id: exercise.id,
-      title: exercise.title,
-      description: exercise.description,
-      imageUrl: exercise.imageUrl,
-      duration: exercise.duration,
-      formattedDuration: this.formatDuration(exercise.duration),
-      intensity: exercise.intensity,
-      intensityLabel: this.getIntensityLabel(exercise.intensity),
-      muscleZone: exercise.muscleZone,
-      muscleZoneLabel: this.getMuscleZoneLabel(exercise.muscleZone),
-      isRecommendedForPhase: true, // Tous les exercices sont maintenant recommandés pour la phase
-    }));
+    const exerciseResponses: ExerciseResponse[] = exercises.map((exercise) => {
+      // Vérifier si l'exercice est recommandé pour cette phase
+      const isRecommendedIntensity = exercise.intensity === (intensity || recommendedIntensity);
+      const isUserExercise = exercise.createdBy === userId;
+      
+      return {
+        id: exercise.id,
+        title: exercise.title,
+        description: exercise.description,
+        imageUrl: exercise.imageUrl,
+        duration: exercise.duration,
+        formattedDuration: this.formatDuration(exercise.duration),
+        intensity: exercise.intensity,
+        intensityLabel: this.getIntensityLabel(exercise.intensity),
+        muscleZone: exercise.muscleZone,
+        muscleZoneLabel: this.getMuscleZoneLabel(exercise.muscleZone),
+        // Les exercices publics sont toujours recommandés (pré-filtrés par intensité)
+        // Les exercices utilisateur sont recommandés seulement si l'intensité correspond
+        isRecommendedForPhase: !isUserExercise || isRecommendedIntensity,
+      };
+    });
 
     return {
       exercises: exerciseResponses,

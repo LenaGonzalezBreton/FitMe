@@ -19,6 +19,7 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
   const [showExercises, setShowExercises] = useState(false);
   const [showPresets, setShowPresets] = useState(false);
+  const [loadingProgramDetails, setLoadingProgramDetails] = useState(false);
   
   // Use hooks
   const { 
@@ -325,9 +326,19 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
               <TouchableOpacity
                 key={program.id}
                 className="bg-surface rounded-xl p-4 mb-4 shadow-sm border border-border-light active:bg-surface-secondary"
-                onPress={() => {
-                  setSelectedProgram(program);
-                  setShowExercises(true);
+                onPress={async () => {
+                  try {
+                    setLoadingProgramDetails(true);
+                    // Load full program details with exercises
+                    const fullProgram = await programApi.getProgramById(program.id);
+                    setSelectedProgram(fullProgram);
+                    setShowExercises(true);
+                  } catch (error) {
+                    console.error('Error loading program details:', error);
+                    Alert.alert('Erreur', 'Impossible de charger les détails du programme');
+                  } finally {
+                    setLoadingProgramDetails(false);
+                  }
                 }}
               >
                 {/* Program Header */}
@@ -463,6 +474,16 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
                 </Text>
                 <Text className="text-sm text-secondary-600">Actif{programs.filter(p => p.isActive).length > 1 ? 's' : ''}</Text>
               </View>
+            </View>
+          </View>
+        )}
+
+        {/* Loading indicator for program details */}
+        {loadingProgramDetails && (
+          <View className="absolute inset-0 bg-black/50 justify-center items-center z-50">
+            <View className="bg-white p-4 rounded-lg">
+              <ActivityIndicator size="large" color="#A99985" />
+              <Text className="mt-2 text-secondary-600">Chargement...</Text>
             </View>
           </View>
         )}

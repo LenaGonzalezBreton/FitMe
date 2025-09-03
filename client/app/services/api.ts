@@ -155,22 +155,6 @@ export const programApi = {
     return response.data;
   },
   
-  // Add an exercise to a program
-  addExerciseToProgram: async (
-    programId: string,
-    exercise: {
-      exerciseId: string;
-      order: number;
-      sets?: number;
-      reps?: string;
-      duration?: number;
-      restTime?: number;
-      notes?: string;
-    }
-  ) => {
-    const response = await api.post(`/programs/${programId}/exercises`, exercise);
-    return response.data;
-  },
 
   // Remove an exercise from a program by programExerciseId
   removeProgramExercise: async (programId: string, programExerciseId: string) => {
@@ -531,7 +515,7 @@ export const exerciseApi = {
   createExercise: async (exerciseData: {
     title: string;
     description: string;
-    intensity: 'LOW' | 'MODERATE' | 'HIGH';
+    intensity: 'VERY_LOW' | 'LOW' | 'MODERATE' | 'HIGH' | 'VERY_HIGH';
     muscleZone: string;
     duration: number;
     instructions?: string;
@@ -545,7 +529,7 @@ export const exerciseApi = {
   updateExercise: async (id: string, updates: Partial<{
     title: string;
     description: string;
-    intensity: 'LOW' | 'MODERATE' | 'HIGH';
+    intensity: 'VERY_LOW' | 'LOW' | 'MODERATE' | 'HIGH' | 'VERY_HIGH';
     muscleZone: string;
     duration: number;
     instructions: string;

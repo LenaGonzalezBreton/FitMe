@@ -79,6 +79,7 @@ export interface ITagRepository {
 
 // Types de filtres et données
 export interface ExerciseFilters {
+  userId?: string;
   intensity?: Intensity;
   muscleZone?: MuscleZone;
   minDuration?: number;

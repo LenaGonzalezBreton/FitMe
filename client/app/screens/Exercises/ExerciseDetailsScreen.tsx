@@ -5,13 +5,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { exerciseApi, programApi } from '../../services/api';
 import ExerciseFormModal from '../../components/ExerciseFormModal';
 import ProgramPickerModal from '../../components/ProgramPickerModal';
+import { getIntensityLabel, getMuscleZoneLabel, getCategoryLabel } from '../../utils/constants';
 
 interface Exercise {
   id: string;
   title: string;
   description: string;
   duration: number;
-  intensity: 'LOW' | 'MEDIUM' | 'HIGH';
+  intensity: 'VERY_LOW' | 'LOW' | 'MODERATE' | 'HIGH' | 'VERY_HIGH';
   category?: string;
   muscleZone?: string;
   phaseRecommendations?: string[];
@@ -40,34 +41,18 @@ export default function ExerciseDetailScreen() {
       load();
     }, [exerciseId]);
 
-    const getIntensityLabel = (intensity: string): string => {
-      switch (intensity) {
-        case 'LOW': return 'Faible';
-        case 'MEDIUM': return 'Modérée';
-        case 'HIGH': return 'Élevée';
-        default: return 'Non définie';
-      }
-    };
 
     const getIntensityColor = (intensity: string): string => {
       switch (intensity) {
+        case 'VERY_LOW': return 'bg-green-100 text-green-700';
         case 'LOW': return 'bg-success-100 text-success-700';
-        case 'MEDIUM': return 'bg-warning-100 text-warning-700';
+        case 'MODERATE': return 'bg-warning-100 text-warning-700';
         case 'HIGH': return 'bg-error-100 text-error-700';
+        case 'VERY_HIGH': return 'bg-red-100 text-red-700';
         default: return 'bg-secondary-100 text-secondary-700';
       }
     };
 
-    const getMuscleZoneLabel = (zone: string): string => {
-      switch (zone) {
-        case 'UPPER_BODY': return 'Haut du corps';
-        case 'LOWER_BODY': return 'Bas du corps';
-        case 'CORE': return 'Abdominaux';
-        case 'FULL_BODY': return 'Corps entier';
-        case 'CARDIO': return 'Cardio';
-        default: return zone;
-      }
-    };
 
     const formatDuration = (minutes: number): string => {
       if (minutes < 60) return `${minutes} min`;
@@ -96,25 +81,23 @@ export default function ExerciseDetailScreen() {
 
     const onPickProgram = async (programId: string) => {
       if (!exercise) return;
-      try {
-        setIsBusy(true);
-        setShowProgramPicker(false);
-        await programApi.addExerciseToProgram(programId, {
-          exerciseId: exercise.id,
-          order: 1,
-          duration: exercise.duration,
-        });
-        Alert.alert('Ajouté', 'Exercice ajouté au programme');
-      } catch (err: any) {
-        Alert.alert('Erreur', err?.response?.data?.message || 'Ajout impossible');
-      } finally {
-        setIsBusy(false);
-      }
+      setShowProgramPicker(false);
+      
+      Alert.alert(
+        'Fonctionnalité à venir',
+        'L\'ajout d\'exercices individuels aux programmes existants sera bientôt disponible. Pour le moment, vous pouvez créer un nouveau programme avec cet exercice.',
+        [
+          { text: 'OK', style: 'default' }
+        ]
+      );
     };
 
     return (
         <SafeAreaView className="flex-1 bg-brand-background">
-            <ScrollView className="flex-1 px-4 py-6">
+            <ScrollView 
+                className="flex-1 px-4 py-6"
+                contentContainerStyle={{ paddingBottom: 120 }}
+            >
                 {/* Header with back button */}
                 <View className="flex-row items-center mb-6">
                     <TouchableOpacity 
@@ -158,7 +141,7 @@ export default function ExerciseDetailScreen() {
                             <Text className="text-lg font-semibold text-brand-text ml-2">Catégorie</Text>
                         </View>
                         <View className="bg-primary-100 px-3 py-2 rounded-full self-start">
-                            <Text className="text-primary-700 font-medium text-sm">{exercise?.category || ''}</Text>
+                            <Text className="text-primary-700 font-medium text-sm">{exercise?.category ? getCategoryLabel(exercise.category) : 'Non définie'}</Text>
                         </View>
                     </View>
                 </View>
@@ -211,8 +194,10 @@ export default function ExerciseDetailScreen() {
                         </View>
                     </View>
                 </View>
+            </ScrollView>
 
-                {/* Actions */}
+            {/* Actions fixes en bas */}
+            <View className="px-4 py-4 bg-brand-background border-t border-border-light">
                 <View className="flex-row space-x-3">
                   <TouchableOpacity
                     onPress={handleAddToProgram}
@@ -236,7 +221,7 @@ export default function ExerciseDetailScreen() {
                     <Text className="text-surface font-bold">Supprimer</Text>
                   </TouchableOpacity>
                 </View>
-            </ScrollView>
+            </View>
 
             {/* Edit Modal */}
             <ExerciseFormModal

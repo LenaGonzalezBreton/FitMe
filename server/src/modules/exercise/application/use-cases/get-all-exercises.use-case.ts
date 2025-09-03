@@ -5,6 +5,7 @@ import { IExerciseRepository, ExerciseFilters } from '../../domain/exercise.repo
 import { Exercise } from '../../domain/exercise.entity';
 
 export interface GetAllExercisesRequest {
+  userId?: string;
   intensity?: string;
   muscleZone?: string;
   minDuration?: number;
@@ -28,6 +29,7 @@ export class GetAllExercisesUseCase {
 
   async execute(request: GetAllExercisesRequest): Promise<GetAllExercisesResponse> {
     const filters: ExerciseFilters = {
+      userId: request.userId,
       intensity: request.intensity as any,
       muscleZone: request.muscleZone as any,
       minDuration: request.minDuration,

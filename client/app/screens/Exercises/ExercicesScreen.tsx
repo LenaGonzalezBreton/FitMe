@@ -19,6 +19,7 @@ interface Exercise {
   createdBy?: string;
   createdAt?: string;
   updatedAt?: string;
+  isRecommendedForPhase?: boolean;
 }
 
 const ExercicesScreen: React.FC = () => {
@@ -97,7 +98,7 @@ const ExercicesScreen: React.FC = () => {
         limit: itemsPerPage,
         offset: isRefresh ? 0 : (currentPage - 1) * itemsPerPage
       };
-
+      
       if (!showAllExercises && selectedPhase) {
         params.phase = selectedPhase;
       } else if (!showAllExercises && getPhaseApiKey) {
@@ -162,24 +163,40 @@ const ExercicesScreen: React.FC = () => {
 
   const handleCreateExercise = async (exerciseData: any) => {
     try {
-      const newExercise = await exerciseApi.createExercise(exerciseData);
+      const response = await exerciseApi.createExercise(exerciseData);
+      // L'API retourne { exercise: {...}, message: "..." }
+      const newExercise = response.exercise || response;
       setExercises(prev => [newExercise, ...prev]);
-      Alert.alert('Succès', 'Exercice créé avec succès');
+      Alert.alert('Succès', response.message || 'Exercice créé avec succès');
     } catch (error: any) {
-      Alert.alert('Erreur', error?.response?.data?.message || 'Impossible de créer l\'exercice');
+      console.error('Error creating exercise:', error);
+      const errorMessages = error?.response?.data?.message;
+      const errorText = Array.isArray(errorMessages) ? errorMessages.join(', ') : (errorMessages || 'Impossible de créer l\'exercice');
+      Alert.alert('Erreur', errorText);
     }
+  };
+
+  const handleExerciseCreated = (newExercise: any) => {
+    // Fonction appelée quand un exercice a déjà été créé par ExerciseFormModal
+    setExercises(prev => [newExercise, ...prev]);
+    Alert.alert('Succès', 'Exercice créé avec succès');
   };
 
   const handleUpdateExercise = async (exerciseData: any) => {
     if (!editingExercise) return;
     
     try {
-      const updatedExercise = await exerciseApi.updateExercise(editingExercise.id, exerciseData);
+      const response = await exerciseApi.updateExercise(editingExercise.id, exerciseData);
+      // L'API peut retourner { exercise: {...}, message: "..." } ou directement l'exercice
+      const updatedExercise = response.exercise || response;
       setExercises(prev => prev.map(ex => ex.id === editingExercise.id ? updatedExercise : ex));
       setEditingExercise(null);
-      Alert.alert('Succès', 'Exercice mis à jour avec succès');
+      Alert.alert('Succès', response.message || 'Exercice mis à jour avec succès');
     } catch (error: any) {
-      Alert.alert('Erreur', error?.response?.data?.message || 'Impossible de mettre à jour l\'exercice');
+      console.error('Error updating exercise:', error);
+      const errorMessages = error?.response?.data?.message;
+      const errorText = Array.isArray(errorMessages) ? errorMessages.join(', ') : (errorMessages || 'Impossible de mettre à jour l\'exercice');
+      Alert.alert('Erreur', errorText);
     }
   };
 
@@ -282,6 +299,13 @@ const ExercicesScreen: React.FC = () => {
             ) : (
               <View className="bg-green-100 px-2 py-1 rounded">
                 <Text className="text-xs text-green-700">Système</Text>
+              </View>
+            )}
+            
+            {/* Avertissement intensité non recommandée */}
+            {exercise.isRecommendedForPhase === false && (
+              <View className="bg-yellow-100 px-2 py-1 rounded border border-yellow-300">
+                <Text className="text-xs text-yellow-800">⚠️ Intensité non recommandée</Text>
               </View>
             )}
           </View>
@@ -525,7 +549,7 @@ const ExercicesScreen: React.FC = () => {
       <ExerciseFormModal
         visible={showCreateModal}
         onClose={() => setShowCreateModal(false)}
-        onSave={handleCreateExercise}
+        onSave={handleExerciseCreated}
       />
 
       <ExerciseFormModal
