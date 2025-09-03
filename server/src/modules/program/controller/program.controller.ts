@@ -31,6 +31,8 @@ import { UpdateProgramUseCase } from '../application/use-cases/update-program.us
 import { DeleteProgramUseCase } from '../application/use-cases/delete-program.use-case';
 import { StartProgramUseCase } from '../application/use-cases/start-program.use-case';
 import { GetProgramStatusUseCase } from '../application/use-cases/get-program-status.use-case';
+import { GetTemplateProgramsUseCase } from '../application/use-cases/get-template-programs.use-case';
+import { GeneratePresetProgramUseCase } from '../application/use-cases/generate-preset-program.use-case';
 import {
   GenerateProgramDto,
   GeneratedProgramResponseDto,
@@ -65,6 +67,8 @@ export class ProgramController {
     private readonly deleteProgramUseCase: DeleteProgramUseCase,
     private readonly startProgramUseCase: StartProgramUseCase,
     private readonly getProgramStatusUseCase: GetProgramStatusUseCase,
+    private readonly getTemplateProgramsUseCase: GetTemplateProgramsUseCase,
+    private readonly generatePresetProgramUseCase: GeneratePresetProgramUseCase,
   ) {}
 
   @Get('types')
@@ -110,6 +114,53 @@ export class ProgramController {
     };
   }
 
+  @Get('templates')
+  @ApiOperation({
+    summary: 'Récupérer les programmes templates disponibles',
+    description: 'Retourne la liste des programmes préconçus disponibles pour tous les utilisateurs',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Nombre maximum de programmes à récupérer',
+    example: 20,
+  })
+  @ApiQuery({
+    name: 'offset',
+    required: false,
+    description: 'Nombre de programmes à ignorer (pagination)',
+    example: 0,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Programmes templates récupérés avec succès',
+    type: ProgramListResponseDto,
+  })
+  async getTemplatePrograms(
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string,
+  ): Promise<ProgramListResponseDto> {
+    try {
+      const result = await this.getTemplateProgramsUseCase.execute({
+        filters: {
+          limit: limit ? parseInt(limit, 10) : 20,
+          offset: offset ? parseInt(offset, 10) : 0,
+        },
+      });
+
+      return {
+        programs: result.programs.map((program) =>
+          this.mapProgramToResponse(program, true), // Include exercises for templates
+        ),
+        total: result.total,
+        offset: result.offset,
+        limit: result.limit,
+      };
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
   @Post('generate')
   @ApiOperation({
     summary: "Générer un programme d'entraînement adapté à la phase de cycle",
@@ -140,7 +191,11 @@ export class ProgramController {
         sessionType: generateDto.sessionType,
       });
 
-      return {
+      console.log('[Backend] Generated program result:', JSON.stringify(result, null, 2));
+      console.log('[Backend] Exercise count in result:', result.program.exercises?.length);
+      console.log('[Backend] Exercise details:', result.program.exercises);
+
+      const response = {
         success: true,
         data: {
           program: result.program,
@@ -149,11 +204,103 @@ export class ProgramController {
         },
         message: `Programme "${result.program.title}" généré avec succès pour votre ${result.userPhase.phaseLabel}`,
       };
+
+      console.log('[Backend] Final response being sent:', JSON.stringify(response, null, 2));
+      return response;
     } catch (error) {
       const message =
         error instanceof Error
           ? error.message
           : 'Erreur lors de la génération du programme';
+      const statusCode =
+        error instanceof Error && error.message?.includes('trouvé')
+          ? HttpStatus.NOT_FOUND
+          : HttpStatus.BAD_REQUEST;
+      throw new HttpException(message, statusCode);
+    }
+  }
+
+  @Post('generate-preset')
+  @ApiOperation({
+    summary: "Générer un programme préconfiguré intelligent",
+    description: 'Crée un programme personnalisé en sélectionnant intelligemment des exercices selon la phase de cycle et les préférences utilisateur',
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        programType: {
+          type: 'string',
+          enum: ['strength', 'cardio', 'flexibility', 'mixed'],
+          description: 'Type de programme à générer'
+        },
+        duration: {
+          type: 'number',
+          description: 'Durée de séance souhaitée en minutes',
+          example: 30
+        },
+        focusZone: {
+          type: 'string',
+          enum: ['UPPER_BODY', 'LOWER_BODY', 'CORE', 'FULL_BODY', 'CARDIO', 'FLEXIBILITY', 'BALANCE'],
+          description: 'Zone musculaire à privilégier (optionnel)'
+        },
+        title: {
+          type: 'string',
+          description: 'Titre personnalisé du programme (optionnel)'
+        },
+        goal: {
+          type: 'string',
+          description: 'Objectif personnalisé du programme (optionnel)'
+        }
+      },
+      required: ['programType']
+    }
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Programme préconfiguré généré avec succès',
+    type: GeneratedProgramResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Aucun cycle trouvé ou exercices insuffisants',
+  })
+  async generatePresetProgram(
+    @Body() generateDto: any,
+    @Request() req: AuthenticatedRequest,
+  ): Promise<GeneratedProgramResponseDto> {
+    try {
+      const userId = req.user.id;
+
+      console.log('[ProgramController] Generating preset program with params:', {
+        userId,
+        ...generateDto
+      });
+
+      const result = await this.generatePresetProgramUseCase.execute({
+        userId,
+        programType: generateDto.programType,
+        duration: generateDto.duration,
+        focusZone: generateDto.focusZone,
+        title: generateDto.title,
+        goal: generateDto.goal,
+      });
+
+      return {
+        success: true,
+        data: {
+          program: result.program,
+          userPhase: result.userPhase,
+          adaptations: result.adaptations,
+        },
+        message: `Programme "${result.program.title}" généré avec succès avec ${result.program.exercises.length} exercices sélectionnés intelligemment pour votre ${result.userPhase.phaseLabel}`,
+      };
+    } catch (error) {
+      console.error('[ProgramController] Error generating preset program:', error);
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Erreur lors de la génération du programme préconfiguré';
       const statusCode =
         error instanceof Error && error.message?.includes('trouvé')
           ? HttpStatus.NOT_FOUND
@@ -625,6 +772,7 @@ export class ProgramController {
       ...(includeExercises &&
         program.exercises && {
           exercises: program.exercises.map((exercise: any) => ({
+            id: exercise.id,
             exerciseId: exercise.exerciseId,
             order: exercise.order,
             sets: exercise.sets,
@@ -632,6 +780,12 @@ export class ProgramController {
             duration: exercise.duration,
             restTime: exercise.restTime,
             notes: exercise.notes,
+            title: exercise.title || exercise.exerciseTitle || `Exercice ${exercise.order}`,
+            description: exercise.description || '',
+            muscleZone: exercise.muscleZone,
+            intensity: exercise.intensity,
+            equipment: exercise.equipment,
+            exerciseTitle: exercise.title || exercise.exerciseTitle || `Exercice ${exercise.order}`, // For backward compatibility
           })),
         }),
     };

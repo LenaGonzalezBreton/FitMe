@@ -110,12 +110,16 @@ export class GenerateProgramByPhaseUseCase {
     );
 
     // 4. Récupérer les exercices adaptés (sans limite de durée)
+    console.log(`[GenerateProgram] Fetching exercises for phase: ${currentPhase.phase}, intensity: ${phaseConfig.intensity}, focusZone: ${focusZone}`);
     const exercisesResult = await this.getExercisesByPhaseUseCase.execute({
       phase: currentPhase.phase,
       intensity: phaseConfig.intensity,
       muscleZone: focusZone,
       limit: 20, // Plus d'exercices pour avoir plus de choix
     });
+    
+    console.log(`[GenerateProgram] Found ${exercisesResult.exercises.length} exercises from phase use case`);
+    console.log('[GenerateProgram] Exercise details:', exercisesResult.exercises);
 
     // 5. Sélectionner et organiser les exercices (sans durée cible)
     const selectedExercises = this.selectAndOrganizeExercises(
@@ -123,6 +127,9 @@ export class GenerateProgramByPhaseUseCase {
       sessionType,
       focusZone,
     );
+    
+    console.log(`[GenerateProgram] Selected ${selectedExercises.length} exercises for program`);
+    console.log('[GenerateProgram] Selected exercise details:', selectedExercises);
 
     // 6. Calculer la durée totale basée sur les exercices sélectionnés
     const totalDuration = this.calculateTotalDuration(selectedExercises);
@@ -137,7 +144,24 @@ export class GenerateProgramByPhaseUseCase {
     );
 
     // 7. Sauvegarder le programme dans la base de données
+    console.log('[GenerateProgram] Saving program with data:', {
+      title: programData.title,
+      goal: programData.goal,
+      exerciseCount: programData.exercises?.length,
+      exerciseDetails: programData.exercises?.map(ex => ({
+        exerciseId: ex.exerciseId,
+        order: ex.order,
+        duration: ex.duration
+      }))
+    });
+    
     const savedProgram = await this.programRepository.create(programData);
+    
+    console.log('[GenerateProgram] Program saved successfully:', {
+      id: savedProgram.id,
+      title: savedProgram.title,
+      savedExerciseCount: savedProgram.exercises?.length || 0
+    });
 
     // 8. Générer les adaptations et conseils
     const adaptations = this.generateAdaptations(currentPhase.phase);
@@ -187,32 +211,32 @@ export class GenerateProgramByPhaseUseCase {
     sessionType: string,
   ): PhaseConfiguration {
     const configs: PhaseConfigMap = {
-      MENSTRUAL: {
+      menstrual: {
         intensity:
           sessionType === 'strength' ? Intensity.LOW : Intensity.VERY_LOW,
         preferredZones: [MuscleZone.FLEXIBILITY, MuscleZone.CORE],
         restMultiplier: 1.5,
       },
-      FOLLICULAR: {
+      follicular: {
         intensity:
           sessionType === 'cardio' ? Intensity.MODERATE : Intensity.LOW,
         preferredZones: [MuscleZone.LOWER_BODY, MuscleZone.CORE],
         restMultiplier: 1.2,
       },
-      OVULATION: {
+      ovulation: {
         intensity:
           sessionType === 'flexibility' ? Intensity.MODERATE : Intensity.HIGH,
         preferredZones: [MuscleZone.FULL_BODY, MuscleZone.UPPER_BODY],
         restMultiplier: 1.0,
       },
-      LUTEAL: {
+      luteal: {
         intensity: Intensity.MODERATE,
         preferredZones: [MuscleZone.UPPER_BODY, MuscleZone.BALANCE],
         restMultiplier: 1.3,
       },
     };
 
-    return configs[phase] || configs.FOLLICULAR;
+    return configs[phase] || configs.follicular;
   }
 
   private selectAndOrganizeExercises(
@@ -414,10 +438,10 @@ export class GenerateProgramByPhaseUseCase {
     duration: number,
   ): string {
     const phaseNames: Record<string, string> = {
-      MENSTRUAL: 'Récupération',
-      FOLLICULAR: 'Énergie Croissante',
-      OVULATION: 'Haute Performance',
-      LUTEAL: 'Force & Endurance',
+      menstrual: 'Récupération',
+      follicular: 'Énergie Croissante',
+      ovulation: 'Haute Performance',
+      luteal: 'Force & Endurance',
     };
 
     const sessionNames: Record<string, string> = {
@@ -432,13 +456,13 @@ export class GenerateProgramByPhaseUseCase {
 
   private generateProgramDescription(phase: string): string {
     const descriptions: Record<string, string> = {
-      MENSTRUAL:
+      menstrual:
         'Programme doux adapté à votre période de récupération. Focus sur la relaxation et les mouvements apaisants.',
-      FOLLICULAR:
+      follicular:
         "Programme progressif pour accompagner votre regain d'énergie. Idéal pour reprendre en douceur.",
-      OVULATION:
+      ovulation:
         "Programme intensif pour profiter de votre pic d'énergie. C'est le moment des défis !",
-      LUTEAL:
+      luteal:
         "Programme équilibré pour maintenir votre force. Focus sur la stabilité et l'endurance.",
     };
 
@@ -455,19 +479,19 @@ export class GenerateProgramByPhaseUseCase {
     ];
 
     const phaseTips: Record<string, string[]> = {
-      MENSTRUAL: [
+      menstrual: [
         'Privilégiez les mouvements fluides et la respiration profonde',
         'Évitez les positions inversées si elles vous dérangent',
       ],
-      FOLLICULAR: [
+      follicular: [
         "C'est le moment idéal pour apprendre de nouveaux mouvements",
         "Augmentez progressivement l'intensité jour après jour",
       ],
-      OVULATION: [
+      ovulation: [
         'Profitez de votre énergie pour vous surpasser',
         "C'est le moment parfait pour battre vos records personnels",
       ],
-      LUTEAL: [
+      luteal: [
         'Concentrez-vous sur la technique et la précision',
         'Les exercices de stabilité sont particulièrement bénéfiques',
       ],
@@ -478,22 +502,22 @@ export class GenerateProgramByPhaseUseCase {
 
   private generateAdaptations(phase: string): string[] {
     const adaptations: Record<string, string[]> = {
-      MENSTRUAL: [
+      menstrual: [
         'Intensité réduite de 30-40% par rapport à votre niveau habituel',
         'Focus sur la récupération et la mobilité',
         "Écoutez votre corps et arrêtez si vous ressentez de l'inconfort",
       ],
-      FOLLICULAR: [
+      follicular: [
         "Augmentation progressive de l'intensité recommandée",
         'Bon moment pour essayer de nouveaux exercices',
         'Récupération généralement plus rapide',
       ],
-      OVULATION: [
+      ovulation: [
         'Intensité maximale recommandée',
         'Idéal pour les entraînements HIIT et les charges lourdes',
         'Profitez de votre pic de performance',
       ],
-      LUTEAL: [
+      luteal: [
         'Intensité modérée avec focus sur la technique',
         "Exercices de stabilité et d'équilibre privilégiés",
         'Temps de récupération légèrement allongé',

@@ -26,6 +26,13 @@ export interface UseProgramsReturn {
     trainingType?: string;
     randomSeed?: number;
   }) => Promise<GeneratedProgramResponse | null>;
+  generatePresetProgram: (params: {
+    programType: 'cardio' | 'strength' | 'flexibility' | 'mixed';
+    duration?: number;
+    focusZone?: 'UPPER_BODY' | 'LOWER_BODY' | 'CORE' | 'FULL_BODY' | 'CARDIO' | 'FLEXIBILITY' | 'BALANCE';
+    title?: string;
+    goal?: string;
+  }) => Promise<GeneratedProgramResponse | null>;
   startProgram: (programId: string) => Promise<boolean>;
   deleteProgram: (programId: string) => Promise<boolean>;
 }
@@ -116,6 +123,11 @@ export const usePrograms = (options: UseProgramsOptions = {}): UseProgramsReturn
 
       const response: GeneratedProgramResponse = await programApi.generateProgram(params);
       
+      console.log('[usePrograms] Raw API response:', response);
+      console.log('[usePrograms] Response data:', response.data);
+      console.log('[usePrograms] Program in response:', response.data?.program);
+      console.log('[usePrograms] Exercises in program:', response.data?.program?.exercises);
+      
       // Refresh programs list after generating
       // reset and refetch after generation
       setProgramOffset(0);
@@ -130,6 +142,45 @@ export const usePrograms = (options: UseProgramsOptions = {}): UseProgramsReturn
       }
       
       const errorMessage = err.response?.data?.message || err.message || 'Erreur lors de la génération du programme';
+      setError(errorMessage);
+      Alert.alert('Erreur', errorMessage);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generatePresetProgram = async (params: {
+    programType: 'cardio' | 'strength' | 'flexibility' | 'mixed';
+    duration?: number;
+    focusZone?: 'UPPER_BODY' | 'LOWER_BODY' | 'CORE' | 'FULL_BODY' | 'CARDIO' | 'FLEXIBILITY' | 'BALANCE';
+    title?: string;
+    goal?: string;
+  }): Promise<GeneratedProgramResponse | null> => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      console.log('[usePrograms] Generating preset program with params:', params);
+
+      const response: GeneratedProgramResponse = await programApi.generatePresetProgram(params);
+      
+      console.log('[usePrograms] Preset program generated successfully:', response);
+      console.log('[usePrograms] Program exercises:', response.data?.program?.exercises);
+
+      // Refresh programs list after generating
+      setProgramOffset(0);
+      await fetchPrograms({ reset: true });
+      
+      return response;
+    } catch (err: any) {
+      // Don't show error alert for session expiration - user will be redirected to login
+      if (err?.name === 'SessionExpired') {
+        console.log('Session expired during preset program generation - user will be redirected to login');
+        return null;
+      }
+      
+      const errorMessage = err.response?.data?.message || err.message || 'Erreur lors de la génération du programme préconfiguré';
       setError(errorMessage);
       Alert.alert('Erreur', errorMessage);
       return null;
@@ -225,6 +276,7 @@ export const usePrograms = (options: UseProgramsOptions = {}): UseProgramsReturn
     loadMorePrograms,
     hasMorePrograms,
     generateProgram,
+    generatePresetProgram,
     startProgram,
     deleteProgram,
   };

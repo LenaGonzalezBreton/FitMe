@@ -190,9 +190,17 @@ const CreateProgramScreen = () => {
       });
 
       if (response) {
+        console.log('[Frontend] Full program generation response:', response);
+        console.log('[Frontend] Generated program data:', response.data);
+        console.log('[Frontend] Generated program exercises:', response.data?.program?.exercises);
+        console.log('[Frontend] Exercise count:', response.data?.program?.exercises?.length);
+        
+        const exerciseCount = response.data?.program?.exercises?.length || 0;
+        const programTitle = response.data?.program?.title || 'Programme généré';
+        
         Alert.alert(
           'Programme généré !',
-          'Un programme personnalisé a été généré pour vous.',
+          `${programTitle}\n${exerciseCount} exercices inclus\n${response.message}`,
           [
             {
               text: 'Voir le programme',

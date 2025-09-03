@@ -49,7 +49,7 @@ export interface GeneratedProgramExercise {
   muscleZone?: string;
   muscleZoneLabel: string;
   order: number;
-  restTimeSeconds?: number;
+  restTime?: number; // Changed from restTimeSeconds to match backend
 }
 
 export interface GeneratedProgram {

@@ -5,6 +5,7 @@ import ProgramExercisesList from '../../components/ProgramExercisesList';
 import PresetProgramsModal, { PresetProgram } from '../../components/PresetProgramsModal';
 import { NavigationProp } from '@react-navigation/native';
 import { usePrograms } from '../../hooks/usePrograms';
+import { useTemplatePrograms } from '../../hooks/useTemplatePrograms';
 import { exerciseApi, programApi } from '../../services/api';
 
 import { Program, ProgramExercise } from '../../types';
@@ -32,8 +33,21 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
     loadMorePrograms,
     hasMorePrograms,
     startProgram,
-    deleteProgram 
+    deleteProgram,
+    generatePresetProgram
   } = usePrograms({
+    autoFetch: true
+  });
+
+  const {
+    templatePrograms,
+    loading: templateProgramsLoading,
+    error: templateProgramsError,
+    total: templateProgramsTotal,
+    refreshTemplatePrograms,
+    loadMoreTemplatePrograms,
+    hasMoreTemplatePrograms,
+  } = useTemplatePrograms({
     autoFetch: true
   });
 
@@ -43,7 +57,11 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
   const onRefresh = async () => {
     setRefreshing(true);
     try {
-      await refreshPrograms();
+      if (activeTab === 'mes-programmes') {
+        await refreshPrograms();
+      } else {
+        await refreshTemplatePrograms();
+      }
     } catch (error) {
       console.error('Error refreshing data:', error);
     } finally {
@@ -96,7 +114,12 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
   };
 
   // Get current programs based on active tab
-  const currentPrograms = activeTab === 'mes-programmes' ? programs : [];
+  const currentPrograms = activeTab === 'mes-programmes' ? programs : templatePrograms;
+  const currentTotal = activeTab === 'mes-programmes' ? total : templateProgramsTotal;
+  const currentLoading = activeTab === 'mes-programmes' ? programsLoading : templateProgramsLoading;
+  const currentError = activeTab === 'mes-programmes' ? programsError : templateProgramsError;
+  const currentHasMore = activeTab === 'mes-programmes' ? hasMorePrograms : hasMoreTemplatePrograms;
+  const currentLoadMore = activeTab === 'mes-programmes' ? loadMorePrograms : loadMoreTemplatePrograms;
 
   const getDifficultyColor = (difficulty: string): string => {
     switch (difficulty) {
@@ -169,14 +192,23 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
   }
 
   async function programApiCreateFromPreset(preset: PresetProgram) {
+    console.log('[programApiCreateFromPreset] Creating program from preset:', preset.title);
+    console.log('[programApiCreateFromPreset] Preset exercises:', preset.exercises);
+
     const startDate = new Date().toISOString();
+    
     // Resolve exercise IDs by title via backend search if available; fallback to creating a minimal set
     const resolvedExercises = await Promise.all(
-      preset.exercises.map(async (ex) => {
+      preset.exercises.map(async (ex, index) => {
+        console.log(`[programApiCreateFromPreset] Resolving exercise ${index + 1}: "${ex.exerciseTitle}"`);
         try {
           const res = await exerciseApi.searchExercises(ex.exerciseTitle, { limit: 1 });
-          const found = res.exercises?.[0];
+          console.log(`[programApiCreateFromPreset] Search result for "${ex.exerciseTitle}":`, res);
+          
+          // Fix: Access exercises from res.data.exercises, not res.exercises
+          const found = res.data?.exercises?.[0];
           if (found?.id) {
+            console.log(`[programApiCreateFromPreset] ✅ Found exercise: ${found.title} (ID: ${found.id})`);
             return {
               exerciseId: found.id,
               order: ex.order,
@@ -186,23 +218,44 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
               restTime: ex.restTime,
               notes: ex.notes,
             };
+          } else {
+            console.log(`[programApiCreateFromPreset] ❌ No exercise found for "${ex.exerciseTitle}"`);
           }
-        } catch {}
+        } catch (error) {
+          console.error(`[programApiCreateFromPreset] Error searching for "${ex.exerciseTitle}":`, error);
+        }
         return null;
       })
     );
+    
     const valid = resolvedExercises.filter(Boolean) as any[];
-    return programApi.createProgram({
+    console.log(`[programApiCreateFromPreset] Resolved ${valid.length} out of ${preset.exercises.length} exercises`);
+    console.log('[programApiCreateFromPreset] Valid exercises:', valid);
+
+    if (valid.length === 0) {
+      console.warn('[programApiCreateFromPreset] ⚠️ No exercises could be resolved - program will be created without exercises');
+      Alert.alert(
+        'Attention',
+        `Aucun exercice n'a pu être trouvé pour le programme "${preset.title}". Le programme sera créé sans exercices.`,
+        [{ text: 'OK' }]
+      );
+    }
+
+    const programData = {
       title: preset.title,
       goal: preset.goal,
       startDate,
       duration: preset.durationWeeks ? preset.durationWeeks * 7 : undefined,
       exercises: valid,
-    });
+    };
+
+    console.log('[programApiCreateFromPreset] Creating program with data:', programData);
+
+    return programApi.createProgram(programData);
   }
 
   // Loading state
-  if (programsLoading) {
+  if (currentLoading) {
     return (
       <SafeAreaView className="flex-1 bg-brand-background">
         <View className="flex-1 justify-center items-center">
@@ -282,15 +335,15 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
         {/* Programs List */}
         <View className="mb-6">
           <Text className="text-lg font-semibold text-brand-text mb-4">
-            Vos programmes ({total})
+            {activeTab === 'mes-programmes' ? `Vos programmes (${currentTotal})` : `Programmes recommandés (${currentTotal})`}
           </Text>
           
           {/* Error state */}
-          {programsError && (
+          {currentError && (
             <View className="bg-error-50 border border-error-200 rounded-xl p-4 mb-4 shadow-sm">
-              <Text className="text-error-700 text-center">{programsError}</Text>
+              <Text className="text-error-700 text-center">{currentError}</Text>
               <TouchableOpacity 
-                onPress={refreshPrograms}
+                onPress={onRefresh}
                 className="mt-2 bg-error-100 py-2 px-4 rounded-lg active:bg-error-200"
               >
                 <Text className="text-error-700 text-center font-medium">Réessayer</Text>
@@ -299,7 +352,7 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
           )}
 
           {/* No programs fallback */}
-          {!programsError && currentPrograms.length === 0 && (
+          {!currentError && currentPrograms.length === 0 && (
             <View className="bg-surface rounded-xl p-6 items-center shadow-sm border border-border-light">
               <Text className="text-6xl mb-4">💪</Text>
               <Text className="text-xl font-bold text-brand-text mb-2 text-center">
@@ -441,10 +494,10 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
               </TouchableOpacity>
             );
           })}
-          {hasMorePrograms && (
+          {currentHasMore && (
             <View className="mt-2">
               <TouchableOpacity
-                onPress={loadMorePrograms}
+                onPress={currentLoadMore}
                 className="bg-secondary-200 py-3 rounded-lg"
               >
                 <Text className="text-secondary-700 font-bold text-center">Charger plus</Text>
@@ -516,6 +569,22 @@ const ProgramScreen = ({ navigation }: ProgramScreenProps) => {
             await refreshPrograms();
           } catch (err: any) {
             Alert.alert('Erreur', err?.response?.data?.message || 'Création impossible');
+          }
+        }}
+        onGeneratePreset={async (params) => {
+          try {
+            console.log('[ProgramScreen] Generating intelligent preset with params:', params);
+            const response = await generatePresetProgram(params);
+            if (response) {
+              console.log('[ProgramScreen] Intelligent preset generated successfully:', response);
+              Alert.alert('Succès', 'Programme intelligent généré avec succès !');
+              await refreshPrograms();
+            } else {
+              Alert.alert('Erreur', 'Impossible de générer le programme intelligent');
+            }
+          } catch (error) {
+            console.error('[ProgramScreen] Error generating intelligent preset:', error);
+            Alert.alert('Erreur', 'Erreur lors de la génération du programme intelligent');
           }
         }}
       />

@@ -15,10 +15,12 @@ export interface IProgramRepository {
   findById(id: string): Promise<Program | null>;
   findByUserId(userId: string, filters?: ProgramFilters): Promise<Program[]>;
   findActiveByUserId(userId: string): Promise<Program | null>;
+  findTemplates(filters?: { limit?: number; offset?: number }): Promise<Program[]>;
   update(id: string, program: Partial<Program>): Promise<Program>;
   delete(id: string): Promise<void>;
   exists(id: string): Promise<boolean>;
   countByUserId(userId: string): Promise<number>;
+  countTemplates(): Promise<number>;
 }
 
 export interface IProgramExerciseRepository {

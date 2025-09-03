@@ -181,6 +181,18 @@ export const programApi = {
     return response.data;
   },
 
+  // Generate preset program with intelligent exercise selection
+  generatePresetProgram: async (params: {
+    programType: 'cardio' | 'strength' | 'flexibility' | 'mixed';
+    duration?: number;
+    focusZone?: 'UPPER_BODY' | 'LOWER_BODY' | 'CORE' | 'FULL_BODY' | 'CARDIO' | 'FLEXIBILITY' | 'BALANCE';
+    title?: string;
+    goal?: string;
+  }) => {
+    const response = await api.post('/programs/generate-preset', params);
+    return response.data;
+  },
+
   // Create program
   createProgram: async (programData: {
     title: string;
@@ -241,6 +253,15 @@ export const programApi = {
   // Get training days
   getTrainingDays: async () => {
     const response = await api.get('/programs/training-days');
+    return response.data;
+  },
+
+  // Get template programs
+  getTemplatePrograms: async (params?: {
+    limit?: number;
+    offset?: number;
+  }) => {
+    const response = await api.get('/programs/templates', { params });
     return response.data;
   },
 };

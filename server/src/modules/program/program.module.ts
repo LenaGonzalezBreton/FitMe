@@ -12,6 +12,8 @@ import { UpdateProgramUseCase } from './application/use-cases/update-program.use
 import { DeleteProgramUseCase } from './application/use-cases/delete-program.use-case';
 import { StartProgramUseCase } from './application/use-cases/start-program.use-case';
 import { GetProgramStatusUseCase } from './application/use-cases/get-program-status.use-case';
+import { GetTemplateProgramsUseCase } from './application/use-cases/get-template-programs.use-case';
+import { GeneratePresetProgramUseCase } from './application/use-cases/generate-preset-program.use-case';
 
 // Infrastructure
 import { PrismaProgramRepository } from './infrastructure/prisma-program.repository';
@@ -41,6 +43,8 @@ import { ProgramController } from './controller/program.controller';
     DeleteProgramUseCase,
     StartProgramUseCase,
     GetProgramStatusUseCase,
+    GetTemplateProgramsUseCase,
+    GeneratePresetProgramUseCase,
 
     // Repository implementations
     {
@@ -61,6 +65,8 @@ import { ProgramController } from './controller/program.controller';
     DeleteProgramUseCase,
     StartProgramUseCase,
     GetProgramStatusUseCase,
+    GetTemplateProgramsUseCase,
+    GeneratePresetProgramUseCase,
     PROGRAM_REPOSITORY_TOKEN,
     PROGRAM_EXERCISE_REPOSITORY_TOKEN,
   ],

@@ -13,7 +13,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { usePrograms } from '../../hooks/usePrograms';
 import { useCycleContext } from '../../context/CycleContext';
-import { workoutApi } from '../../services/api';
+import { workoutApi, programApi } from '../../services/api';
 
 interface WorkoutExercise {
   id: string;
@@ -69,12 +69,67 @@ const WorkoutSessionScreen = () => {
         throw new Error('Aucun programme actif');
       }
 
+      console.log('[WorkoutSessionScreen] Starting workout session for program:', activeProgram.id);
+      
       // Start workout session via API
       const response = await workoutApi.startWorkoutSession(activeProgram.id);
-      setWorkoutSession(response.session);
+      console.log('[WorkoutSessionScreen] API response:', response);
+      
+      // API returns data in response.data, not response.session
+      const sessionData = response.data || response;
+      console.log('[WorkoutSessionScreen] Session data:', sessionData);
+      
+      if (!sessionData || !sessionData.id) {
+        throw new Error('Invalid session data received from API');
+      }
+
+      // Fetch program details to get exercises and title
+      let programDetails = activeProgram;
+      try {
+        if (activeProgram.id) {
+          console.log('[WorkoutSessionScreen] Fetching program details for:', activeProgram.id);
+          const fullProgram = await programApi.getProgramById(activeProgram.id);
+          console.log('[WorkoutSessionScreen] Program details:', fullProgram);
+          programDetails = fullProgram;
+        }
+      } catch (programErr) {
+        console.error('[WorkoutSessionScreen] Error fetching program details:', programErr);
+        // Continue with activeProgram if fetch fails
+      }
+
+      // Transform API response to match WorkoutSession interface
+      const workoutSession: WorkoutSession = {
+        id: sessionData.id,
+        programId: sessionData.programId || activeProgram.id,
+        programTitle: programDetails.title || sessionData.title || 'Entraînement',
+        startTime: new Date(sessionData.startTime),
+        endTime: sessionData.endTime ? new Date(sessionData.endTime) : undefined,
+        exercises: programDetails.exercises?.map((ex: any, index: number) => ({
+          id: ex.id || `exercise-${index}`,
+          exerciseId: ex.exerciseId || ex.id,
+          title: ex.title || ex.exerciseTitle || `Exercice ${index + 1}`,
+          description: ex.description || '',
+          duration: ex.duration || 0,
+          sets: ex.sets,
+          reps: ex.reps,
+          restTime: ex.restTime,
+          order: ex.order || index,
+          completed: false,
+        })) || [],
+        currentExerciseIndex: 0,
+        isActive: sessionData.status === 'ACTIVE' || true,
+      };
+      
+      console.log('[WorkoutSessionScreen] Transformed workout session:', workoutSession);
+      setWorkoutSession(workoutSession);
     } catch (err: any) {
-      setError(err.message || 'Erreur lors de l\'initialisation de la séance');
-      console.error('Error initializing workout session:', err);
+      const errorMessage = err.response?.data?.message || err.message || 'Erreur lors de l\'initialisation de la séance';
+      setError(errorMessage);
+      console.error('[WorkoutSessionScreen] Error initializing workout session:', {
+        error: err,
+        response: err.response?.data,
+        message: errorMessage,
+      });
     } finally {
       setLoading(false);
     }
