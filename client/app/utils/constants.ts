@@ -1,8 +1,10 @@
 // Exercise Intensity Options (matching API interface)
 export const INTENSITY_OPTIONS = [
+  { value: 'VERY_LOW', label: 'Très faible' },
   { value: 'LOW', label: 'Faible' },
-  { value: 'MEDIUM', label: 'Modérée' },
-  { value: 'HIGH', label: 'Élevée' }
+  { value: 'MODERATE', label: 'Modérée' },
+  { value: 'HIGH', label: 'Élevée' },
+  { value: 'VERY_HIGH', label: 'Très élevée' }
 ];
 
 // Exercise Muscle Zone Options

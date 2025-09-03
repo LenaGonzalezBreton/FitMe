@@ -64,7 +64,7 @@ const ExerciseFormModal: React.FC<ExerciseFormModalProps> = ({
       const exerciseData = {
         title: title.trim(),
         description: description.trim() || '',
-        intensity: intensity as 'LOW' | 'MEDIUM' | 'HIGH',
+        intensity: intensity as 'VERY_LOW' | 'LOW' | 'MODERATE' | 'HIGH' | 'VERY_HIGH',
         muscleZone: muscleZone || '',
         duration: duration ? Number(duration) : 15, // Default duration (minimum 10 required by API)
         imageUrl: imageUrl.trim() || undefined,
